@@ -1296,3 +1296,35 @@
   letter-spacing: 0.18em;
   color: var(--accent);
 }
+
+/* --- Code attendu, élément par élément (frappe indulgente) --- */
+
+.prompt-code {
+  display: inline-flex;
+  gap: 0.32rem;
+  margin: 0 0.55rem;
+  font-family: var(--font-mono);
+}
+
+.prompt-code__el {
+  color: var(--text-faint);
+  transition: color 60ms linear, text-shadow 60ms linear;
+}
+
+.prompt-code__el.is-keyed {
+  color: var(--accent);
+  text-shadow: 0 0 10px var(--accent-soft);
+}
+
+.trainer__hint--mode {
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-2);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+/* Empêche le menu contextuel iOS sur appui long : sur tablette, tenir la
+   palette plusieurs secondes est le geste normal, pas une sélection. */
+.keypad__key {
+  -webkit-touch-callout: none;
+}

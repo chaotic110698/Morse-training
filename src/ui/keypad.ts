@@ -9,7 +9,7 @@
  */
 
 import { h } from './dom.ts';
-import { keyLabel, isTypingTarget, shouldPreventDefault } from './keys.ts';
+import { keyLabel, isTypingTarget, matchesBinding, resolveCode, shouldPreventDefault } from './keys.ts';
 import type { Keyer, PaddleSide } from '../core/keyer.ts';
 import type { Settings } from '../core/settings.ts';
 
@@ -129,16 +129,19 @@ export class KeyPad {
 
   private attachKeyboard(): void {
     const onKeyDown = (event: KeyboardEvent): void => {
+      // `begin` ignore un appui déjà en cours : la garde `repeat` n'est qu'une
+      // optimisation, et le manipulateur reste correct sur les claviers qui ne
+      // renseignent pas cet indicateur, comme certains claviers d'iPad.
       if (event.repeat || isTypingTarget(event.target)) return;
-      const side = this.sideForCode(event.code);
+      const side = this.sideForEvent(event);
       if (!side) return;
-      if (shouldPreventDefault(event.code)) event.preventDefault();
+      if (shouldPreventDefault(resolveCode(event))) event.preventDefault();
       this.begin(side);
     };
     const onKeyUp = (event: KeyboardEvent): void => {
-      const side = this.sideForCode(event.code);
+      const side = this.sideForEvent(event);
       if (!side) return;
-      if (shouldPreventDefault(event.code)) event.preventDefault();
+      if (shouldPreventDefault(resolveCode(event))) event.preventDefault();
       this.end(side);
     };
     // Un changement d'onglet laisserait le contact ferme : on relâche tout.
@@ -159,11 +162,13 @@ export class KeyPad {
     };
   }
 
-  private sideForCode(code: string): PaddleSide | null {
+  private sideForEvent(event: KeyboardEvent): PaddleSide | null {
     const settings = this.options.getSettings();
-    if (settings.keyerMode === 'straight') return code === settings.keyStraight ? 'dit' : null;
-    if (code === settings.keyDit) return 'dit';
-    if (code === settings.keyDah) return 'dah';
+    if (settings.keyerMode === 'straight') {
+      return matchesBinding(event, settings.keyStraight) ? 'dit' : null;
+    }
+    if (matchesBinding(event, settings.keyDit)) return 'dit';
+    if (matchesBinding(event, settings.keyDah)) return 'dah';
     return null;
   }
 

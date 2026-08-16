@@ -50,9 +50,13 @@ export function sendView(context: ViewContext): View {
   let expectedIndex = 0;
   let started = false;
   let attemptErrors = 0;
+  /** Portion du code du caractère courant déjà frappée, en frappe indulgente. */
+  let progress = '';
   let promptStartedAt = 0;
   const recent: string[] = [];
   let tracker = new SessionTracker(store, 'send', store.settings.sessionLength);
+
+  const forgiving = (): boolean => store.settings.forgivingKeying;
 
   // --- Interface ---
 
@@ -92,6 +96,7 @@ export function sendView(context: ViewContext): View {
       },
       onElement: (_kind: ElementKind, code: string) => {
         buffer.textContent = prettyCode(code);
+        if (forgiving() && drill !== 'free') handleProgress(code);
       },
       onCharacter: (code, char) => {
         buffer.textContent = '';
@@ -126,6 +131,21 @@ export function sendView(context: ViewContext): View {
     h('option', { value: 'straight', text: 'Manipulateur droit (une touche)' }),
     h('option', { value: 'iambic-a', text: 'Palettes iambiques — mode A' }),
     h('option', { value: 'iambic-b', text: 'Palettes iambiques — mode B' }),
+  );
+
+  const modeNote = h('p', { class: 'trainer__hint trainer__hint--mode' });
+
+  const forgivingToggle = h(
+    'label',
+    { class: 'switch' },
+    h('input', {
+      type: 'checkbox',
+      on: {
+        change: (event) =>
+          store.updateSettings({ forgivingKeying: (event.target as HTMLInputElement).checked }),
+      },
+    }),
+    h('span', { text: 'Frappe indulgente' }),
   );
 
   const swapToggle = h(
@@ -202,6 +222,7 @@ export function sendView(context: ViewContext): View {
     tape.replaceChildren();
     keyer.reset();
     started = false;
+    syncFromSettings();
     nextPrompt();
   };
 
@@ -212,6 +233,7 @@ export function sendView(context: ViewContext): View {
     expectedIndex = 0;
     attemptErrors = 0;
     promptStartedAt = 0;
+    progress = '';
 
     if (drill === 'free') {
       target = '';
@@ -237,13 +259,36 @@ export function sendView(context: ViewContext): View {
     listenButton.disabled = false;
     nextButton.disabled = false;
     promptChar.textContent = target;
-    promptCode.textContent = [...target]
-      .map((char) => prettyCode(encodeChar(char) ?? ''))
-      .join('   ');
+    renderPromptCode(progress);
     const remaining = target.slice(expectedIndex);
     promptHint.textContent = remaining
       ? `À émettre : ${remaining}`
       : 'Consigne terminée.';
+  };
+
+  /**
+   * Rend le code attendu élément par élément, ceux déjà frappés étant marqués.
+   * En frappe indulgente c'est le seul repère de progression : il n'y a plus
+   * de chronomètre pour signaler qu'un caractère est terminé.
+   */
+  const renderPromptCode = (keyed: string): void => {
+    promptCode.replaceChildren(
+      ...[...target].map((char, index) => {
+        const code = encodeChar(char) ?? '';
+        const done = index < expectedIndex;
+        const current = index === expectedIndex;
+        return h(
+          'span',
+          { class: 'prompt-code' },
+          ...[...code].map((symbol, position) =>
+            h('span', {
+              class: `prompt-code__el${done || (current && position < keyed.length) ? ' is-keyed' : ''}`,
+              text: symbol === '.' ? '·' : '–',
+            }),
+          ),
+        );
+      }),
+    );
   };
 
   const appendTape = (text: string, kind: 'ok' | 'error' | 'space' | 'free'): void => {
@@ -251,13 +296,87 @@ export function sendView(context: ViewContext): View {
     tape.scrollLeft = tape.scrollWidth;
   };
 
-  const handleCharacter = (code: string, char: string | null): void => {
+  const beginTiming = (): void => {
     if (!started) {
       started = true;
       tracker.start();
     }
     if (promptStartedAt === 0) promptStartedAt = performance.now();
+  };
 
+  /** Consigne terminée : enregistre le résultat et enchaîne. */
+  const finishPrompt = (): void => {
+    const clean = attemptErrors === 0;
+    const responseMs = promptStartedAt === 0 ? 0 : performance.now() - promptStartedAt;
+    tracker.record(target, null, clean, responseMs);
+    if (store.settings.uiSounds && clean) store.audio.feedback('ok');
+    store.haptics.feedback(clean ? 'ok' : 'error');
+    display.className = `display ${clean ? 'display--ok' : 'display--error'}`;
+    promptHint.textContent = clean
+      ? 'Émission conforme.'
+      : `${attemptErrors} caractère(s) hors consigne. Réessayez ou passez au suivant.`;
+    renderProgress();
+    if (tracker.finished) finishSession();
+    else window.setTimeout(() => nextPrompt(), 900);
+  };
+
+  /** Valide le caractère courant et passe au suivant. */
+  const advance = (char: string | null, correct: boolean): void => {
+    if (!correct) attemptErrors += 1;
+    appendTape(char ?? '?', correct ? 'ok' : 'error');
+    expectedIndex += 1;
+    progress = '';
+    if (store.settings.uiSounds && !correct) store.audio.feedback('error');
+    if (expectedIndex >= target.length) finishPrompt();
+    else renderPrompt();
+  };
+
+  /**
+   * Frappe indulgente : chaque élément est confronté au code attendu.
+   *
+   * Tant que ce qui est frappé en constitue un début valide, il ne se passe
+   * rien — l'opérateur peut prendre tout son temps entre deux éléments. Le
+   * caractère est validé à l'instant où le code est complet, et seule une
+   * divergence réelle interrompt la saisie.
+   */
+  const handleProgress = (code: string): void => {
+    const char = target[expectedIndex];
+    const expected = char ? encodeChar(char) : null;
+    if (!char || !expected) return;
+    beginTiming();
+
+    if (code === expected) {
+      keyer.clearBuffer();
+      buffer.textContent = '';
+      tracker.countSent();
+      detectSpecials(code, char);
+      advance(char, true);
+      return;
+    }
+
+    if (expected.startsWith(code)) {
+      progress = code;
+      renderPromptCode(progress);
+      promptHint.textContent = `À émettre : ${target.slice(expectedIndex)}`;
+      return;
+    }
+
+    // Divergence : le seul cas qui arrête la saisie. Le caractère repart à
+    // zéro pour être refrappé, sans faire avancer la consigne.
+    keyer.clearBuffer();
+    buffer.textContent = '';
+    progress = '';
+    attemptErrors += 1;
+    if (store.settings.uiSounds) store.audio.feedback('error');
+    store.haptics.feedback('error');
+    appendTape('✗', 'error');
+    renderPromptCode('');
+    display.className = 'display display--error';
+    promptHint.textContent = `Cet élément ne fait pas partie du code de ${char}. Reprenez ce caractère.`;
+  };
+
+  const handleCharacter = (code: string, char: string | null): void => {
+    beginTiming();
     tracker.countSent();
     detectSpecials(code, char);
 
@@ -269,29 +388,7 @@ export function sendView(context: ViewContext): View {
 
     const expected = target[expectedIndex];
     if (expected === undefined) return;
-    const correct = char === expected;
-    if (!correct) attemptErrors += 1;
-    appendTape(char ?? '?', correct ? 'ok' : 'error');
-    expectedIndex += 1;
-
-    if (store.settings.uiSounds && !correct) store.audio.feedback('error');
-
-    if (expectedIndex >= target.length) {
-      const clean = attemptErrors === 0;
-      const responseMs = promptStartedAt === 0 ? 0 : performance.now() - promptStartedAt;
-      tracker.record(target, null, clean, responseMs);
-      if (store.settings.uiSounds && clean) store.audio.feedback('ok');
-      store.haptics.feedback(clean ? 'ok' : 'error');
-      display.className = `display ${clean ? 'display--ok' : 'display--error'}`;
-      promptHint.textContent = clean
-        ? 'Émission conforme.'
-        : `${attemptErrors} caractère(s) hors consigne. Réessayez ou passez au suivant.`;
-      renderProgress();
-      if (tracker.finished) finishSession();
-      else window.setTimeout(() => nextPrompt(), 900);
-    } else {
-      renderPrompt();
-    }
+    advance(char, char === expected);
   };
 
   /**
@@ -363,10 +460,24 @@ export function sendView(context: ViewContext): View {
     modeSelect.value = store.settings.keyerMode;
     (swapToggle.querySelector('input') as HTMLInputElement).checked = store.settings.swapPaddles;
     swapToggle.style.display = store.settings.keyerMode === 'straight' ? 'none' : '';
+    (forgivingToggle.querySelector('input') as HTMLInputElement).checked = forgiving();
     keyer.setTiming(store.timing);
-    keyer.setOptions({ mode: store.settings.keyerMode, adaptive: store.settings.adaptiveKeying });
+    keyer.setOptions({
+      mode: store.settings.keyerMode,
+      adaptive: store.settings.adaptiveKeying,
+      // En manipulation libre il n'y a pas de consigne à confronter : le
+      // découpage reste chronométré, simplement beaucoup plus tolérant.
+      autoBreak: !forgiving() || drill === 'free',
+      charGapUnits: forgiving() ? 4 : 2,
+      wordGapUnits: forgiving() ? 9 : 5,
+    });
     keypad.render();
     lamp.setEnabled(store.settings.visualSignal);
+    modeNote.textContent = forgiving()
+      ? drill === 'free'
+        ? "Frappe indulgente : les silences sont interprétés bien plus largement, rien ne vous presse."
+        : "Frappe indulgente : aucun délai imposé entre les éléments. Le caractère se valide dès que son code est complet, et seule une erreur interrompt la saisie."
+      : "Frappe chronométrée : un silence de trois unités termine le caractère, comme en trafic réel.";
   };
 
   const unsubscribe = store.subscribe(syncFromSettings);
@@ -377,7 +488,8 @@ export function sendView(context: ViewContext): View {
   const element = h(
     'div',
     { class: 'trainer' },
-    h('div', { class: 'toolbar' }, modeSelect, swapToggle),
+    h('div', { class: 'toolbar' }, modeSelect, swapToggle, forgivingToggle),
+    modeNote,
     drillSelect,
     h('p', { class: 'trainer__hint', text: DRILLS.find((entry) => entry.id === drill)?.hint ?? '' }),
     h('div', { class: 'progress' }, progressBar, progressLabel),
@@ -402,8 +514,16 @@ export function sendView(context: ViewContext): View {
         "Le mode B ajoute un élément supplémentaire après un relâchement en pince ; le mode A s’arrête net. " +
         "Si vous débutez aux palettes, restez en mode A."),
       h('p', {},
-        "Sur téléphone, utilisez les boutons ci-dessus. Sur ordinateur, ils sont reliés aux touches " +
-        "indiquées sur chaque bouton, modifiables dans les réglages."),
+        "Sur téléphone et sur tablette, utilisez les boutons ci-dessus. Avec un clavier — y compris " +
+        "celui d'un iPad — ils sont reliés aux touches indiquées sur chaque bouton, modifiables dans " +
+        "les réglages."),
+      h('p', {},
+        h('strong', { text: 'La frappe indulgente ' }),
+        "enlève toute contrainte de temps : chaque élément est comparé au code attendu, un début " +
+        "valide vous laisse réfléchir aussi longtemps qu'il le faut, et seul un élément qui ne " +
+        "correspond pas arrête la saisie. Le code attendu s'allume au fur et à mesure sous la " +
+        "consigne. C'est le bon réglage pour apprendre le geste ; désactivez-le quand vous voulez " +
+        "travailler le rythme, qui est ce qui compte en trafic réel."),
     ),
   );
 

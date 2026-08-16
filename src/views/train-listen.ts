@@ -12,7 +12,7 @@ import { h, formatNumber, setChildren } from '../ui/dom.ts';
 import { SignalLamp } from '../ui/lamp.ts';
 import { MorsePlayer } from '../ui/player.ts';
 import { SessionTracker } from '../ui/session.ts';
-import { isTypingTarget } from '../ui/keys.ts';
+import { isSpaceKey, isTypingTarget } from '../ui/keys.ts';
 import { prettyCode, encodeChar } from '../core/morse.ts';
 import { drawKochChars, drawWeakestFirst, kochCharset, kochMaxLevel, getKochOrder } from '../core/koch.ts';
 import { charAccuracy, formatPercent } from '../core/progress.ts';
@@ -405,7 +405,7 @@ export function listenView(context: ViewContext): View {
 
   const onKeyDown = (event: KeyboardEvent): void => {
     if (isTypingTarget(event.target) || event.metaKey || event.ctrlKey || event.altKey) return;
-    if (event.code === 'Space') {
+    if (isSpaceKey(event)) {
       event.preventDefault();
       if (phase === 'running') replay();
       else primaryButton.click();

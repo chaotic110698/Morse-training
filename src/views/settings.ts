@@ -7,7 +7,7 @@
  */
 
 import { h, field } from '../ui/dom.ts';
-import { keyLabel } from '../ui/keys.ts';
+import { keyLabel, resolveCode } from '../ui/keys.ts';
 import { MorsePlayer } from '../ui/player.ts';
 import { SignalLamp } from '../ui/lamp.ts';
 import { hapticsSupported } from '../core/haptics.ts';
@@ -79,7 +79,8 @@ export function settingsView(context: ViewContext): View {
     if (!capturing) return;
     event.preventDefault();
     event.stopPropagation();
-    if (event.code !== 'Escape') store.updateSettings({ [capturing]: event.code });
+    const code = resolveCode(event);
+    if (code !== 'Escape') store.updateSettings({ [capturing]: code });
     capturing = null;
     render();
   };
@@ -296,6 +297,23 @@ export function settingsView(context: ViewContext): View {
               'Pour les gauchers, ou simplement par habitude inverse.',
             )
           : null,
+        field(
+          'Frappe indulgente',
+          h(
+            'label',
+            { class: 'switch' },
+            h('input', {
+              type: 'checkbox',
+              attrs: { checked: s.forgivingKeying },
+              on: {
+                change: (event) =>
+                  store.updateSettings({ forgivingKeying: (event.target as HTMLInputElement).checked }),
+              },
+            }),
+            h('span', { text: "Aucune contrainte de temps entre les éléments" }),
+          ),
+          "Dans les exercices guidés, le décodage cesse d'être arbitré par un chronomètre : chaque élément est comparé au code attendu. Un début valide vous laisse tout le temps voulu, le caractère se valide dès que son code est complet, et seule une erreur réelle interrompt la saisie. En manipulation libre, les silences sont simplement interprétés bien plus largement.",
+        ),
         field(
           'Seuil adaptatif',
           h(

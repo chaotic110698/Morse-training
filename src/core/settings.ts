@@ -20,6 +20,13 @@ export interface Settings {
   adaptiveKeying: boolean;
   /** Inverse les deux palettes, pour les gauchers. */
   swapPaddles: boolean;
+  /**
+   * Frappe sans contrainte de temps. Le décodage cesse d'être arbitré par un
+   * chronomètre : dans les exercices guidés, chaque élément est comparé au code
+   * attendu, si bien qu'une pause n'a plus aucune conséquence et que seule une
+   * erreur réelle interrompt la saisie.
+   */
+  forgivingKeying: boolean;
   /** Code physique de la touche du manipulateur droit. */
   keyStraight: string;
   /** Code physique de la palette « point ». */
@@ -54,6 +61,7 @@ export const DEFAULT_SETTINGS: Settings = {
   keyerMode: 'straight',
   adaptiveKeying: true,
   swapPaddles: false,
+  forgivingKeying: false,
   keyStraight: 'Space',
   keyDit: 'ArrowLeft',
   keyDah: 'ArrowRight',

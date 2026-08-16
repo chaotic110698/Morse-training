@@ -36,6 +36,12 @@ export interface KeyerOptions {
    * lieu de la vitesse configurée. Indispensable au manipulateur droit, où personne ne frappe exactement à la vitesse annoncée.
    */
   adaptive: boolean;
+  /**
+   * Termine le caractère automatiquement après un silence. Débrayer cette
+   * coupure rend la frappe intemporelle : c'est alors à l'appelant de décider
+   * quand le caractère est complet, en comparant le code à ce qu'il attend.
+   */
+  autoBreak: boolean;
 }
 
 export const DEFAULT_KEYER_OPTIONS: KeyerOptions = {
@@ -43,6 +49,7 @@ export const DEFAULT_KEYER_OPTIONS: KeyerOptions = {
   charGapUnits: 2,
   wordGapUnits: 5,
   adaptive: true,
+  autoBreak: true,
 };
 
 export interface KeyerCallbacks {
@@ -132,6 +139,12 @@ export class Keyer {
   }
 
   /** Termine immédiatement le caractère en cours, s'il y en à un. */
+  /** Vide le caractère en cours sans l'émettre, pour repartir de zéro. */
+  clearBuffer(): void {
+    this.buffer = '';
+    this.clearGapTimers();
+  }
+
   flush(): void {
     this.clearGapTimers();
     this.emitCharacter();
@@ -282,6 +295,9 @@ export class Keyer {
 
   private startGapTimers(): void {
     this.clearGapTimers();
+    // Sans coupure automatique, un silence ne signifie plus rien : l'opérateur
+    // peut réfléchir aussi longtemps qu'il le souhaite entre deux éléments.
+    if (!this.options.autoBreak) return;
     const unit = this.referenceUnit * 1000;
     this.charTimer = window.setTimeout(() => {
       this.charTimer = 0;
