@@ -1243,16 +1243,36 @@
  * neutre au repos et piloté uniquement par la classe : il n'existe dans le
  * document que si l'utilisateur a explicitement activé l'option.
  */
+/*
+ * Le voile n'existe visuellement que pendant une émission. Au repos il est
+ * retiré du flux : peint en noir en permanence, il masquait toute la page dès
+ * que l'option était cochée et rendait la navigation impossible.
+ */
 .flash-layer {
+  display: none;
   position: fixed;
   inset: 0;
   z-index: 90;
   background: #000;
-  pointer-events: none;
+}
+
+.flash-layer.is-armed {
+  display: grid;
+  place-items: end center;
+  padding-bottom: 12vh;
+  cursor: pointer;
 }
 
 .flash-layer.is-lit {
   background: #fff;
+}
+
+/* Gris moyen : lisible aussi bien sur le noir que sur le blanc du signal. */
+.flash-layer__hint {
+  color: #808080;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  user-select: none;
 }
 
 /* Réglage compact du niveau, placé à côté du badge correspondant. */

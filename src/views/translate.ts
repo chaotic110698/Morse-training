@@ -27,14 +27,30 @@ export function translateView(context: ViewContext): View {
   let source: 'text' | 'morse' = 'text';
   let syncing = false;
   let torchEnabled = false;
+  /** L'appareil a confirmé l'allumage, par opposition à ne rien renseigner. */
+  let torchVerified = false;
   let screenFlashEnabled = false;
 
   // --- Flash d'écran ---
 
-  // Un voile plein écran, créé une seule fois et seulement s'il est demandé :
-  // il porte un avertissement, car un clignotement rapide plein écran est
-  // pénible et déconseillé aux personnes photosensibles.
-  const flashLayer = h('div', { class: 'flash-layer', attrs: { 'aria-hidden': 'true' } });
+  // Un voile plein écran, créé une seule fois et seulement s'il est demandé.
+  // Il ne s'affiche que le temps d'une émission — sinon il masquerait la page —
+  // et se referme au toucher, seule sortie possible quand l'écran entier
+  // clignote.
+  const flashLayer = h(
+    'div',
+    {
+      class: 'flash-layer',
+      attrs: { role: 'button', tabindex: '-1', 'aria-label': "Arrêter l'émission lumineuse" },
+      on: { click: () => stop() },
+    },
+    h('span', { class: 'flash-layer__hint', text: 'Touchez l’écran pour arrêter' }),
+  );
+
+  const armFlash = (armed: boolean): void => {
+    flashLayer.classList.toggle('is-armed', armed && screenFlashEnabled);
+    if (!armed) flashLayer.classList.remove('is-lit');
+  };
 
   // --- Champs ---
 
@@ -135,7 +151,7 @@ export function translateView(context: ViewContext): View {
   const stop = (): void => {
     player.stop();
     torch.set(false);
-    flashLayer.classList.remove('is-lit');
+    armFlash(false);
     playButton.textContent = 'Émettre';
     renderStrip();
   };
@@ -144,6 +160,7 @@ export function translateView(context: ViewContext): View {
     const elements = currentElements();
     if (elements.length === 0) return;
     playButton.textContent = 'Arrêter';
+    armFlash(true);
 
     await player.playElements(elements, {
       onChar: (index) => renderStrip(index),
@@ -153,7 +170,7 @@ export function translateView(context: ViewContext): View {
       },
       onEnd: () => {
         torch.set(false);
-        flashLayer.classList.remove('is-lit');
+        armFlash(false);
         playButton.textContent = 'Émettre';
         renderStrip();
       },
@@ -163,6 +180,43 @@ export function translateView(context: ViewContext): View {
   // --- Sorties lumineuses ---
 
   const torchNote = h('p', { class: 'field__hint' });
+
+  const torchTestButton = h('button', {
+    class: 'btn btn--small',
+    type: 'button',
+    text: 'Tester la lampe',
+    disabled: true,
+    on: {
+      click: async () => {
+        torchTestButton.disabled = true;
+        const result = await torch.selfTest(700);
+        torchTestButton.disabled = false;
+        if (!result.ok) {
+          context.toast(result.message ?? 'Essai échoué.', 'error');
+          renderTorchNote(result.message);
+          return;
+        }
+        torchVerified = result.verified === true;
+        context.toast(
+          torchVerified
+            ? 'La lampe a répondu : elle vient de rester allumée une seconde.'
+            : "Demande envoyée sans erreur. Si rien ne s'est allumé, c'est que cet appareil ne pilote pas son flash depuis une page web.",
+          torchVerified ? 'success' : 'info',
+        );
+        renderTorchNote();
+      },
+    },
+  });
+
+  // Une panne en cours d'émission doit se voir, pas disparaître dans un silence.
+  torch.onFailure = (message) => {
+    context.toast(message, 'error');
+    torchEnabled = false;
+    torchInput.checked = false;
+    torchTestButton.disabled = true;
+    torch.release();
+    renderTorchNote(message);
+  };
   const torchInput = h('input', {
     type: 'checkbox',
     attrs: { disabled: !torchPossiblySupported() },
@@ -171,19 +225,31 @@ export function translateView(context: ViewContext): View {
         const input = event.target as HTMLInputElement;
         if (!input.checked) {
           torchEnabled = false;
+          torchTestButton.disabled = true;
           torch.release();
           renderTorchNote();
           return;
         }
+        input.disabled = true;
         const result = await torch.acquire();
+        input.disabled = false;
         if (!result.ok) {
           input.checked = false;
           torchEnabled = false;
+          torchTestButton.disabled = true;
           context.toast(result.message ?? "La lampe n'a pas pu être activée.", 'error');
           renderTorchNote(result.message);
           return;
         }
         torchEnabled = true;
+        torchTestButton.disabled = false;
+        torchVerified = result.verified === true;
+        context.toast(
+          torchVerified
+            ? 'Lampe prête : elle vient de clignoter une fois.'
+            : "Lampe activée, mais cet appareil ne confirme rien : vérifiez de visu avec « Tester la lampe ».",
+          torchVerified ? 'success' : 'info',
+        );
         renderTorchNote();
         if (store.settings.charWpm > TORCH_MAX_WPM) {
           context.toast(
@@ -206,7 +272,9 @@ export function translateView(context: ViewContext): View {
       return;
     }
     torchNote.textContent = torchEnabled
-      ? `Lampe prête. La caméra arrière reste ouverte tant que l'option est active. Au-delà de ${TORCH_MAX_WPM} mots par minute, la commutation du flash ne suit plus : baissez la vitesse pour un signal lisible.`
+      ? (torchVerified
+          ? `Lampe confirmée par l'appareil. La caméra arrière reste ouverte tant que l'option est active. Au-delà de ${TORCH_MAX_WPM} mots par minute, la commutation du flash ne suit plus : baissez la vitesse pour un signal lisible.`
+          : `Demande acceptée, mais cet appareil ne dit pas si la lampe s'est réellement allumée. Utilisez « Tester la lampe » et regardez le flash : c'est le seul verdict fiable. Au-delà de ${TORCH_MAX_WPM} mots par minute, la commutation ne suit plus.`)
       : `Passe par la caméra arrière, seul chemin qu'offre le web vers le flash : l'autorisation caméra sera demandée. À utiliser vers ${TORCH_MAX_WPM} mots par minute au plus.`;
   };
 
@@ -349,7 +417,9 @@ export function translateView(context: ViewContext): View {
       h('div', { class: 'field' },
         h('div', { class: 'field__label', text: 'Lampe torche' },),
         h('div', { class: 'field__control' },
-          h('label', { class: 'switch' }, torchInput, h('span', { text: 'Piloter le flash du téléphone' }))),
+          h('div', { class: 'actions' },
+            h('label', { class: 'switch' }, torchInput, h('span', { text: 'Piloter le flash du téléphone' })),
+            torchTestButton)),
         torchNote),
       h('div', { class: 'field' },
         h('div', { class: 'field__label', text: "Flash de l'écran" }),
@@ -358,8 +428,10 @@ export function translateView(context: ViewContext): View {
             h('span', { text: "Utiliser l'écran comme lampe" }))),
         h('p', { class: 'field__hint' },
           "Solution de repli quand la lampe n'est pas pilotable, notamment sur iPhone. L'écran entier " +
-          "s'allume au rythme du signal : c'est efficace de nuit, mais éprouvant pour l'œil et " +
-          "déconseillé aux personnes photosensibles. À réserver à une émission courte, à vitesse lente.")),
+          "s'allume au rythme du signal, mais seulement pendant l'émission : cocher la case ne change " +
+          "rien à l'affichage. Touchez l'écran à tout moment pour arrêter. C'est efficace de nuit, mais " +
+          "éprouvant pour l'œil et déconseillé aux personnes photosensibles ; à réserver à une émission " +
+          "courte, à vitesse lente.")),
     ),
 
     h(

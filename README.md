@@ -67,9 +67,17 @@ elles ne peuvent donc pas dériver l'une par rapport à l'autre.
   sur Android ; Safari sur iOS n'expose aucune API de vibration, l'interface le
   signale explicitement.
 - **Lampe torche** — pilotée dans le traducteur via la contrainte `torch` de la
-  piste vidéo de la caméra arrière. La commutation du flash prend plusieurs
-  dizaines de millisecondes : au-delà d'une dizaine de mots par minute elle ne
-  suit plus, ce que l'interface annonce.
+  piste vidéo de la caméra arrière. Trois pièges se manifestent tous de la même
+  façon — la caméra s'ouvre, rien ne s'allume — et sont traités séparément : le
+  flux est attaché à un élément vidéo lu en sourdine, car plusieurs appareils
+  laissent la pile caméra en veille sans cela ; `getCapabilities()` absent n'est
+  pas tenu pour un refus, seule une déclaration explicite l'est ; et le résultat
+  est vérifié par `getSettings()` plutôt que déduit de l'absence d'erreur. Un
+  bouton « Tester la lampe » permet de trancher de visu, et l'interface
+  distingue un allumage confirmé par l'appareil d'une demande simplement
+  acceptée. La commutation du flash prend plusieurs dizaines de millisecondes :
+  au-delà d'une dizaine de mots par minute elle ne suit plus, ce que l'interface
+  annonce.
 
 ## Pourquoi un mode « un élément par appui »
 
