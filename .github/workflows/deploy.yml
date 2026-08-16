@@ -5,9 +5,11 @@
 # main, et le site en ligne correspond toujours au code de la branche.
 name: Deployer sur GitHub Pages
 
+# Toute poussee declenche le workflow, mais seule la branche par defaut du
+# depot publie reellement (voir la condition `if` du job). Ainsi le site se
+# deploie sans retoucher ce fichier, quel que soit le nom de cette branche.
 on:
   push:
-    branches: [main]
   workflow_dispatch:
 
 # Autorisations minimales necessaires au deploiement Pages.
@@ -24,6 +26,7 @@ concurrency:
 
 jobs:
   build:
+    if: github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -66,8 +66,12 @@ npm run preview    # previsualisation de la construction
 ## Deploiement
 
 Le site est publie sur GitHub Pages par le workflow
-`.github/workflows/deploy.yml`, declenche a chaque poussee sur `main`. Il faut
-avoir choisi **GitHub Actions** comme source dans les reglages Pages du depot.
+`.github/workflows/deploy.yml`. Il se declenche a chaque poussee, mais ne
+publie que depuis la branche par defaut du depot : renommer ou changer cette
+branche ne demande aucune modification du workflow.
+
+Une seule chose est a faire une fois pour toutes dans les reglages du depot :
+choisir **GitHub Actions** comme source dans la section Pages.
 
 La base d'URL est definie dans `vite.config.ts` (`base: '/Morse-training/'`) :
 elle doit correspondre au nom du depot, sinon les assets sont demandes a la
