@@ -1131,3 +1131,168 @@
     right: var(--space-4);
   }
 }
+
+/* --- Traducteur --- */
+
+.translate__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: var(--space-4);
+}
+
+.translate__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.translate__panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.translate__panel-title {
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.translate__field {
+  max-width: none;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.translate__field--mono {
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+}
+
+.translate__actions {
+  margin-top: var(--space-4);
+}
+
+.translate__meta {
+  margin: var(--space-3) 0 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.btn--small {
+  min-height: 2rem;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.82rem;
+}
+
+/* Bandeau de lecture : chaque caractere avec son code, celui en cours surligne. */
+.translate__strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  min-height: 3.5rem;
+  align-content: flex-start;
+}
+
+.translate__strip-empty {
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+.translate__unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-2) var(--space-2);
+  min-width: 2.6rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  transition: background 60ms linear, border-color 60ms linear;
+}
+
+.translate__unit.is-active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.translate__unit-char {
+  font-weight: 650;
+  line-height: 1;
+}
+
+.translate__unit.is-active .translate__unit-char {
+  color: var(--accent);
+}
+
+.translate__unit-code {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  min-height: 0.8rem;
+}
+
+/*
+ * Flash d'ecran, en repli quand la lampe n'est pas pilotable. Volontairement
+ * neutre au repos et pilote uniquement par la classe : il n'existe dans le
+ * document que si l'utilisateur a explicitement active l'option.
+ */
+.flash-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: #000;
+  pointer-events: none;
+}
+
+.flash-layer.is-lit {
+  background: #fff;
+}
+
+/* Reglage compact du niveau, place a cote du badge correspondant. */
+.stepper {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.stepper__btn {
+  min-width: 2rem;
+  min-height: 1.7rem;
+  padding: 0 var(--space-2);
+  background: none;
+  border: 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.stepper__btn:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+.stepper__btn + .stepper__btn {
+  border-left: 1px solid var(--border);
+}
+
+.display__lead {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.display__lead strong {
+  font-family: var(--font-mono);
+  letter-spacing: 0.18em;
+  color: var(--accent);
+}

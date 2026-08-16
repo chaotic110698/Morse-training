@@ -133,6 +133,22 @@ export function decodeText(morse: string): string {
     .join(' ');
 }
 
+/**
+ * Nettoie une saisie morse libre. L'utilisateur peut coller du texte venant de
+ * n'importe ou : points typographiques, tirets longs, separateurs de mots
+ * varies, retours a la ligne. Tout est ramene a la notation ASCII interne,
+ * avec un espace entre caracteres et ` / ` entre mots.
+ */
+export function normalizeMorseInput(input: string): string {
+  return input
+    .replace(/[·•‧∙]/g, '.')
+    .replace(/[–—−‒_]/g, '-')
+    .replace(/[|¦]/g, '/')
+    .replace(/\s*\/+\s*/g, ' / ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 /** Indique si une chaine ne contient que des points et des traits. */
 export function isValidCode(code: string): boolean {
   return /^[.-]+$/.test(code);

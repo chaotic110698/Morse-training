@@ -50,6 +50,37 @@ export function listenView(context: ViewContext): View {
   // --- Elements d'interface ---
 
   const levelBadge = h('span', { class: 'badge badge--accent' });
+
+  /**
+   * Reglage du niveau a portee de main. Quelqu'un qui connait deja une partie
+   * du code n'a aucune raison de repartir de deux caracteres, et aller le
+   * chercher dans les reglages n'est pas evident quand on decouvre la page.
+   */
+  const stepLevel = (delta: number): void => {
+    const max = kochMaxLevel(store.settings.kochOrder);
+    store.mutateProgress((progress) => {
+      progress.kochLevel = Math.min(max, Math.max(2, progress.kochLevel + delta));
+    });
+  };
+
+  const levelStepper = h(
+    'div',
+    { class: 'stepper', attrs: { role: 'group', 'aria-label': 'Nombre de caracteres travailles' } },
+    h('button', {
+      class: 'stepper__btn',
+      type: 'button',
+      text: '−',
+      attrs: { 'aria-label': 'Retirer un caractere' },
+      on: { click: () => stepLevel(-1) },
+    }),
+    h('button', {
+      class: 'stepper__btn',
+      type: 'button',
+      text: '+',
+      attrs: { 'aria-label': 'Ajouter un caractere' },
+      on: { click: () => stepLevel(1) },
+    }),
+  );
   const speedBadge = h('span', { class: 'badge' });
   const charsetStrip = h('div', { class: 'charset' });
   const progressBar = h('div', { class: 'progress__fill' });
@@ -122,11 +153,23 @@ export function listenView(context: ViewContext): View {
 
   const renderDisplay = (state?: { char: string; correct: boolean; answer: string | null }): void => {
     if (phase === 'idle') {
+      const set = charset();
+      const max = kochMaxLevel(store.settings.kochOrder);
       display.className = 'display';
-      display.replaceChildren(
+      setChildren(display, [
+        h('p', { class: 'display__lead' },
+          `Vous travaillez ${set.length} caractere${set.length > 1 ? 's' : ''} sur ${max} : `,
+          h('strong', { text: set.join(' ') }),
+          '.'),
         h('p', { class: 'display__hint' },
-          `Vous travaillez ${charset().length} caracteres. Ecoutez, repondez au clavier ou en touchant la grille.`),
-      );
+          set.length <= 3
+            ? `C'est volontaire, et c'est tout l'interet de la methode Koch : on demarre a deux caracteres ` +
+              `a pleine vitesse plutot qu'a l'alphabet entier au ralenti. Un caractere de plus se debloque ` +
+              `des que vous depassez ${Math.round(store.settings.kochThreshold * 100)} % sur une serie complete de ` +
+              `${store.settings.sessionLength}. Si vous connaissez deja une partie du code, montez le niveau avec le bouton + ci-dessus.`
+            : `Un caractere de plus se debloque des que vous depassez ${Math.round(store.settings.kochThreshold * 100)} % ` +
+              `sur une serie complete. Ecoutez, repondez au clavier ou en touchant la grille.`),
+      ]);
       return;
     }
     if (!state) {
@@ -394,7 +437,7 @@ export function listenView(context: ViewContext): View {
     h(
       'div',
       { class: 'trainer__header' },
-      h('div', { class: 'badges' }, levelBadge, speedBadge),
+      h('div', { class: 'badges' }, levelBadge, levelStepper, speedBadge),
       charsetStrip,
     ),
     h('div', { class: 'progress' }, progressBar, progressLabel),

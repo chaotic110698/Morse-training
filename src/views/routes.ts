@@ -11,12 +11,14 @@ import { readView } from './train-read.ts';
 import { statsView } from './stats.ts';
 import { achievementsView } from './achievements.ts';
 import { settingsView } from './settings.ts';
+import { translateView } from './translate.ts';
 import type { RouteDefinition } from '../ui/router.ts';
 
 export const NAV_GROUPS: Array<{ id: string; label: string }> = [
   { id: 'accueil', label: 'Accueil' },
   { id: 'apprendre', label: 'Apprendre' },
   { id: 'entrainement', label: 'S’entrainer' },
+  { id: 'outils', label: 'Outils' },
   { id: 'progression', label: 'Progression' },
   { id: 'reglages', label: 'Reglages' },
 ];
@@ -93,6 +95,15 @@ export const ROUTES: RouteDefinition[] = [
     icon: '👁️',
     group: 'entrainement',
     factory: readView,
+  },
+  {
+    path: '/outils/traducteur',
+    label: 'Traducteur',
+    title: 'Traducteur texte et morse',
+    description: 'Traduire dans les deux sens, ecouter, et emettre en lumiere.',
+    icon: '🔁',
+    group: 'outils',
+    factory: translateView,
   },
   {
     path: '/progression/statistiques',

@@ -39,6 +39,12 @@ const SHORTCUTS: Shortcut[] = [
     text: 'Sans son, pour reviser partout. Un complement, jamais un substitut a l’ecoute.',
   },
   {
+    path: '/outils/traducteur',
+    icon: '🔁',
+    title: 'Traducteur texte et morse',
+    text: "Traduire dans les deux sens, ecouter le resultat, et emettre en lumiere avec la lampe du telephone.",
+  },
+  {
     path: '/apprendre/principes',
     icon: '📐',
     title: 'Comprendre le morse',

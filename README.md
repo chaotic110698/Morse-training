@@ -31,6 +31,14 @@ localement.
 - *Lecture visuelle* — sans son, dans les deux sens (code vers lettre, lettre
   vers code).
 
+**Outils**
+
+- *Traducteur* — texte vers morse et morse vers texte, en direct dans les deux
+  sens. Le resultat s'ecoute, defile caractere par caractere, et peut piloter la
+  lampe torche du telephone pour emettre reellement en lumiere. La torche passe
+  par la camera arriere, seul chemin qu'offre le web : elle fonctionne sous
+  Android, pas sous iOS, ou un flash d'ecran est propose en repli.
+
 **Suivre sa progression**
 
 Statistiques par caractere sous forme de carte de chaleur, points faibles du
@@ -52,6 +60,10 @@ elles ne peuvent donc pas deriver l'une par rapport a l'autre.
   donne un rythme bien plus regulier qu'une serie de declenchements. Disponible
   sur Android ; Safari sur iOS n'expose aucune API de vibration, l'interface le
   signale explicitement.
+- **Lampe torche** — pilotee dans le traducteur via la contrainte `torch` de la
+  piste video de la camera arriere. La commutation du flash prend plusieurs
+  dizaines de millisecondes : au dela d'une dizaine de mots par minute elle ne
+  suit plus, ce que l'interface annonce.
 
 ## Developpement
 
