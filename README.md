@@ -25,9 +25,13 @@ localement.
   révision ciblée sur les caractères les plus ratés.
 - *Émission* — manipulateur droit (une touche, la durée de l'appui fait le
   point ou le trait) ou palettes iambiques en mode A ou B. Au doigt sur
-  téléphone, au clavier sur ordinateur, avec touches réassignables.
+  téléphone et sur tablette, au clavier sur ordinateur comme sur iPad, avec
+  touches réassignables. Une option de **frappe indulgente** retire toute
+  contrainte de temps : chaque élément est comparé au code attendu, une pause
+  n'a plus aucune conséquence, et seul un élément qui ne correspond pas
+  interrompt la saisie.
 - *Mots et indicatifs* — abréviations, codes Q, mots courants, indicatifs
-  generes et groupes aléatoires de cinq caractères.
+  générés et groupes aléatoires de cinq caractères.
 - *Lecture visuelle* — sans son, dans les deux sens (code vers lettre, lettre
   vers code).
 
@@ -64,6 +68,15 @@ elles ne peuvent donc pas dériver l'une par rapport à l'autre.
   piste vidéo de la caméra arrière. La commutation du flash prend plusieurs
   dizaines de millisecondes : au-delà d'une dizaine de mots par minute elle ne
   suit plus, ce que l'interface annonce.
+
+## Compatibilité clavier
+
+`KeyboardEvent.code` désigne la touche physique indépendamment de la
+disposition, et c'est sur lui que reposent les raccourcis du manipulateur. Mais
+Safari sur iPad ne le renseigne pas toujours pour un clavier externe : il arrive
+vide, et toute comparaison échoue en silence. `resolveCode()` reconstruit alors
+le code depuis `key`, qu'iPadOS fournit systématiquement, de sorte que la barre
+d'espace fonctionne sur tous les appareils.
 
 ## Développement
 
