@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="fr" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Morse Training — apprendre et pratiquer le code morse</title>
+    <meta
+      name="description"
+      content="Entrainement au code morse dans le navigateur : ecoute methode Koch, emission au manipulateur, lexique complet et histoire du morse. Gratuit, sans compte, utilisable hors ligne."
+    />
+    <meta name="theme-color" content="#0b1015" />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="icon" href="icons/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icons/icon-192.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Morse" />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <div id="app" class="shell"></div>
+    <noscript>
+      <p style="padding: 2rem; font-family: system-ui, sans-serif">
+        Ce site a besoin de JavaScript : la generation du son morse se fait entierement dans votre
+        navigateur, sans serveur.
+      </p>
+    </noscript>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

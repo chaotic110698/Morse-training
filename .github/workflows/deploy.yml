@@ -1,0 +1,58 @@
+# Publication du site sur GitHub Pages.
+#
+# Le depot ne contient que les sources : le dossier `dist/` est reconstruit a
+# chaque poussee sur la branche principale, puis publie. Rien a committer a la
+# main, et le site en ligne correspond toujours au code de la branche.
+name: Deployer sur GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Autorisations minimales necessaires au deploiement Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Une seule publication a la fois ; les poussees suivantes attendent leur tour
+# plutot que d'annuler un deploiement deja lance.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Verifier les types
+        run: npm run typecheck
+
+      - name: Construire le site
+        run: npm run build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

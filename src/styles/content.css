@@ -1,0 +1,203 @@
+/* Styles des pages de lecture : principes, histoire, lexique. */
+
+.prose {
+  max-width: 68ch;
+  color: var(--text);
+}
+
+.prose--tight {
+  max-width: none;
+}
+
+.prose__lead {
+  font-size: 1.08rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-5);
+}
+
+.prose h2 {
+  margin: var(--space-6) 0 var(--space-3);
+  font-size: 1.25rem;
+}
+
+.prose h2:first-of-type {
+  margin-top: var(--space-5);
+}
+
+.prose__note {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+
+.prose__callout {
+  padding: var(--space-4);
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  color: var(--text);
+}
+
+.prose__list {
+  padding-left: 1.2rem;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.formula {
+  padding: var(--space-4);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.demo-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: var(--space-4);
+}
+
+/* --- Frise historique --- */
+
+.timeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--space-5);
+  position: relative;
+}
+
+.timeline__item {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  gap: var(--space-4);
+  position: relative;
+  padding-left: var(--space-1);
+}
+
+.timeline__period {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--accent);
+  padding-top: 0.2rem;
+  border-right: 1px solid var(--border);
+  padding-right: var(--space-4);
+}
+
+.timeline__title {
+  font-size: 1.05rem;
+  margin-bottom: var(--space-2);
+}
+
+.timeline__content p {
+  color: var(--text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.timeline__content p:last-child {
+  margin-bottom: 0;
+}
+
+.timeline__end {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 640px) {
+  .timeline__item {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2);
+  }
+
+  .timeline__period {
+    border-right: 0;
+    border-left: 2px solid var(--accent);
+    padding: 0 0 0 var(--space-3);
+  }
+}
+
+/* --- Lexique --- */
+
+.lexicon {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.lexicon__title {
+  font-size: 1.1rem;
+  margin-bottom: var(--space-2);
+}
+
+.lexicon__description {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  max-width: 70ch;
+  margin-bottom: var(--space-4);
+}
+
+.lexicon__grid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: var(--space-2);
+}
+
+.lexicon__card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.lexicon__card:hover {
+  border-color: var(--accent);
+  background: var(--surface-2);
+}
+
+.lexicon__char {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.lexicon__code {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+}
+
+.lexicon__spoken {
+  font-size: 0.72rem;
+  color: var(--text-faint);
+  letter-spacing: 0.02em;
+}
+
+.lexicon__note {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}

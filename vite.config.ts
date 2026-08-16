@@ -1,0 +1,44 @@
+import { defineConfig } from 'vite';
+import { VitePWA } from 'vite-plugin-pwa';
+
+// Le site est publie sur GitHub Pages a l'adresse
+// https://<user>.github.io/Morse-training/ : la base doit donc inclure le
+// nom du depot, sinon les assets sont demandes a la racine du domaine.
+export default defineConfig({
+  base: '/Morse-training/',
+  build: {
+    target: 'es2022',
+    sourcemap: true,
+  },
+  plugins: [
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['icons/icon.svg', 'icons/favicon.svg'],
+      manifest: {
+        name: 'Morse Training',
+        short_name: 'Morse',
+        description: "Apprendre et s'entrainer au code morse : ecoute, manipulation, lexique et histoire.",
+        lang: 'fr',
+        dir: 'ltr',
+        start_url: '/Morse-training/',
+        scope: '/Morse-training/',
+        display: 'standalone',
+        orientation: 'any',
+        background_color: '#0b1015',
+        theme_color: '#0b1015',
+        categories: ['education', 'utilities'],
+        icons: [
+          { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
+        ],
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,webmanifest}'],
+        cleanupOutdatedCaches: true,
+        navigateFallback: '/Morse-training/index.html',
+      },
+      devOptions: { enabled: false },
+    }),
+  ],
+});
