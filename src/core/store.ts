@@ -1,9 +1,9 @@
 /**
- * Etat applicatif partage : reglages, progression et services audio/haptique.
+ * État applicatif partage : réglages, progression et services audio/haptique.
  *
- * Un simple modele d'abonnement suffit ici. Les vues s'abonnent pour se
- * redessiner quand les reglages changent, et l'enregistrement dans le stockage
- * local est temporise pour ne pas ecrire a chaque frappe.
+ * Un simple modèle d'abonnement suffit ici. Les vues s'abonnent pour se
+ * redessiner quand les réglages changent, et l'enregistrement dans le stockage
+ * local est temporisé pour ne pas écrire à chaque frappe.
  */
 
 import { AudioEngine } from './audio.ts';
@@ -64,7 +64,7 @@ export class AppStore {
 
   updateSettings(patch: Partial<Settings>): void {
     this.settings = { ...this.settings, ...patch };
-    // La vitesse globale ne peut pas depasser la vitesse des caracteres.
+    // La vitesse globale ne peut pas dépasser la vitesse des caractères.
     if (this.settings.effectiveWpm > this.settings.charWpm) {
       this.settings.effectiveWpm = this.settings.charWpm;
     }
@@ -79,7 +79,7 @@ export class AppStore {
     this.emit();
   }
 
-  /** Applique une mutation a la progression puis verifie les succes. */
+  /** Applique une mutation à la progression puis vérifie les succès. */
   mutateProgress(mutator: (progress: Progress) => void, options: { silent?: boolean } = {}): void {
     mutator(this.progress);
     const freshly = unlockAchievementsSafe(this.progress);
@@ -90,7 +90,7 @@ export class AppStore {
     if (!options.silent) this.emit();
   }
 
-  /** Marque un evenement ponctuel, une seule fois. */
+  /** Marque un événement ponctuel, une seule fois. */
   raiseFlag(flag: string): void {
     if (this.progress.flags[flag]) return;
     this.mutateProgress((progress) => {

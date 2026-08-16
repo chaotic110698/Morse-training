@@ -1,11 +1,11 @@
 /**
- * Manipulateur a l'ecran et raccourcis clavier.
+ * Manipulateur à l'écran et raccourcis clavier.
  *
- * Le meme composant sert sur mobile et sur ordinateur : les boutons tactiles
- * et les touches physiques declenchent exactement les memes evenements, si
- * bien qu'on peut passer de l'un a l'autre sans rien reconfigurer. Le choix
+ * Le même composant sert sur mobile et sur ordinateur : les boutons tactiles
+ * et les touches physiques déclenchent exactement les mêmes événements, si
+ * bien qu'on peut passer de l'un à l'autre sans rien reconfigurer. Le choix
  * entre manipulateur droit et manipulateur double est disponible dans tous les
- * exercices, puisque les deux ecoles ont chacune leurs adeptes.
+ * exercices, puisque les deux écoles ont chacune leurs adeptes.
  */
 
 import { h } from './dom.ts';
@@ -16,7 +16,7 @@ import type { Settings } from '../core/settings.ts';
 export interface KeyPadOptions {
   keyer: Keyer;
   getSettings: () => Settings;
-  /** Appele avant tout appui, pour deverrouiller l'audio au premier geste. */
+  /** Appele avant tout appui, pour déverrouiller l'audio au premier geste. */
   onFirstTouch?: () => void;
 }
 
@@ -34,7 +34,7 @@ export class KeyPad {
     this.attachKeyboard();
   }
 
-  /** Redessine les boutons apres un changement de manipulateur ou de touches. */
+  /** Redessine les boutons après un changement de manipulateur ou de touches. */
   render(): void {
     const settings = this.options.getSettings();
     const straight = settings.keyerMode === 'straight';
@@ -62,10 +62,10 @@ export class KeyPad {
   }
 
   /**
-   * `glyph` designe la marque dessinee sur le bouton : un disque pour le
+   * `glyph` désigne la marque dessinée sur le bouton : un disque pour le
    * manipulateur droit et pour le point, une barre trois fois plus longue pour
-   * le trait. Les proportions sont celles du code lui-meme, ce qui rend le
-   * bouton lisible sans legende.
+   * le trait. Les proportions sont celles du code lui-même, ce qui rend le
+   * bouton lisible sans légende.
    */
   private makeButton(
     side: PaddleSide,
@@ -85,9 +85,9 @@ export class KeyPad {
       h('span', { class: 'keypad__hint', text: hint }),
     );
 
-    // `pointer*` couvre souris, tactile et stylet d'un seul jeu d'ecouteurs.
-    // La capture garantit qu'un doigt qui glisse hors du bouton libere quand
-    // meme le contact : sans elle, un manipulateur peut rester bloque en bas.
+    // `pointer*` couvre souris, tactile et stylet d'un seul jeu d'écouteurs.
+    // La capture garantit qu'un doigt qui glisse hors du bouton libère quand
+    // même le contact : sans elle, un manipulateur peut rester bloque en bas.
     button.addEventListener('pointerdown', (event) => {
       event.preventDefault();
       button.setPointerCapture(event.pointerId);
@@ -99,7 +99,7 @@ export class KeyPad {
     };
     button.addEventListener('pointerup', end);
     button.addEventListener('pointercancel', end);
-    // Empeche le menu contextuel sur appui long mobile.
+    // Empêche le menu contextuel sur appui long mobile.
     button.addEventListener('contextmenu', (event) => event.preventDefault());
 
     this.buttons.set(side, button);
@@ -120,7 +120,7 @@ export class KeyPad {
     this.options.keyer.release(this.resolveSide(side));
   }
 
-  /** Applique l'inversion des palettes demandee par les gauchers. */
+  /** Applique l'inversion des palettes demandée par les gauchers. */
   private resolveSide(side: PaddleSide): PaddleSide {
     const settings = this.options.getSettings();
     if (settings.keyerMode === 'straight' || !settings.swapPaddles) return side;
@@ -141,7 +141,7 @@ export class KeyPad {
       if (shouldPreventDefault(event.code)) event.preventDefault();
       this.end(side);
     };
-    // Un changement d'onglet laisserait le contact ferme : on relache tout.
+    // Un changement d'onglet laisserait le contact ferme : on relâche tout.
     const onBlur = (): void => {
       for (const side of [...this.pressed]) this.end(side);
     };
@@ -167,7 +167,7 @@ export class KeyPad {
     return null;
   }
 
-  /** Reflete visuellement l'etat du contact, y compris quand il est genere. */
+  /** Reflète visuellement l'état du contact, y compris quand il est généré. */
   setActive(side: PaddleSide | null): void {
     for (const [key, button] of this.buttons) button.classList.toggle('is-emitting', key === side);
   }

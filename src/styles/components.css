@@ -157,7 +157,7 @@
   text-align: center;
 }
 
-/* --- Controles de formulaire --- */
+/* --- Contrôles de formulaire --- */
 
 .input,
 .select {
@@ -324,7 +324,7 @@
   color: var(--text-muted);
 }
 
-/* --- Diode temoin --- */
+/* --- Diode témoin --- */
 
 .lamp {
   display: inline-flex;
@@ -473,7 +473,7 @@
   font-style: italic;
 }
 
-/* --- Jeu de caracteres travaille --- */
+/* --- Jeu de caractères travaille --- */
 
 .charset {
   display: flex;
@@ -502,7 +502,7 @@
   font-weight: 700;
 }
 
-/* --- Grille de reponse --- */
+/* --- Grille de réponse --- */
 
 .answer-grid {
   display: grid;
@@ -549,7 +549,7 @@
   color: var(--error);
 }
 
-/* --- Manipulateur a l'ecran --- */
+/* --- Manipulateur à l'écran --- */
 
 .keypad {
   display: grid;
@@ -574,7 +574,7 @@
   color: var(--text);
   cursor: pointer;
   user-select: none;
-  /* Indispensable au tactile : sans cela, un appui maintenu fait defiler la
+  /* Indispensable au tactile : sans cela, un appui maintenu fait défiler la
      page au lieu de fermer le contact. */
   touch-action: none;
   -webkit-user-select: none;
@@ -590,8 +590,8 @@
   transform: translateY(2px);
 }
 
-/* Le point et le trait sont dessines, pas ecrits : les caracteres « · » et
-   « – » sont trop petits et trop dependants de la police pour servir de
+/* Le point et le trait sont dessinés, pas écrits : les caractères « · » et
+   « – » sont trop petits et trop dépendants de la police pour servir de
    marque sur un bouton de manipulateur. */
 .keypad__glyph {
   display: block;
@@ -624,7 +624,7 @@
   color: var(--text-faint);
 }
 
-/* --- Bande de decodage --- */
+/* --- Bande de décodage --- */
 
 .tape-wrap {
   display: flex;
@@ -654,7 +654,7 @@
 }
 
 .tape:empty::before {
-  content: 'Le decodage de votre emission s’affichera ici.';
+  content: 'Le décodage de votre émission s’affichera ici.';
   font-family: var(--font-sans);
   font-size: 0.85rem;
   letter-spacing: normal;
@@ -836,7 +836,7 @@
   fill: var(--border);
 }
 
-/* --- Succes --- */
+/* --- Succès --- */
 
 .achievements {
   display: grid;
@@ -1031,7 +1031,7 @@
   font-weight: 500;
 }
 
-/* --- Messages ephemeres --- */
+/* --- Messages éphémères --- */
 
 .toasts {
   position: fixed;
@@ -1076,12 +1076,12 @@
   }
 }
 
-/* --- Adaptations telephone --- */
+/* --- Adaptations téléphone --- */
 
 @media (max-width: 640px) {
-  /* La scene reste sur une ligne : empiler la diote sous l'affichage
+  /* La scène reste sur une ligne : empiler la diode sous l'affichage
      repousserait le manipulateur sous la ligne de flottaison, ce qui est
-     precisement l'element qu'on vient chercher sur telephone. */
+     précisément l'élément qu'on vient chercher sur téléphone. */
   .trainer__stage {
     gap: var(--space-3);
     padding: var(--space-4);
@@ -1189,7 +1189,7 @@
   font-size: 0.82rem;
 }
 
-/* Bandeau de lecture : chaque caractere avec son code, celui en cours surligne. */
+/* Bandeau de lecture : chaque caractère avec son code, celui en cours surligne. */
 .translate__strip {
   display: flex;
   flex-wrap: wrap;
@@ -1239,9 +1239,9 @@
 }
 
 /*
- * Flash d'ecran, en repli quand la lampe n'est pas pilotable. Volontairement
- * neutre au repos et pilote uniquement par la classe : il n'existe dans le
- * document que si l'utilisateur a explicitement active l'option.
+ * Flash d'écran, en repli quand la lampe n'est pas pilotable. Volontairement
+ * neutre au repos et piloté uniquement par la classe : il n'existe dans le
+ * document que si l'utilisateur a explicitement activé l'option.
  */
 .flash-layer {
   position: fixed;
@@ -1255,7 +1255,7 @@
   background: #fff;
 }
 
-/* Reglage compact du niveau, place a cote du badge correspondant. */
+/* Réglage compact du niveau, placé à côté du badge correspondant. */
 .stepper {
   display: inline-flex;
   border: 1px solid var(--border);

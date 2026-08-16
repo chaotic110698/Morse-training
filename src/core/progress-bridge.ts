@@ -1,9 +1,9 @@
 /**
- * Petit pont entre la progression et les succes.
+ * Petit pont entre la progression et les succès.
  *
- * Il existe uniquement pour eviter que `store.ts` n'importe deux modules qui
- * decrivent le meme domaine, et pour offrir une variante non bloquante du
- * deblocage : une erreur dans le calcul d'un succes ne doit jamais empecher
+ * Il existe uniquement pour éviter que `store.ts` n'importe deux modules qui
+ * décrivent le même domaine, et pour offrir une variante non bloquante du
+ * déblocage : une erreur dans le calcul d'un succès ne doit jamais empêcher
  * l'enregistrement d'une session.
  */
 

@@ -3,30 +3,30 @@
  *
  * Deux principes gouvernent ce module :
  *
- * 1. Toute la sequence est programmee a l'avance sur l'horloge de
+ * 1. Toute la séquence est programmée à l'avance sur l'horloge de
  *    l'AudioContext (`currentTime`), jamais avec `setTimeout`. Les timers
- *    JavaScript derivent de plusieurs dizaines de millisecondes sur mobile,
- *    ce qui detruirait le rythme du morse ; l'horloge audio, elle, est
- *    echantillon-exacte.
- * 2. Chaque son est enveloppe par une rampe de montee et de descente de
- *    quelques millisecondes. Un creneau brut produit un « clic de manipulation »
- *    tres desagreable et etale le spectre du signal.
+ *    JavaScript dérivent de plusieurs dizaines de millisecondes sur mobile,
+ *    ce qui détruirait le rythme du morse ; l'horloge audio, elle, est
+ *    échantillon-exacte.
+ * 2. Chaque son est enveloppé par une rampe de montée et de descente de
+ *    quelques millisecondes. Un créneau brut produit un « clic de manipulation »
+ *    très désagréable et étale le spectre du signal.
  *
  * La synchronisation visuelle et haptique se fait par une boucle
- * `requestAnimationFrame` qui compare l'horloge audio aux instants programmes,
- * de sorte que la diode et le vibreur restent cales sur le son.
+ * `requestAnimationFrame` qui compare l'horloge audio aux instants programmés,
+ * de sorte que la diode et le vibreur restent calés sur le son.
  */
 
 import type { TimedElement } from './timing.ts';
 
 export interface AudioSettings {
-  /** Frequence de la tonalite, en hertz. */
+  /** Fréquence de la tonalité, en hertz. */
   frequency: number;
-  /** Volume principal, de 0 a 1. */
+  /** Volume principal, de 0 à 1. */
   volume: number;
-  /** Duree des rampes d'attaque et d'extinction, en millisecondes. */
+  /** Durée des rampes d'attaque et d'extinction, en millisecondes. */
   rampMs: number;
-  /** Forme d'onde de la tonalite. */
+  /** Forme d'onde de la tonalité. */
   waveform: OscillatorType;
 }
 
@@ -38,18 +38,18 @@ export const DEFAULT_AUDIO_SETTINGS: AudioSettings = {
 };
 
 export interface PlaybackHooks {
-  /** Appele au debut de chaque son, cale sur l'horloge audio. */
+  /** Appelé au début de chaque son, calé sur l'horloge audio. */
   onToneStart?: (element: TimedElement, index: number) => void;
-  /** Appele a la fin de chaque son. */
+  /** Appele à la fin de chaque son. */
   onToneEnd?: (element: TimedElement, index: number) => void;
 }
 
 export interface PlaybackHandle {
-  /** Resolue a `true` si la lecture est allee au bout, `false` si interrompue. */
+  /** Résolue à `true` si la lecture est allée au bout, `false` si interrompue. */
   readonly finished: Promise<boolean>;
-  /** Instant de debut sur l'horloge audio, en secondes. */
+  /** Instant de début sur l'horloge audio, en secondes. */
   readonly startTime: number;
-  /** Duree totale programmee, en secondes. */
+  /** Durée totale programmée, en secondes. */
   readonly duration: number;
   stop(): void;
 }
@@ -71,7 +71,7 @@ export class AudioEngine {
     this.settings = { ...DEFAULT_AUDIO_SETTINGS, ...settings };
   }
 
-  /** Vrai une fois le contexte cree et actif. */
+  /** Vrai une fois le contexte créé et actif. */
   get ready(): boolean {
     return this.context?.state === 'running';
   }
@@ -82,9 +82,9 @@ export class AudioEngine {
   }
 
   /**
-   * Cree ou reprend le contexte audio. Doit imperativement etre appele depuis
+   * Crée ou reprend le contexte audio. Doit impérativement être appelé depuis
    * un geste utilisateur : iOS et les politiques d'autoplay des navigateurs de
-   * bureau refusent de demarrer un contexte autrement.
+   * bureau refusent de démarrer un contexte autrement.
    */
   async unlock(): Promise<boolean> {
     if (!this.context) {
@@ -135,7 +135,7 @@ export class AudioEngine {
       return [osc, gain];
     };
 
-    // Deux voix distinctes : la lecture programmee et le retour local du
+    // Deux voix distinctes : la lecture programmée et le retour local du
     // manipulateur ne doivent jamais se couper l'une l'autre.
     [this.playbackOsc, this.playbackGain] = makeVoice();
     [this.sidetoneOsc, this.sidetoneGain] = makeVoice();
@@ -146,8 +146,8 @@ export class AudioEngine {
   }
 
   /**
-   * Programme une sequence complete et renvoie une poignee permettant de
-   * l'interrompre. Une seule lecture est active a la fois.
+   * Programme une séquence complète et renvoie une poignée permettant de
+   * l'interrompre. Une seule lecture est active à la fois.
    */
   play(elements: TimedElement[], hooks: PlaybackHooks = {}): PlaybackHandle {
     this.stop();
@@ -173,8 +173,8 @@ export class AudioEngine {
 
     elements.forEach((element, index) => {
       if (element.on) {
-        // La rampe de descente est comprise dans la duree de l'element, sinon
-        // les sons deborderaient sur le silence et fausseraient le rythme.
+        // La rampe de descente est comprise dans la durée de l'élément, sinon
+        // les sons déborderaient sur le silence et fausseraient le rythme.
         const hold = Math.max(0.002, element.duration - ramp);
         gain.gain.setValueAtTime(0, cursor);
         gain.gain.linearRampToValueAtTime(1, cursor + ramp);
@@ -230,7 +230,7 @@ export class AudioEngine {
         gain.gain.cancelScheduledValues(at);
         gain.gain.setValueAtTime(gain.gain.value, at);
         gain.gain.linearRampToValueAtTime(0, at + ramp);
-        // Signale la fin du son en cours pour eteindre diode et vibreur.
+        // Signale la fin du son en cours pour éteindre diode et vibreur.
         const current = transitions[Math.max(0, pointer - 1)];
         if (current?.start) {
           const element = elements[current.index];
@@ -245,12 +245,12 @@ export class AudioEngine {
     return handle;
   }
 
-  /** Interrompt la lecture en cours, s'il y en a une. */
+  /** Interrompt la lecture en cours, s'il y en à une. */
   stop(): void {
     this.activeHandle?.stop();
   }
 
-  /** Vrai si une sequence est en cours de lecture. */
+  /** Vrai si une séquence est en cours de lecture. */
   get playing(): boolean {
     return this.activeHandle !== null;
   }
@@ -278,9 +278,9 @@ export class AudioEngine {
   }
 
   /**
-   * Emet un son court hors sequence, pour les retours d'interface (bonne ou
-   * mauvaise reponse). La hauteur est decalee pour ne pas etre confondue avec
-   * la tonalite d'entrainement.
+   * Émet un son court hors séquence, pour les retours d'interface (bonne ou
+   * mauvaise réponse). La hauteur est décalée pour ne pas être confondue avec
+   * la tonalité d'entraînement.
    */
   feedback(kind: 'ok' | 'error'): void {
     const ctx = this.context;
@@ -302,7 +302,7 @@ export class AudioEngine {
     osc.stop(now + 0.2);
   }
 
-  /** Libere les ressources audio. */
+  /** Libère les ressources audio. */
   dispose(): void {
     this.stop();
     this.playbackOsc?.stop();

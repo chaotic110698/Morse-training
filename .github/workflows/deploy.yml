@@ -1,25 +1,25 @@
 # Publication du site sur GitHub Pages.
 #
-# Le depot ne contient que les sources : le dossier `dist/` est reconstruit a
-# chaque poussee sur la branche principale, puis publie. Rien a committer a la
+# Le dépôt ne contient que les sources : le dossier `dist/` est reconstruit à
+# chaque poussée sur la branche principale, puis publié. Rien à committer à la
 # main, et le site en ligne correspond toujours au code de la branche.
-name: Deployer sur GitHub Pages
+name: Déployer sur GitHub Pages
 
-# Toute poussee declenche le workflow, mais seule la branche par defaut du
-# depot publie reellement (voir la condition `if` du job). Ainsi le site se
-# deploie sans retoucher ce fichier, quel que soit le nom de cette branche.
+# Toute poussée déclenche le workflow, mais seule la branche par défaut du
+# dépôt publie réellement (voir la condition `if` du job). Ainsi le site se
+# déploie sans retoucher ce fichier, quel que soit le nom de cette branche.
 on:
   push:
   workflow_dispatch:
 
-# Autorisations minimales necessaires au deploiement Pages.
+# Autorisations minimales nécessaires au déploiement Pages.
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Une seule publication a la fois ; les poussees suivantes attendent leur tour
-# plutot que d'annuler un deploiement deja lance.
+# Une seule publication à la fois ; les poussées suivantes attendent leur tour
+# plutôt que d'annuler un déploiement déjà lancé.
 concurrency:
   group: pages
   cancel-in-progress: false
@@ -38,15 +38,15 @@ jobs:
 
       - run: npm ci
 
-      - name: Verifier les types
+      - name: Vérifier les types
         run: npm run typecheck
 
       - name: Construire le site
         run: npm run build
 
-      # `enablement` demande a l'action d'activer Pages en mode « GitHub
-      # Actions » si ce n'est pas deja fait. Sans cela, l'etape echoue tant que
-      # le depot n'a pas ete configure a la main dans ses reglages.
+      # `enablement` demande à l'action d'activer Pages en mode « GitHub
+      # Actions » si ce n'est pas déjà fait. Sans cela, l'étape échoue tant que
+      # le dépôt n'a pas été configuré à la main dans ses réglages.
       - uses: actions/configure-pages@v5
         with:
           enablement: true

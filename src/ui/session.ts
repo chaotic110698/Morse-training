@@ -1,9 +1,9 @@
 /**
- * Suivi d'une serie d'entrainement.
+ * Suivi d'une série d'entraînement.
  *
- * Mutualise ce que les quatre exercices ont en commun : compter les reponses,
+ * Mutualise ce que les quatre exercices ont en commun : compter les réponses,
  * mesurer les temps, enregistrer la progression et fermer proprement la
- * session meme si l'utilisateur quitte la page en cours de route.
+ * session même si l'utilisateur quitte la page en cours de route.
  */
 
 import { commitSession, recordAttempt, type SessionRecord, type TrainingMode } from '../core/progress.ts';
@@ -61,14 +61,14 @@ export class SessionTracker {
     return this.entries.length >= this.target;
   }
 
-  /** Temps de reponse moyen sur la serie, en millisecondes. */
+  /** Temps de réponse moyen sur la série, en millisecondes. */
   get averageResponseMs(): number | null {
     if (this.entries.length === 0) return null;
     return this.entries.reduce((sum, entry) => sum + entry.responseMs, 0) / this.entries.length;
   }
 
   /**
-   * Enregistre une reponse. `char` designe l'element travaille : un caractere
+   * Enregistre une réponse. `char` désigne l'élément travaillé : un caractère
    * en mode Koch, le mot entier dans les exercices de mots.
    */
   record(char: string, answer: string | null, correct: boolean, responseMs: number): void {
@@ -79,7 +79,7 @@ export class SessionTracker {
     );
   }
 
-  /** Compte des caracteres emis au manipulateur, pour les succes d'emission. */
+  /** Compte des caractères émis au manipulateur, pour les succès d'émission. */
   countSent(amount = 1): void {
     this.store.mutateProgress(
       (progress) => {
@@ -90,8 +90,8 @@ export class SessionTracker {
   }
 
   /**
-   * Cloture la serie et l'ajoute a l'historique. Sans effet si elle est vide
-   * ou deja close, ce qui rend l'appel sur destruction de la vue inoffensif.
+   * Clôture la série et l'ajoute à l'historique. Sans effet si elle est vide
+   * ou déjà close, ce qui rend l'appel sur destruction de la vue inoffensif.
    */
   commit(kochLevel: number | null = null): SessionRecord | null {
     if (this.committed || this.entries.length === 0) return null;

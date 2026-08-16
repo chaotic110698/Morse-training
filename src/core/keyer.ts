@@ -1,22 +1,22 @@
 /**
- * Manipulateur : transforme les appuis de l'utilisateur en elements morse.
+ * Manipulateur : transforme les appuis de l'utilisateur en éléments morse.
  *
- * Deux familles de manipulateurs coexistent chez les operateurs, et les deux
- * sont proposees ici :
+ * Deux familles de manipulateurs coexistent chez les opérateurs, et les deux
+ * sont proposées ici :
  *
- * - Le **manipulateur droit** (straight key) n'a qu'un contact. C'est la duree
- *   de l'appui qui distingue le point du trait, et c'est l'operateur qui porte
- *   toute la responsabilite du rythme.
- * - Le **manipulateur double / iambique** (paddle) a deux contacts, un pour le
- *   point et un pour le trait. L'electronique genere des elements parfaitement
- *   calibres tant que la palette est tenue ; presser les deux simultanement
- *   (« squeeze ») alterne points et traits. Les modes A et B ne different que
- *   sur le relachement : en mode B, un element supplementaire de la palette
- *   opposee est emis apres un relachement en squeeze.
+ * - Le **manipulateur droit** (straight key) n'a qu'un contact. C'est la durée
+ *   de l'appui qui distingue le point du trait, et c'est l'opérateur qui porte
+ *   toute la responsabilité du rythme.
+ * - Le **manipulateur double / iambique** (paddle) à deux contacts, un pour le
+ *   point et un pour le trait. L'électronique génère des éléments parfaitement
+ *   calibrés tant que la palette est tenue ; presser les deux simultanément
+ *   (« squeeze ») alterne points et traits. Les modes A et B ne diffèrent que
+ *   sur le relâchement : en mode B, un élément supplémentaire de la palette
+ *   opposée est émis après un relâchement en squeeze.
  *
- * Les silences sont interpretes avec les seuils theoriques : moins de 2 unites
- * separent deux elements d'un meme caractere, de 2 a 5 unites separent deux
- * caracteres, au dela commence un nouveau mot.
+ * Les silences sont interprétés avec les seuils théoriques : moins de 2 unités
+ * séparent deux éléments d'un même caractère, de 2 à 5 unités séparent deux
+ * caractères, au-delà commence un nouveau mot.
  */
 
 import { decodeChar } from './morse.ts';
@@ -27,14 +27,13 @@ export type PaddleSide = 'dit' | 'dah';
 
 export interface KeyerOptions {
   mode: KeyerMode;
-  /** Seuil de silence, en unites, au dela duquel le caractere est termine. */
+  /** Seuil de silence, en unités, au-delà duquel le caractère est terminé. */
   charGapUnits: number;
-  /** Seuil de silence, en unites, au dela duquel un mot est termine. */
+  /** Seuil de silence, en unités, au-delà duquel un mot est terminé. */
   wordGapUnits: number;
   /**
-   * Ajuste la frontiere point/trait sur la frappe reelle de l'operateur au
-   * lieu de la vitesse configuree. Indispensable au manipulateur droit, ou
-   * personne ne frappe exactement a la vitesse annoncee.
+   * Ajuste la frontière point/trait sur la frappe réelle de l'opérateur au
+   * lieu de la vitesse configurée. Indispensable au manipulateur droit, où personne ne frappe exactement à la vitesse annoncée.
    */
   adaptive: boolean;
 }
@@ -51,11 +50,11 @@ export interface KeyerCallbacks {
   onKeyDown?: (kind: ElementKind | null) => void;
   /** Le contact s'ouvre. */
   onKeyUp?: () => void;
-  /** Un element vient d'etre valide. `code` est le caractere en cours. */
+  /** Un élément vient d'être validé. `code` est le caractère en cours. */
   onElement?: (kind: ElementKind, code: string) => void;
-  /** Un caractere est termine. `char` vaut `null` si le code est inconnu. */
+  /** Un caractère est terminé. `char` vaut `null` si le code est inconnu. */
   onCharacter?: (code: string, char: string | null) => void;
-  /** Une separation de mot a ete detectee. */
+  /** Une séparation de mot a été détectée. */
   onWord?: () => void;
 }
 
@@ -66,9 +65,9 @@ export class Keyer {
   private timing: ResolvedTiming;
   private callbacks: KeyerCallbacks;
 
-  /** Code du caractere en cours de composition. */
+  /** Code du caractère en cours de composition. */
   private buffer = '';
-  /** Estimation courante de l'unite de l'operateur, en secondes. */
+  /** Estimation courante de l'unité de l'opérateur, en secondes. */
   private unitEstimate: number;
 
   // Manipulateur droit
@@ -102,7 +101,7 @@ export class Keyer {
     return this.buffer;
   }
 
-  /** Unite de reference utilisee pour classer les appuis, en secondes. */
+  /** Unité de référence utilisée pour classer les appuis, en secondes. */
   get referenceUnit(): number {
     return this.options.adaptive ? this.unitEstimate : this.timing.unit;
   }
@@ -118,7 +117,7 @@ export class Keyer {
     if (options.mode && options.mode !== previousMode) this.reset();
   }
 
-  /** Remet le manipulateur a zero sans emettre d'evenement de caractere. */
+  /** Remet le manipulateur à zéro sans émettre d'événement de caractère. */
   reset(): void {
     this.clearTimers();
     if (this.down || this.iambicState === 'element') this.callbacks.onKeyUp?.();
@@ -132,24 +131,24 @@ export class Keyer {
     this.unitEstimate = this.timing.unit;
   }
 
-  /** Termine immediatement le caractere en cours, s'il y en a un. */
+  /** Termine immédiatement le caractère en cours, s'il y en à un. */
   flush(): void {
     this.clearGapTimers();
     this.emitCharacter();
   }
 
-  // --- Entrees ---------------------------------------------------------
+  // --- Entrées ---------------------------------------------------------
 
   /**
    * Signale un appui. `side` vaut `dit` ou `dah` pour un manipulateur double ;
-   * il est ignore en mode droit, ou un seul contact existe.
+   * il est ignoré en mode droit, où un seul contact existe.
    */
   press(side: PaddleSide = 'dit'): void {
     if (this.options.mode === 'straight') this.pressStraight();
     else this.pressPaddle(side);
   }
 
-  /** Signale un relachement. */
+  /** Signale un relâchement. */
   release(side: PaddleSide = 'dit'): void {
     if (this.options.mode === 'straight') this.releaseStraight();
     else this.releasePaddle(side);
@@ -171,7 +170,7 @@ export class Keyer {
     this.callbacks.onKeyUp?.();
 
     const duration = (performance.now() - this.pressedAt) / 1000;
-    // Un appui plus court qu'un dixieme d'unite est un rebond de contact ou
+    // Un appui plus court qu'un dixième d'unité est un rebond de contact ou
     // un effleurement involontaire : on l'ignore.
     if (duration < this.referenceUnit * 0.15) return;
 
@@ -181,13 +180,13 @@ export class Keyer {
     this.startGapTimers();
   }
 
-  /** Affine l'estimation de l'unite a partir de l'element qui vient d'etre frappe. */
+  /** Affine l'estimation de l'unité à partir de l'élément qui vient d'être frappe. */
   private observeElement(duration: number, kind: ElementKind): void {
     if (!this.options.adaptive) return;
     const observed = kind === 'dit' ? duration : duration / 3;
     const blended = this.unitEstimate * 0.75 + observed * 0.25;
-    // Bornes larges autour de la vitesse configuree : elles evitent qu'une
-    // frappe aberrante ne desregle durablement le decodage.
+    // Bornes larges autour de la vitesse configurée : elles évitent qu'une
+    // frappe aberrante ne dérègle durablement le décodage.
     const min = this.timing.unit / 3;
     const max = this.timing.unit * 3;
     this.unitEstimate = Math.min(max, Math.max(min, blended));
@@ -205,8 +204,8 @@ export class Keyer {
     if (this.iambicState === 'idle') {
       this.startIambicElement(side);
     } else if (side !== this.currentSide) {
-      // Memoire de palette : l'element oppose demande pendant l'element en
-      // cours sera joue juste apres, meme si la palette est relachee entre-temps.
+      // Mémoire de palette : l'élément opposé demande pendant l'élément en
+      // cours sera joue juste après, même si la palette est relâchée entre-temps.
       this.memory = side;
     }
   }
@@ -231,9 +230,9 @@ export class Keyer {
     this.pushElement(this.currentSide);
     this.iambicState = 'space';
 
-    // Mode B : un squeeze relache pendant l'element donne droit a un element
-    // supplementaire de la palette opposee. C'est la seule difference avec le
-    // mode A, et elle change beaucoup le ressenti a grande vitesse.
+    // Mode B : un squeeze relâche pendant l'élément donne droit à un élément
+    // supplémentaire de la palette opposée. C'est la seule différence avec le
+    // mode A, et elle change beaucoup le ressenti à grande vitesse.
     if (
       this.options.mode === 'iambic-b' &&
       this.squeezed &&
@@ -267,7 +266,7 @@ export class Keyer {
     return null;
   }
 
-  // --- Composition des caracteres --------------------------------------
+  // --- Composition des caractères --------------------------------------
 
   private pushElement(kind: ElementKind): void {
     this.buffer += kind === 'dit' ? '.' : '-';
@@ -295,9 +294,9 @@ export class Keyer {
   }
 
   /**
-   * Programme un rendez-vous en corrigeant la derive : l'echeance est calculee
-   * en temps absolu, si bien qu'un `setTimeout` en retard ne decale pas les
-   * elements suivants.
+   * Programme un rendez-vous en corrigeant la dérive : l'échéance est calculée
+   * en temps absolu, si bien qu'un `setTimeout` en retard ne décalé pas les
+   * éléments suivants.
    */
   private scheduleAbsolute(seconds: number, action: () => void): void {
     const deadline = performance.now() + seconds * 1000;

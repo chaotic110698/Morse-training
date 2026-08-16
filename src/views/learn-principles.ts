@@ -1,4 +1,4 @@
-/** Page « Comprendre le morse » : les regles qui gouvernent le code. */
+/** Page « Comprendre le morse » : les règles qui gouvernent le code. */
 
 import { h } from '../ui/dom.ts';
 import { SignalLamp } from '../ui/lamp.ts';
@@ -8,7 +8,7 @@ import type { View, ViewContext } from '../ui/router.ts';
 
 export function principlesView(context: ViewContext): View {
   const { store } = context;
-  const lamp = new SignalLamp('Demonstration');
+  const lamp = new SignalLamp('Démonstration');
   const player = new MorsePlayer(store, lamp);
 
   const timingTable = h('tbody');
@@ -21,11 +21,11 @@ export function principlesView(context: ViewContext): View {
     });
     const ms = (seconds: number): string => `${Math.round(seconds * 1000)} ms`;
     const rows: Array<[string, string, string]> = [
-      ['Point (dit)', '1 unite', ms(timing.dit)],
-      ['Trait (dah)', '3 unites', ms(timing.dah)],
-      ['Silence entre deux elements', '1 unite', ms(timing.intraChar)],
-      ['Silence entre deux caracteres', '3 unites', ms(timing.interChar)],
-      ['Silence entre deux mots', '7 unites', ms(timing.interWord)],
+      ['Point (dit)', '1 unité', ms(timing.dit)],
+      ['Trait (dah)', '3 unités', ms(timing.dah)],
+      ['Silence entre deux éléments', '1 unité', ms(timing.intraChar)],
+      ['Silence entre deux caractères', '3 unités', ms(timing.interChar)],
+      ['Silence entre deux mots', '7 unités', ms(timing.interWord)],
     ];
     timingTable.replaceChildren(
       ...rows.map(([label, theory, value]) =>
@@ -39,8 +39,8 @@ export function principlesView(context: ViewContext): View {
       ),
     );
     speedNote.textContent = timing.farnsworth
-      ? `Vos reglages actuels : caracteres a ${store.settings.charWpm} WPM, vitesse globale ${store.settings.effectiveWpm} WPM. Les silences sont donc etires (mode Farnsworth), ce qui explique que les deux dernieres lignes depassent la proportion theorique.`
-      : `Vos reglages actuels : ${store.settings.charWpm} WPM, sans etirement des silences. Les durees suivent exactement les proportions theoriques.`;
+      ? `Vos réglages actuels : caractères à ${store.settings.charWpm} WPM, vitesse globale ${store.settings.effectiveWpm} WPM. Les silences sont donc étirés (mode Farnsworth), ce qui explique que les deux dernières lignes dépassent la proportion théorique.`
+      : `Vos réglages actuels : ${store.settings.charWpm} WPM, sans étirement des silences. Les durées suivent exactement les proportions théoriques.`;
   };
 
   refreshTiming();
@@ -49,18 +49,18 @@ export function principlesView(context: ViewContext): View {
   const demoButton = h('button', {
     class: 'btn btn--primary',
     type: 'button',
-    text: 'Ecouter PARIS',
+    text: 'Écouter PARIS',
     on: {
       click: () => {
         if (player.playing) {
           player.stop();
-          demoButton.textContent = 'Ecouter PARIS';
+          demoButton.textContent = 'Écouter PARIS';
           return;
         }
-        demoButton.textContent = 'Arreter';
+        demoButton.textContent = 'Arrêter';
         void player.play('PARIS', {
           onEnd: () => {
-            demoButton.textContent = 'Ecouter PARIS';
+            demoButton.textContent = 'Écouter PARIS';
           },
         });
       },
@@ -71,25 +71,25 @@ export function principlesView(context: ViewContext): View {
     'article',
     { class: 'prose' },
     h('p', { class: 'prose__lead' },
-      "Le code morse ne repose que sur deux signes et sur une regle de duree. Tout le reste " +
-      "— la vitesse, les methodes d'apprentissage, les manipulateurs — decoule de cette base " +
-      "d'une simplicite remarquable."),
+      "Le code morse ne repose que sur deux signes et sur une règle de durée. Tout le reste " +
+      "— la vitesse, les méthodes d'apprentissage, les manipulateurs — découle de cette base " +
+      "d'une simplicité remarquable."),
 
     h('h2', { text: 'Deux signes, et rien d’autre' }),
     h('p', {},
-      "Le morse encode chaque caractere par une suite de deux signaux seulement : un signal court, le ",
+      "Le morse encode chaque caractère par une suite de deux signaux seulement : un signal court, le ",
       h('strong', { text: 'point' }),
-      ", que les operateurs prononcent « ti » (dit en anglais), et un signal long, le ",
+      ", que les opérateurs prononcent « ti » (dit en anglais), et un signal long, le ",
       h('strong', { text: 'trait' }),
-      ", prononce « taa » (dah). Le E est un point unique, le T un trait unique : ce sont les deux lettres " +
-      "les plus frequentes en anglais, et ce n’est pas un hasard. Samuel Morse et Alfred Vail ont compte " +
-      "les caracteres dans la casse d’un imprimeur pour attribuer les codes les plus courts aux lettres " +
-      "les plus utilisees. Le morse est, des l’origine, un code de compression."),
+      ", prononcé « taa » (dah). Le E est un point unique, le T un trait unique : ce sont les deux lettres " +
+      "les plus fréquentes en anglais, et ce n’est pas un hasard. Samuel Morse et Alfred Vail ont compté " +
+      "les caractères dans la casse d’un imprimeur pour attribuer les codes les plus courts aux lettres " +
+      "les plus utilisées. Le morse est, dès l’origine, un code de compression."),
 
-    h('h2', { text: 'Une seule unite de temps' }),
+    h('h2', { text: 'Une seule unité de temps' }),
     h('p', {},
-      "Tout le code se mesure en multiples d’une unite unique : la duree d’un point. Les cinq regles " +
-      "suivantes suffisent a decrire integralement le rythme du morse, et elles n’ont jamais change depuis " +
+      "Tout le code se mesure en multiples d’une unité unique : la durée d’un point. Les cinq règles " +
+      "suivantes suffisent à décrire intégralement le rythme du morse, et elles n’ont jamais changé depuis " +
       "la normalisation internationale."),
     h(
       'div',
@@ -103,9 +103,9 @@ export function principlesView(context: ViewContext): View {
           h(
             'tr',
             {},
-            h('th', { attrs: { scope: 'col' }, text: 'Element' }),
-            h('th', { attrs: { scope: 'col' }, text: 'Duree theorique' }),
-            h('th', { attrs: { scope: 'col' }, text: 'A vos reglages' }),
+            h('th', { attrs: { scope: 'col' }, text: 'Élément' }),
+            h('th', { attrs: { scope: 'col' }, text: 'Durée théorique' }),
+            h('th', { attrs: { scope: 'col' }, text: 'À vos réglages' }),
           ),
         ),
         timingTable,
@@ -115,70 +115,70 @@ export function principlesView(context: ViewContext): View {
 
     h('h2', { text: 'La vitesse : mots par minute' }),
     h('p', {},
-      "La vitesse s’exprime en mots par minute (WPM). Comme les mots n’ont pas tous la meme longueur, " +
-      "on a choisi un mot etalon : ",
+      "La vitesse s’exprime en mots par minute (WPM). Comme les mots n’ont pas tous la même longueur, " +
+      "on a choisi un mot étalon : ",
       h('strong', { text: 'PARIS' }),
-      ", qui dure exactement 50 unites, espace de mot compris. Emettre PARIS vingt fois en une minute, " +
-      "c’est donc emettre a 20 WPM. On en tire une formule qu’il suffit de retenir :"),
-    h('p', { class: 'formula', text: 'duree d’une unite (ms) = 1200 / vitesse en WPM' }),
+      ", qui dure exactement 50 unités, espace de mot compris. Émettre PARIS vingt fois en une minute, " +
+      "c’est donc émettre à 20 WPM. On en tire une formule qu’il suffit de retenir :"),
+    h('p', { class: 'formula', text: 'durée d’une unité (ms) = 1200 / vitesse en WPM' }),
     h('p', {},
-      "A 20 WPM, une unite vaut 60 millisecondes : un point dure 60 ms, un trait 180 ms. A 5 WPM elle " +
-      "vaut 240 ms. La vitesse change tout : un caractere emis lentement et le meme emis vite ne sont pas " +
-      "percus par le cerveau comme le meme objet."),
+      "À 20 WPM, une unité vaut 60 millisecondes : un point dure 60 ms, un trait 180 ms. À 5 WPM elle " +
+      "vaut 240 ms. La vitesse change tout : un caractère émis lentement et le même émis vite ne sont pas " +
+      "perçus par le cerveau comme le même objet."),
     h('div', { class: 'demo-row' }, demoButton, lamp.element),
 
-    h('h2', { text: 'Farnsworth : la bonne facon de ralentir' }),
+    h('h2', { text: 'Farnsworth : la bonne façon de ralentir' }),
     h('p', {},
-      "L’erreur classique du debutant est de ralentir les caracteres pour se donner le temps de compter " +
-      "les points. C’est un piege : on apprend alors a compter, pas a reconnaitre, et il faut tout " +
-      "reapprendre pour depasser 10 WPM. Le mur est bien connu des operateurs."),
+      "L’erreur classique du débutant est de ralentir les caractères pour se donner le temps de compter " +
+      "les points. C’est un piège : on apprend alors à compter, pas à reconnaître, et il faut tout " +
+      "réapprendre pour dépasser 10 WPM. Le mur est bien connu des opérateurs."),
     h('p', {},
-      "La methode ",
+      "La méthode ",
       h('strong', { text: 'Farnsworth' }),
-      " resout le probleme. Les caracteres sont emis a pleine vitesse — leur rythme sonore est donc " +
-      "d’emblee le bon — mais les silences entre caracteres et entre mots sont allonges pour laisser le " +
-      "temps de reconnaitre ce qu’on vient d’entendre. On progresse ensuite en raccourcissant les " +
-      "silences, sans jamais toucher aux caracteres eux-memes."),
+      " résout le problème. Les caractères sont émis à pleine vitesse — leur rythme sonore est donc " +
+      "d’emblée le bon — mais les silences entre caractères et entre mots sont allongés pour laisser le " +
+      "temps de reconnaître ce qu’on vient d’entendre. On progresse ensuite en raccourcissant les " +
+      "silences, sans jamais toucher aux caractères eux-mêmes."),
     h('p', { class: 'prose__callout' },
-      "En pratique : reglez la vitesse des caracteres a 18 ou 20 WPM des le premier jour, et la vitesse " +
-      "globale a 5 ou 8 WPM. Ne baissez jamais la premiere ; ne montez la seconde que lorsque vous etes " +
-      "a l’aise."),
+      "En pratique : réglez la vitesse des caractères à 18 ou 20 WPM dès le premier jour, et la vitesse " +
+      "globale à 5 ou 8 WPM. Ne baissez jamais la première ; ne montez la seconde que lorsque vous êtes " +
+      "à l’aise."),
 
-    h('h2', { text: 'Koch : deux caracteres a la fois' }),
+    h('h2', { text: 'Koch : deux caractères à la fois' }),
     h('p', {},
-      "Dans les annees 1930, le psychologue allemand Ludwig Koch a montre qu’on apprend beaucoup plus " +
-      "vite en commencant avec deux caracteres seulement, a la vitesse cible, puis en ajoutant un " +
-      "caractere des que la reconnaissance devient fiable — le seuil usuel est de 90 % de reussite. " +
-      "La progression se fait par elargissement du vocabulaire, jamais par acceleration."),
+      "Dans les années 1930, le psychologue allemand Ludwig Koch à montre qu’on apprend beaucoup plus " +
+      "vite en commençant avec deux caractères seulement, à la vitesse cible, puis en ajoutant un " +
+      "caractère dès que la reconnaissance devient fiable — le seuil usuel est de 90 % de réussite. " +
+      "La progression se fait par élargissement du vocabulaire, jamais par accélération."),
     h('p', {},
-      "C’est ce que fait le mode Ecoute de ce site. L’ordre d’introduction des caracteres n’est pas " +
-      "alphabetique : il commence par des sons tres differents les uns des autres (K et M, par exemple) " +
-      "pour eviter les confusions precoces."),
+      "C’est ce que fait le mode Écoute de ce site. L’ordre d’introduction des caractères n’est pas " +
+      "alphabétique : il commence par des sons très différents les uns des autres (K et M, par exemple) " +
+      "pour éviter les confusions précoces."),
 
-    h('h2', { text: 'Trois erreurs a eviter' }),
+    h('h2', { text: 'Trois erreurs à éviter' }),
     h(
       'ul',
       { class: 'prose__list' },
       h('li', {},
         h('strong', { text: 'Apprendre par le tableau visuel. ' }),
-        "Memoriser que A s’ecrit « point trait » cree un detour mental : entendre, traduire en points, " +
-        "puis chercher la lettre. Les operateurs rapides n’ont pas ce detour, ils reconnaissent un son."),
+        "Mémoriser que A s’écrit « point trait » crée un détour mental : entendre, traduire en points, " +
+        "puis chercher la lettre. Les opérateurs rapides n’ont pas ce détour, ils reconnaissent un son."),
       h('li', {},
-        h('strong', { text: 'Compter les elements. ' }),
-        "Ca marche jusqu’a 10 WPM, et plus jamais ensuite. Mieux vaut se tromper vite que compter juste."),
+        h('strong', { text: 'Compter les éléments. ' }),
+        "Ça marche jusqu’à 10 WPM, et plus jamais ensuite. Mieux vaut se tromper vite que compter juste."),
       h('li', {},
-        h('strong', { text: 'S’entrainer longtemps et rarement. ' }),
+        h('strong', { text: 'S’entraîner longtemps et rarement. ' }),
         "Quinze minutes par jour valent mieux que deux heures le dimanche. La reconnaissance auditive se " +
         "consolide pendant le sommeil, pas pendant l’effort."),
     ),
 
-    h('h2', { text: 'Ou est le lexique ?' }),
+    h('h2', { text: 'Où est le lexique ?' }),
     h('p', {},
       "La page ",
       h('a', { href: '#/apprendre/alphabet', text: 'Alphabet et lexique' }),
-      " reprend l’integralite du code : lettres, chiffres, ponctuation, caracteres accentues et signaux " +
-      "de procedure. Chaque ligne est ecoutable d’un clic. Servez-vous-en comme d’une reference, pas " +
-      "comme d’un support d’apprentissage : c’est a l’oreille que le morse s’acquiert."),
+      " reprend l’intégralité du code : lettres, chiffres, ponctuation, caractères accentués et signaux " +
+      "de procédure. Chaque ligne est écoutable d’un clic. Servez-vous-en comme d’une référence, pas " +
+      "comme d’un support d’apprentissage : c’est à l’oreille que le morse s’acquiert."),
   );
 
   return {

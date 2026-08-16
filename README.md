@@ -1,111 +1,111 @@
 # Morse Training
 
-Site d'entrainement au code morse, utilisable au navigateur sur telephone comme
-sur ordinateur. Aucun compte, aucun serveur, aucune donnee qui quitte
-l'appareil : tout tourne dans le navigateur et la progression est enregistree
+Site d'entraînement au code morse, utilisable au navigateur sur téléphone comme
+sur ordinateur. Aucun compte, aucun serveur, aucune donnée qui quitte
+l'appareil : tout tourne dans le navigateur et la progression est enregistrée
 localement.
 
 ## Ce que le site propose
 
 **Apprendre**
 
-- *Comprendre le morse* — les cinq regles de duree, la vitesse en mots par
-  minute, la methode Farnsworth et la methode Koch, avec un tableau de durees
-  recalcule en direct selon vos reglages.
-- *Histoire du morse* — du telegraphe Chappe a la fin de la veille maritime, en
+- *Comprendre le morse* — les cinq règles de durée, la vitesse en mots par
+  minute, la méthode Farnsworth et la méthode Koch, avec un tableau de durées
+  recalculé en direct selon vos réglages.
+- *Histoire du morse* — du télégraphe Chappe à la fin de la veille maritime, en
   dix jalons.
-- *Alphabet et lexique* — lettres, chiffres, ponctuation, caracteres accentues
-  et signaux de procedure, chaque entree etant ecoutable d'un clic.
+- *Alphabet et lexique* — lettres, chiffres, ponctuation, caractères accentués
+  et signaux de procédure, chaque entrée étant écoutable d'un clic.
 
-**S'entrainer**
+**S'entraîner**
 
-- *Ecoute (Koch)* — l'exercice central : on commence a deux caracteres, a pleine
-  vitesse, et on en ajoute un des que la reconnaissance depasse le seuil. Grille
-  de reponse tactile sur telephone, clavier physique sur ordinateur, option de
-  revision ciblee sur les caracteres les plus rates.
-- *Emission* — manipulateur droit (une touche, la duree de l'appui fait le
+- *Écoute (Koch)* — l'exercice central : on commence à deux caractères, à pleine
+  vitesse, et on en ajoute un dès que la reconnaissance dépasse le seuil. Grille
+  de réponse tactile sur téléphone, clavier physique sur ordinateur, option de
+  révision ciblée sur les caractères les plus ratés.
+- *Émission* — manipulateur droit (une touche, la durée de l'appui fait le
   point ou le trait) ou palettes iambiques en mode A ou B. Au doigt sur
-  telephone, au clavier sur ordinateur, avec touches reassignables.
-- *Mots et indicatifs* — abreviations, codes Q, mots courants, indicatifs
-  generes et groupes aleatoires de cinq caracteres.
+  téléphone, au clavier sur ordinateur, avec touches réassignables.
+- *Mots et indicatifs* — abréviations, codes Q, mots courants, indicatifs
+  generes et groupes aléatoires de cinq caractères.
 - *Lecture visuelle* — sans son, dans les deux sens (code vers lettre, lettre
   vers code).
 
 **Outils**
 
 - *Traducteur* — texte vers morse et morse vers texte, en direct dans les deux
-  sens. Le resultat s'ecoute, defile caractere par caractere, et peut piloter la
-  lampe torche du telephone pour emettre reellement en lumiere. La torche passe
-  par la camera arriere, seul chemin qu'offre le web : elle fonctionne sous
-  Android, pas sous iOS, ou un flash d'ecran est propose en repli.
+  sens. Le résultat s'écoute, défile caractère par caractère, et peut piloter la
+  lampe torche du téléphone pour émettre réellement en lumière. La torche passe
+  par la caméra arrière, seul chemin qu'offre le web : elle fonctionne sous
+  Android, pas sous iOS, où un flash d'écran est proposé en repli.
 
 **Suivre sa progression**
 
-Statistiques par caractere sous forme de carte de chaleur, points faibles du
-moment, historique des series, series de jours consecutifs, et vingt-huit succes.
-Le tout s'exporte et se reimporte en JSON.
+Statistiques par caractère sous forme de carte de chaleur, points faibles du
+moment, historique des séries, séries de jours consécutifs, et vingt-huit succès.
+Le tout s'exporte et se réimporte en JSON.
 
-## Sorties son, lumiere et vibration
+## Sorties son, lumière et vibration
 
-Les trois sorties sont construites a partir de la meme sequence temporelle,
-elles ne peuvent donc pas deriver l'une par rapport a l'autre.
+Les trois sorties sont construites à partir de la même séquence temporelle,
+elles ne peuvent donc pas dériver l'une par rapport à l'autre.
 
-- **Son** — Web Audio, programme sur l'horloge de l'AudioContext et non avec
-  `setTimeout`, avec enveloppe d'attaque reglable pour eviter les clics de
+- **Son** — Web Audio, programmé sur l'horloge de l'AudioContext et non avec
+  `setTimeout`, avec enveloppe d'attaque réglable pour éviter les clics de
   manipulation.
-- **Lumiere** — une diode temoin allumee exactement le temps du signal, plutot
-  qu'un clignotement plein ecran qui serait epuisant et risque pour les
+- **Lumière** — une diode témoin allumée exactement le temps du signal, plutôt
+  qu'un clignotement plein écran qui serait épuisant et risque pour les
   personnes photosensibles.
-- **Vibration** — le motif complet est confie au systeme d'un seul appel, ce qui
-  donne un rythme bien plus regulier qu'une serie de declenchements. Disponible
+- **Vibration** — le motif complet est confié au système d'un seul appel, ce qui
+  donne un rythme bien plus régulier qu'une série de déclenchements. Disponible
   sur Android ; Safari sur iOS n'expose aucune API de vibration, l'interface le
   signale explicitement.
-- **Lampe torche** — pilotee dans le traducteur via la contrainte `torch` de la
-  piste video de la camera arriere. La commutation du flash prend plusieurs
-  dizaines de millisecondes : au dela d'une dizaine de mots par minute elle ne
+- **Lampe torche** — pilotée dans le traducteur via la contrainte `torch` de la
+  piste vidéo de la caméra arrière. La commutation du flash prend plusieurs
+  dizaines de millisecondes : au-delà d'une dizaine de mots par minute elle ne
   suit plus, ce que l'interface annonce.
 
-## Developpement
+## Développement
 
 ```bash
 npm install
-npm run dev        # serveur de developpement
-npm run typecheck  # verification des types
+npm run dev        # serveur de développement
+npm run typecheck  # vérification des types
 npm run build      # construction dans dist/
-npm run preview    # previsualisation de la construction
+npm run preview    # prévisualisation de la construction
 ```
 
-## Deploiement
+## Déploiement
 
-Le site est publie sur GitHub Pages par le workflow
-`.github/workflows/deploy.yml`. Il se declenche a chaque poussee, mais ne
-publie que depuis la branche par defaut du depot : renommer ou changer cette
+Le site est publié sur GitHub Pages par le workflow
+`.github/workflows/deploy.yml`. Il se déclenche à chaque poussée, mais ne
+publie que depuis la branche par défaut du dépôt : renommer ou changer cette
 branche ne demande aucune modification du workflow.
 
-Une seule chose est a verifier une fois pour toutes dans les reglages du depot,
-section Pages : la source doit etre **GitHub Actions**, et non « Deploy from a
-branch ». Ce dernier mode publie le depot tel quel, donc le `index.html` source,
-qui reference `/src/main.ts` : le navigateur recoit alors une page sans style ni
-script, puisque rien n'a ete construit.
+Une seule chose est à vérifier une fois pour toutes dans les réglages du dépôt,
+section Pages : la source doit être **GitHub Actions**, et non « Deploy from a
+branch ». Ce dernier mode publie le dépôt tel quel, donc le `index.html` source,
+qui référence `/src/main.ts` : le navigateur reçoit alors une page sans style ni
+script, puisque rien n'a été construit.
 
-La base d'URL est definie dans `vite.config.ts` (`base: '/Morse-training/'`) :
-elle doit correspondre au nom du depot, sinon les assets sont demandes a la
+La base d'URL est définie dans `vite.config.ts` (`base: '/Morse-training/'`) :
+elle doit correspondre au nom du dépôt, sinon les assets sont demandés à la
 racine du domaine.
 
 ## Organisation du code
 
 ```
 src/
-  core/      logique pure : tables morse, calcul des durees, moteur audio,
-             manipulateur, methode Koch, progression, succes, stockage
+  core/      logique pure : tables morse, calcul des durées, moteur audio,
+             manipulateur, méthode Koch, progression, succès, stockage
   ui/        briques d'interface : fabrique DOM, routeur, ossature, diode,
-             manipulateur a l'ecran, lecteur, suivi de session
+             manipulateur à l'écran, lecteur, suivi de session
   views/     une page par fichier, plus la table des routes
-  data/      vocabulaire d'entrainement
+  data/      vocabulaire d'entraînement
   styles/    jetons de design, base, mise en page, composants, contenu
 ```
 
-Aucun framework : le rendu est fait avec une petite fabrique DOM, ce qui evite
+Aucun framework : le rendu est fait avec une petite fabrique DOM, ce qui évite
 qu'un cycle de rendu ne vienne s'intercaler entre l'horloge audio et
 l'affichage.
 

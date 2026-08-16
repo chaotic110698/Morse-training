@@ -1,7 +1,7 @@
 /**
  * Routeur par fragment d'URL.
  *
- * Le fragment (`#/...`) evite toute configuration serveur : GitHub Pages sert
+ * Le fragment (`#/...`) évite toute configuration serveur : GitHub Pages sert
  * un seul `index.html` et le navigateur ne demande jamais de chemin qui
  * n'existe pas. Chaque page reste ainsi partageable par lien et le bouton
  * retour fonctionne normalement.
@@ -19,7 +19,7 @@ export interface ViewContext {
 
 export interface View {
   element: HTMLElement;
-  /** Appele quand on quitte la page : arreter le son, retirer les ecouteurs. */
+  /** Appele quand on quitte la page : arrêter le son, retirer les écouteurs. */
   destroy?: () => void;
 }
 
@@ -28,7 +28,7 @@ export type ViewFactory = (context: ViewContext) => View;
 export interface RouteDefinition {
   path: string;
   label: string;
-  /** Titre complet, affiche en tete de page et dans l'onglet. */
+  /** Titre complet, affiche en tête de page et dans l'onglet. */
   title: string;
   description: string;
   icon: string;
@@ -84,8 +84,8 @@ export class Router {
     const view = route.factory(this.context);
     this.current = view;
     this.outlet.append(view.element);
-    // Le focus part en tete de page pour que la navigation au clavier et les
-    // lecteurs d'ecran suivent le changement de contenu.
+    // Le focus part en tête de page pour que la navigation au clavier et les
+    // lecteurs d'écran suivent le changement de contenu.
     this.outlet.scrollTo({ top: 0 });
     window.scrollTo({ top: 0 });
     document.title = `${route.title} — Morse Training`;

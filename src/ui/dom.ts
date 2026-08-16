@@ -1,7 +1,7 @@
 /**
- * Fabrique d'elements DOM.
+ * Fabrique d'éléments DOM.
  *
- * Le site n'utilise aucun framework : cette poignee de fonctions remplace le
+ * Le site n'utilise aucun framework : cette poignée de fonctions remplace le
  * JSX sans rien imposer, et surtout sans cycle de rendu qui viendrait
  * s'intercaler entre l'horloge audio et l'affichage.
  */
@@ -24,7 +24,7 @@ export interface ElementProps {
   on?: Partial<{
     [K in keyof HTMLElementEventMap]: (event: HTMLElementEventMap[K]) => void;
   }>;
-  /** Options passees a `addEventListener` pour tous les ecouteurs de `on`. */
+  /** Options passées à `addEventListener` pour tous les écouteurs de `on`. */
   listenerOptions?: AddEventListenerOptions;
 }
 
@@ -71,8 +71,8 @@ export function append(parent: Node, children: Child[]): void {
 }
 
 /**
- * Remplace le contenu d'un element en ignorant les enfants absents, ce que
- * `replaceChildren` ne sait pas faire : cela permet d'ecrire directement
+ * Remplace le contenu d'un élément en ignorant les enfants absents, ce que
+ * `replaceChildren` ne sait pas faire : cela permet d'écrire directement
  * `condition ? element : null` dans une liste d'enfants.
  */
 export function setChildren(parent: Element, children: Child[]): void {
@@ -84,7 +84,7 @@ export function clear(node: Node): void {
   while (node.firstChild) node.removeChild(node.firstChild);
 }
 
-/** Element SVG, pour les icones et les graphiques de progression. */
+/** Élément SVG, pour les icônes et les graphiques de progression. */
 export function svg(
   tag: string,
   attrs: Record<string, string | number> = {},
@@ -98,12 +98,12 @@ export function svg(
   return element;
 }
 
-/** Bloc titre + contenu, motif repete dans toutes les pages. */
+/** Bloc titre + contenu, motif répété dans toutes les pages. */
 export function section(title: string, ...children: Child[]): HTMLElement {
   return h('section', { class: 'card' }, h('h2', { class: 'card__title', text: title }), ...children);
 }
 
-/** Etiquette de reglage avec son controle. */
+/** Étiquette de réglage avec son contrôle. */
 export function field(label: string, control: Node, hint?: string): HTMLElement {
   return h(
     'div',
@@ -114,7 +114,7 @@ export function field(label: string, control: Node, hint?: string): HTMLElement 
   );
 }
 
-/** Formate un nombre avec des espaces insecables comme separateurs de milliers. */
+/** Formate un nombre avec des espaces insécâbles comme séparateurs de milliers. */
 export function formatNumber(value: number): string {
   return new Intl.NumberFormat('fr-FR').format(Math.round(value));
 }

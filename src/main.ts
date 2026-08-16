@@ -1,4 +1,4 @@
-/** Point d'entree : assemble l'etat, l'ossature et le routeur. */
+/** Point d'entrée : assemble l'état, l'ossature et le routeur. */
 
 import { registerSW } from 'virtual:pwa-register';
 import './styles/index.css';
@@ -8,7 +8,7 @@ import { Router } from './ui/router.ts';
 import { ROUTES } from './views/routes.ts';
 
 const root = document.getElementById('app');
-if (!root) throw new Error('Element #app introuvable');
+if (!root) throw new Error('Élément #app introuvable');
 
 const store = new AppStore();
 const shell = createShell(root, store);
@@ -21,9 +21,9 @@ const router = new Router({
 });
 router.start();
 
-// Le premier geste de l'utilisateur, quel qu'il soit, sert a deverrouiller le
-// contexte audio : les navigateurs mobiles refusent de le demarrer autrement,
-// et attendre le bouton « Ecouter » ferait manquer le tout premier son.
+// Le premier geste de l'utilisateur, quel qu'il soit, sert à déverrouiller le
+// contexte audio : les navigateurs mobiles refusent de le démarrer autrement,
+// et attendre le bouton « Écouter » ferait manquer le tout premier son.
 const unlockOnce = (): void => {
   void store.audio.unlock();
   window.removeEventListener('pointerdown', unlockOnce);
@@ -32,19 +32,19 @@ const unlockOnce = (): void => {
 window.addEventListener('pointerdown', unlockOnce, { once: false });
 window.addEventListener('keydown', unlockOnce, { once: false });
 
-// Le navigateur peut fermer l'onglet sans previr : on force l'ecriture avant
-// que la page ne parte en arriere-plan, plutot que de compter sur `unload`.
+// Le navigateur peut fermer l'onglet sans prévenir : on force l'écriture avant
+// que la page ne parte en arrière-plan, plutôt que de compter sur `unload`.
 window.addEventListener('pagehide', () => store.saveNow());
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') store.saveNow();
 });
 
-// Mise a jour du service worker : on recharge silencieusement au prochain
-// passage, sans interrompre une serie d'entrainement en cours.
+// Mise à jour du service worker : on recharge silencieusement au prochain
+// passage, sans interrompre une série d'entraînement en cours.
 const updateSW = registerSW({
   immediate: true,
   onNeedRefresh() {
-    shell.toast('Une nouvelle version est prete. Elle s’appliquera au prochain lancement.', 'info');
+    shell.toast('Une nouvelle version est prête. Elle s’appliquera au prochain lancement.', 'info');
     void updateSW(false);
   },
   onOfflineReady() {

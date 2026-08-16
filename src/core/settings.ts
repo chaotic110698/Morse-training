@@ -1,22 +1,22 @@
-/** Reglages de l'application, persistes tels quels. */
+/** Réglages de l'application, persistés tels quels. */
 
 export type Waveform = 'sine' | 'square' | 'triangle' | 'sawtooth';
 export type Theme = 'auto' | 'dark' | 'light';
 export type KochOrderId = 'lcwo' | 'classic' | 'alphabetical';
 
 export interface Settings {
-  /** Vitesse des caracteres, en mots par minute. */
+  /** Vitesse des caractères, en mots par minute. */
   charWpm: number;
-  /** Vitesse globale percue ; inferieure a `charWpm` active le mode Farnsworth. */
+  /** Vitesse globale perçue ; inférieure à `charWpm` active le mode Farnsworth. */
   effectiveWpm: number;
   frequency: number;
   volume: number;
   rampMs: number;
   waveform: Waveform;
 
-  /** Type de manipulateur pour les exercices d'emission. */
+  /** Type de manipulateur pour les exercices d'émission. */
   keyerMode: 'straight' | 'iambic-a' | 'iambic-b';
-  /** Ajustement automatique de la frontiere point/trait a la frappe reelle. */
+  /** Ajustement automatique de la frontière point/trait à la frappe réelle. */
   adaptiveKeying: boolean;
   /** Inverse les deux palettes, pour les gauchers. */
   swapPaddles: boolean;
@@ -27,19 +27,19 @@ export interface Settings {
   /** Code physique de la palette « trait ». */
   keyDah: string;
 
-  /** Diode temoin synchronisee sur le son. */
+  /** Diode témoin synchronisée sur le son. */
   visualSignal: boolean;
-  /** Retour haptique quand le materiel le permet. */
+  /** Retour haptique quand le matériel le permet. */
   haptics: boolean;
   /** Sons de confirmation et d'erreur de l'interface. */
   uiSounds: boolean;
 
   theme: Theme;
-  /** Ordre d'introduction des caracteres en methode Koch. */
+  /** Ordre d'introduction des caractères en méthode Koch. */
   kochOrder: KochOrderId;
-  /** Precision a atteindre pour debloquer le caractere suivant, de 0 a 1. */
+  /** Précision à atteindre pour débloquer le caractère suivant, de 0 à 1. */
   kochThreshold: number;
-  /** Nombre de caracteres tires par serie d'entrainement. */
+  /** Nombre de caractères tirés par série d'entraînement. */
   sessionLength: number;
 }
 
@@ -76,9 +76,9 @@ const clamp = (value: number, min: number, max: number): number =>
   Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : min;
 
 /**
- * Ramene des reglages arbitraires dans les bornes valides. Utilise au
- * chargement du stockage local et a l'import d'une sauvegarde, ou les donnees
- * peuvent provenir d'une version anterieure ou avoir ete editees a la main.
+ * Ramène des réglages arbitraires dans les bornes valides. Utilise au
+ * chargement du stockage local et à l'import d'une sauvegarde, où les données
+ * peuvent provenir d'une version antérieure ou avoir été éditées à la main.
  */
 export function normalizeSettings(input: Partial<Settings> | null | undefined): Settings {
   const raw = { ...DEFAULT_SETTINGS, ...(input ?? {}) };

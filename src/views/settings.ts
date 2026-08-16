@@ -1,9 +1,9 @@
 /**
- * Page « Reglages ».
+ * Page « Réglages ».
  *
- * Chaque reglage est accompagne d'une phrase qui dit a quoi il sert et quelle
- * valeur choisir : un trainer de morse expose forcement des notions techniques
- * (Farnsworth, mode iambique, unite de temps) qu'on ne peut pas deviner.
+ * Chaque réglage est accompagné d'une phrase qui dit à quoi il sert et quelle
+ * valeur choisir : un trainer de morse expose forcément des notions techniques
+ * (Farnsworth, mode iambique, unité de temps) qu'on ne peut pas deviner.
  */
 
 import { h, field } from '../ui/dom.ts';
@@ -26,7 +26,7 @@ export function settingsView(context: ViewContext): View {
 
   let capturing: BindingKey | null = null;
 
-  /** Curseur numerique avec sa valeur affichee, motif repete partout ici. */
+  /** Curseur numérique avec sa valeur affichée, motif répété partout ici. */
   const slider = (
     options: {
       min: number;
@@ -91,7 +91,7 @@ export function settingsView(context: ViewContext): View {
       `morse-training-${stamp}.json`,
       JSON.stringify(buildSaveFile(store.settings, store.progress), null, 2),
     );
-    context.toast('Sauvegarde exportee.', 'success');
+    context.toast('Sauvegarde exportée.', 'success');
   };
 
   const importInput = h('input', {
@@ -110,7 +110,7 @@ export function settingsView(context: ViewContext): View {
             return;
           }
           store.replaceState(result.settings, result.progress);
-          context.toast('Sauvegarde importee.', 'success');
+          context.toast('Sauvegarde importée.', 'success');
         });
         reader.readAsText(file);
         input.value = '';
@@ -130,7 +130,7 @@ export function settingsView(context: ViewContext): View {
         { class: 'card' },
         h('h2', { class: 'card__title', text: 'Vitesse' }),
         field(
-          'Vitesse des caracteres',
+          'Vitesse des caractères',
           slider({
             min: 5,
             max: 40,
@@ -138,8 +138,8 @@ export function settingsView(context: ViewContext): View {
             format: (value) => `${value} WPM`,
             onInput: (value) => store.updateSettings({ charWpm: value }),
           }),
-          `La vitesse a laquelle chaque caractere est emis. Une unite vaut actuellement ${Math.round(timing.unit * 1000)} ms. ` +
-            'Reglez-la a 18 ou 20 WPM des le debut et ne la baissez plus : c’est la clef pour ne pas apprendre a compter les points.',
+          `La vitesse à laquelle chaque caractère est émis. Une unité vaut actuellement ${Math.round(timing.unit * 1000)} ms. ` +
+            'Réglez-la à 18 ou 20 WPM dès le début et ne la baissez plus : c’est la clef pour ne pas apprendre à compter les points.',
         ),
         field(
           'Vitesse globale (Farnsworth)',
@@ -151,8 +151,8 @@ export function settingsView(context: ViewContext): View {
             onInput: (value) => store.updateSettings({ effectiveWpm: value }),
           }),
           timing.farnsworth
-            ? `Les silences sont etires : ${Math.round(timing.interChar * 1000)} ms entre deux caracteres au lieu de ${Math.round(timing.unit * 3000)} ms. C’est ce reglage qu’on augmente pour progresser.`
-            : 'Egale a la vitesse des caracteres : aucun etirement des silences. Baissez-la pour vous laisser plus de temps entre les caracteres.',
+            ? `Les silences sont étirés : ${Math.round(timing.interChar * 1000)} ms entre deux caractères au lieu de ${Math.round(timing.unit * 3000)} ms. C’est ce réglage qu’on augmente pour progresser.`
+            : 'Égale à la vitesse des caractères : aucun étirement des silences. Baissez-la pour vous laisser plus de temps entre les caractères.',
         ),
         h(
           'div',
@@ -160,7 +160,7 @@ export function settingsView(context: ViewContext): View {
           h('button', {
             class: 'btn',
             type: 'button',
-            text: 'Ecouter un exemple',
+            text: 'Écouter un exemple',
             on: {
               click: () => {
                 player.stop();
@@ -178,7 +178,7 @@ export function settingsView(context: ViewContext): View {
         { class: 'card' },
         h('h2', { class: 'card__title', text: 'Son' }),
         field(
-          'Tonalite',
+          'Tonalité',
           slider({
             min: 300,
             max: 1200,
@@ -187,7 +187,7 @@ export function settingsView(context: ViewContext): View {
             format: (value) => `${value} Hz`,
             onInput: (value) => store.updateSettings({ frequency: value }),
           }),
-          'La plupart des operateurs se placent entre 550 et 750 Hz. Une tonalite trop aigue fatigue vite ; une tonalite trop grave se confond avec le bruit de fond.',
+          'La plupart des opérateurs se placent entre 550 et 750 Hz. Une tonalité trop aiguë fatigue vite ; une tonalité trop grave se confond avec le bruit de fond.',
         ),
         field(
           'Volume',
@@ -208,7 +208,7 @@ export function settingsView(context: ViewContext): View {
             format: (value) => `${value} ms`,
             onInput: (value) => store.updateSettings({ rampMs: value }),
           }),
-          'Duree de la montee et de la descente du son. En dessous de 3 ms apparaissent les « clics de manipulation », desagreables a l’oreille et mal vus en trafic reel.',
+          'Durée de la montée et de la descente du son. En dessous de 3 ms apparaissent les « clics de manipulation », désagréables à l’oreille et mal vus en trafic réel.',
         ),
         field(
           'Forme d’onde',
@@ -225,9 +225,9 @@ export function settingsView(context: ViewContext): View {
             },
             ...(
               [
-                ['sine', 'Sinusoide — pure, la plus proche d’un recepteur radio'],
-                ['triangle', 'Triangle — legerement plus presente'],
-                ['square', 'Carree — dure, tres percante'],
+                ['sine', 'Sinusoïde — pure, la plus proche d’un récepteur radio'],
+                ['triangle', 'Triangle — légèrement plus présente'],
+                ['square', 'Carrée — dure, très perçante'],
                 ['sawtooth', 'Dent de scie — riche en harmoniques'],
               ] as const
             ).map(([value, label]) =>
@@ -236,7 +236,7 @@ export function settingsView(context: ViewContext): View {
           ),
         ),
         h('p', { class: 'field__hint' },
-          'Sur iPhone et iPad, le son du navigateur suit le bouton silencieux physique. Si vous n’entendez rien, verifiez-le avant tout le reste.'),
+          'Sur iPhone et iPad, le son du navigateur suit le bouton silencieux physique. Si vous n’entendez rien, vérifiez-le avant tout le reste.'),
       ),
 
       // --- Manipulateur ---
@@ -267,12 +267,12 @@ export function settingsView(context: ViewContext): View {
               h('option', { value, text: label, attrs: { selected: s.keyerMode === value } }),
             ),
           ),
-          'Au manipulateur droit, la duree de l’appui distingue le point du trait. Aux palettes, une touche donne les points, l’autre les traits, et l’electronique cale les durees. Le mode B ajoute un element apres un relachement en pince ; commencez par le mode A.',
+          'Au manipulateur droit, la durée de l’appui distingue le point du trait. Aux palettes, une touche donne les points, l’autre les traits, et l’électronique cale les durées. Le mode B ajoute un élément après un relâchement en pince ; commencez par le mode A.',
         ),
         field(
           s.keyerMode === 'straight' ? 'Touche du manipulateur' : 'Touche des points',
           captureButton(s.keyerMode === 'straight' ? 'keyStraight' : 'keyDit', 'Touche'),
-          'Cliquez sur le bouton puis appuyez sur la touche voulue. Echap annule.',
+          'Cliquez sur le bouton puis appuyez sur la touche voulue. Échap annule.',
         ),
         paddleMode
           ? field('Touche des traits', captureButton('keyDah', 'Touche des traits'))
@@ -291,7 +291,7 @@ export function settingsView(context: ViewContext): View {
                       store.updateSettings({ swapPaddles: (event.target as HTMLInputElement).checked }),
                   },
                 }),
-                h('span', { text: 'Points a droite, traits a gauche' }),
+                h('span', { text: 'Points à droite, traits à gauche' }),
               ),
               'Pour les gauchers, ou simplement par habitude inverse.',
             )
@@ -309,9 +309,9 @@ export function settingsView(context: ViewContext): View {
                   store.updateSettings({ adaptiveKeying: (event.target as HTMLInputElement).checked }),
               },
             }),
-            h('span', { text: 'Suivre ma vitesse reelle de frappe' }),
+            h('span', { text: 'Suivre ma vitesse réelle de frappe' }),
           ),
-          'Le decodeur ajuste la frontiere entre point et trait sur votre frappe plutot que sur la vitesse annoncee. A laisser active au manipulateur droit ; sans effet aux palettes, ou les durees sont generees.',
+          'Le décodeur ajuste la frontière entre point et trait sur votre frappe plutôt que sur la vitesse annoncée. À laisser activé au manipulateur droit ; sans effet aux palettes, où les durées sont générées.',
         ),
       ),
 
@@ -321,7 +321,7 @@ export function settingsView(context: ViewContext): View {
         { class: 'card' },
         h('h2', { class: 'card__title', text: 'Sorties visuelle et haptique' }),
         field(
-          'Diode temoin',
+          'Diode témoin',
           h(
             'label',
             { class: 'switch' },
@@ -335,7 +335,7 @@ export function settingsView(context: ViewContext): View {
             }),
             h('span', { text: 'Allumer une diode pendant chaque signal' }),
           ),
-          'La diode reste allumee exactement le temps du signal : une lueur breve pour un point, trois fois plus longue pour un trait. Aucun clignotement plein ecran, qui serait epuisant et risque pour les personnes photosensibles.',
+          'La diode reste allumée exactement le temps du signal : une lueur brève pour un point, trois fois plus longue pour un trait. Aucun clignotement plein écran, qui serait épuisant et risque pour les personnes photosensibles.',
         ),
         field(
           'Retour haptique',
@@ -353,7 +353,7 @@ export function settingsView(context: ViewContext): View {
             h('span', { text: 'Vibrer au rythme du morse' }),
           ),
           hapticsSupported()
-            ? 'Le motif complet est confie au systeme d’un seul coup, ce qui donne un rythme bien plus regulier qu’une suite d’appels. Au manipulateur droit, la vibration dure exactement le temps de l’appui.'
+            ? 'Le motif complet est confié au système d’un seul coup, ce qui donne un rythme bien plus régulier qu’une suite d’appels. Au manipulateur droit, la vibration dure exactement le temps de l’appui.'
             : 'Votre navigateur n’expose pas l’API Vibration. C’est le cas de Safari sur iPhone et iPad : aucune interface web ne permet d’y piloter le moteur haptique. Sur Android avec Chrome ou Firefox, la fonction est disponible.',
         ),
         field(
@@ -380,7 +380,7 @@ export function settingsView(context: ViewContext): View {
         { class: 'card' },
         h('h2', { class: 'card__title', text: 'Apprentissage' }),
         field(
-          'Ordre d’introduction des caracteres',
+          'Ordre d’introduction des caractères',
           h(
             'select',
             {
@@ -399,7 +399,7 @@ export function settingsView(context: ViewContext): View {
           KOCH_ORDERS.find((order) => order.id === s.kochOrder)?.description ?? '',
         ),
         field(
-          'Seuil pour debloquer un caractere',
+          'Seuil pour débloquer un caractère',
           slider({
             min: 60,
             max: 100,
@@ -408,19 +408,19 @@ export function settingsView(context: ViewContext): View {
             format: (value) => `${value} %`,
             onInput: (value) => store.updateSettings({ kochThreshold: value / 100 }),
           }),
-          'Precision a atteindre sur une serie avant d’ajouter le caractere suivant. Le seuil classique est 90 %.',
+          'Précision à atteindre sur une série avant d’ajouter le caractère suivant. Le seuil classique est 90 %.',
         ),
         field(
-          'Longueur d’une serie',
+          'Longueur d’une série',
           slider({
             min: 10,
             max: 60,
             step: 5,
             value: s.sessionLength,
-            format: (value) => `${value} caracteres`,
+            format: (value) => `${value} caractères`,
             onInput: (value) => store.updateSettings({ sessionLength: value }),
           }),
-          'Des series courtes et repetees valent mieux qu’une seance interminable.',
+          'Des séries courtes et répétées valent mieux qu’une séance interminable.',
         ),
         field(
           'Niveau Koch',
@@ -431,7 +431,7 @@ export function settingsView(context: ViewContext): View {
               class: 'btn',
               type: 'button',
               text: '−',
-              attrs: { 'aria-label': 'Retirer un caractere' },
+              attrs: { 'aria-label': 'Retirer un caractère' },
               on: {
                 click: () =>
                   store.mutateProgress((progress) => {
@@ -444,7 +444,7 @@ export function settingsView(context: ViewContext): View {
               class: 'btn',
               type: 'button',
               text: '+',
-              attrs: { 'aria-label': 'Ajouter un caractere' },
+              attrs: { 'aria-label': 'Ajouter un caractère' },
               on: {
                 click: () =>
                   store.mutateProgress((progress) => {
@@ -453,7 +453,7 @@ export function settingsView(context: ViewContext): View {
               },
             }),
           ),
-          'Le niveau monte normalement tout seul a la fin d’une serie reussie. Ce reglage sert a reprendre plus haut si vous connaissez deja une partie du code.',
+          'Le niveau monte normalement tout seul à la fin d’une série réussie. Ce réglage sert à reprendre plus haut si vous connaissez déjà une partie du code.',
         ),
       ),
 
@@ -463,13 +463,13 @@ export function settingsView(context: ViewContext): View {
         { class: 'card' },
         h('h2', { class: 'card__title', text: 'Apparence' }),
         field(
-          'Theme',
+          'Thème',
           h(
             'div',
-            { class: 'segmented', attrs: { role: 'group', 'aria-label': 'Theme' } },
+            { class: 'segmented', attrs: { role: 'group', 'aria-label': 'Thème' } },
             ...(
               [
-                ['auto', 'Systeme'],
+                ['auto', 'Système'],
                 ['dark', 'Sombre'],
                 ['light', 'Clair'],
               ] as const
@@ -485,15 +485,15 @@ export function settingsView(context: ViewContext): View {
         ),
       ),
 
-      // --- Donnees ---
+      // --- Données ---
       h(
         'section',
         { class: 'card' },
-        h('h2', { class: 'card__title', text: 'Mes donnees' }),
+        h('h2', { class: 'card__title', text: 'Mes données' }),
         h('p', { class: 'card__hint' },
           storageAvailable()
-            ? 'Reglages et progression sont enregistres dans ce navigateur uniquement. Rien n’est envoye sur un serveur, il n’y a ni compte ni suivi.'
-            : 'Le stockage local est indisponible (navigation privee ?). Votre progression sera perdue en fermant l’onglet ; pensez a exporter.'),
+            ? 'Réglages et progression sont enregistrés dans ce navigateur uniquement. Rien n’est envoyé sur un serveur, il n’y à ni compte ni suivi.'
+            : 'Le stockage local est indisponible (navigation privée ?). Votre progression sera perdue en fermant l’onglet ; pensez à exporter.'),
         h(
           'div',
           { class: 'actions' },
@@ -508,11 +508,11 @@ export function settingsView(context: ViewContext): View {
           h('button', {
             class: 'btn btn--ghost',
             type: 'button',
-            text: 'Reglages par defaut',
+            text: 'Réglages par défaut',
             on: {
               click: () => {
                 store.updateSettings({ ...DEFAULT_SETTINGS });
-                context.toast('Reglages remis a zero.', 'info');
+                context.toast('Réglages remis à zéro.', 'info');
                 render();
               },
             },
@@ -523,9 +523,9 @@ export function settingsView(context: ViewContext): View {
             text: 'Effacer ma progression',
             on: {
               click: () => {
-                if (!window.confirm('Effacer definitivement statistiques, niveau et succes ? Cette action est irreversible.')) return;
+                if (!window.confirm('Effacer définitivement statistiques, niveau et succès ? Cette action est irréversible.')) return;
                 store.resetProgress();
-                context.toast('Progression effacee.', 'info');
+                context.toast('Progression effacée.', 'info');
               },
             },
           }),

@@ -1,11 +1,11 @@
 /**
- * Lecture visuelle : un code ecrit, une lettre a retrouver.
+ * Lecture visuelle : un code écrit, une lettre à retrouver.
  *
- * Ce mode est volontairement present, mais il ne remplace pas l'ecoute. Il
- * rend service quand on ne peut pas mettre de son — en reunion, dans un train,
- * sans ecouteurs — et il convient a ceux qui memorisent mieux par l'oeil. Le
- * texte d'aide en bas de page dit clairement ses limites : la competence
- * visee, a terme, est auditive.
+ * Ce mode est volontairement présent, mais il ne remplace pas l'écoute. Il
+ * rend service quand on ne peut pas mettre de son — en réunion, dans un train,
+ * sans écouteurs — et il convient à ceux qui mémorisent mieux par l'œil. Le
+ * texte d'aide en bas de page dit clairement ses limites : la compétence
+ * visée, à terme, est auditive.
  */
 
 import { h } from '../ui/dom.ts';
@@ -76,7 +76,7 @@ export function readView(context: ViewContext): View {
         },
       },
     }),
-    h('span', { text: 'Tout le jeu de caracteres' }),
+    h('span', { text: 'Tout le jeu de caractères' }),
   );
 
   const setDirection = (next: Direction): void => {
@@ -100,7 +100,7 @@ export function readView(context: ViewContext): View {
     if (direction === 'code-to-char') {
       display.replaceChildren(
         h('span', { class: 'display__code display__code--big', text: prettyCode(encodeChar(current) ?? '') }),
-        h('p', { class: 'display__hint', text: 'Quel caractere ?' }),
+        h('p', { class: 'display__hint', text: 'Quel caractère ?' }),
       );
     } else {
       display.replaceChildren(
@@ -171,13 +171,13 @@ export function readView(context: ViewContext): View {
     display.replaceChildren(
       h('span', { class: 'display__char', text: expected }),
       h('span', { class: 'display__code', text: prettyCode(encodeChar(expected) ?? '') }),
-      h('p', { class: 'display__hint', text: correct ? 'Correct' : `Reponse : ${expected}` }),
+      h('p', { class: 'display__hint', text: correct ? 'Correct' : `Réponse : ${expected}` }),
     );
 
     if (store.settings.uiSounds) store.audio.feedback(correct ? 'ok' : 'error');
     store.haptics.feedback(correct ? 'ok' : 'error');
 
-    // Le son du caractere est joue meme dans ce mode visuel : c'est le meilleur
+    // Le son du caractère est joué même dans ce mode visuel : c'est le meilleur
     // moyen de faire glisser progressivement l'apprentissage vers l'oreille.
     if (!correct) void player.play(expected);
 
@@ -194,15 +194,15 @@ export function readView(context: ViewContext): View {
         { class: 'summary__scores' },
         h('div', { class: 'metric' },
           h('span', { class: 'metric__value', text: formatPercent(tracker.accuracy) }),
-          h('span', { class: 'metric__label', text: 'Precision' })),
+          h('span', { class: 'metric__label', text: 'Précision' })),
         h('div', { class: 'metric' },
           h('span', { class: 'metric__value', text: `${tracker.correct}/${tracker.count}` }),
-          h('span', { class: 'metric__label', text: 'Bonnes reponses' })),
+          h('span', { class: 'metric__label', text: 'Bonnes réponses' })),
       ),
       h('button', {
         class: 'btn btn--primary',
         type: 'button',
-        text: 'Nouvelle serie',
+        text: 'Nouvelle série',
         on: {
           click: () => {
             tracker = new SessionTracker(store, 'read', 20);
@@ -244,15 +244,15 @@ export function readView(context: ViewContext): View {
     h(
       'details',
       { class: 'help' },
-      h('summary', { text: 'A quoi sert vraiment ce mode' }),
+      h('summary', { text: 'À quoi sert vraiment ce mode' }),
       h('p', {},
         "La lecture visuelle est pratique : elle se fait sans son, partout, et elle rassure quand on " +
-        "debute. Elle a pourtant une limite qu’il faut connaitre — savoir que A s’ecrit point-trait ne " +
-        "permet pas de reconnaitre A a 20 mots par minute."),
+        "débute. Elle a pourtant une limite qu’il faut connaître — savoir que A s’écrit point-trait ne " +
+        "permet pas de reconnaître A à 20 mots par minute."),
       h('p', {},
-        "Utilisez-la comme complement, pour reviser un caractere oublie ou vous occuper sans casque, " +
-        "puis revenez au mode Ecoute. C’est la que se construit la competence reelle. Le son du caractere " +
-        "est d’ailleurs joue automatiquement apres chaque erreur, pour amorcer le passage a l’oreille."),
+        "Utilisez-la comme complément, pour réviser un caractère oublié ou vous occuper sans casque, " +
+        "puis revenez au mode Écoute. C’est là que se construit la compétence réelle. Le son du caractère " +
+        "est d’ailleurs joue automatiquement après chaque erreur, pour amorcer le passage à l’oreille."),
     ),
   );
 

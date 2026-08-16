@@ -1,8 +1,8 @@
 /**
- * Lecture d'un texte en morse, avec ses sorties son, lumiere et vibration.
+ * Lecture d'un texte en morse, avec ses sorties son, lumière et vibration.
  *
- * Les trois sorties partent de la meme sequence d'elements : elles sont donc
- * coherentes par construction, et rien ne peut deriver entre l'oreille, la
+ * Les trois sorties partent de la même séquence d'éléments : elles sont donc
+ * cohérentes par construction, et rien ne peut dériver entre l'oreille, la
  * diode et le vibreur.
  */
 
@@ -12,11 +12,11 @@ import type { AppStore } from '../core/store.ts';
 import type { SignalLamp } from './lamp.ts';
 
 export interface PlayOptions {
-  /** Surligne le caractere en cours de lecture. */
+  /** Surligne le caractère en cours de lecture. */
   onChar?: (charIndex: number, char: string | undefined) => void;
   /**
-   * Suit l'etat du signal, cale sur l'horloge audio. Sert aux sorties qui ne
-   * passent pas par le moteur audio : lampe torche, flash d'ecran.
+   * Suit l'état du signal, calé sur l'horloge audio. Sert aux sorties qui ne
+   * passent pas par le moteur audio : lampe torche, flash d'écran.
    */
   onSignal?: (on: boolean, element: TimedElement) => void;
   onStart?: (duration: number) => void;
@@ -41,7 +41,7 @@ export class MorsePlayer {
     return this.store.audio.playing;
   }
 
-  /** Convertit un texte en sequence temporelle prete a jouer. */
+  /** Convertit un texte en séquence temporelle prête à jouer. */
   buildElements(text: string): TimedElement[] {
     const timing = this.store.timing;
     const tokens = [...text.toUpperCase()].map((char) => {
@@ -55,10 +55,10 @@ export class MorsePlayer {
   }
 
   /**
-   * Convertit une notation morse ecrite en sequence temporelle. Les caracteres
-   * sont separes par des espaces et les mots par une barre oblique, ce qui
-   * permet de jouer fidelement une saisie manuelle, y compris un code qui ne
-   * correspond a aucune lettre.
+   * Convertit une notation morse écrite en séquence temporelle. Les caractères
+   * sont séparés par des espaces et les mots par une barre oblique, ce qui
+   * permet de jouer fidèlement une saisie manuelle, y compris un code qui ne
+   * correspond à aucune lettre.
    */
   buildElementsFromMorse(morse: string): TimedElement[] {
     const timing = this.store.timing;
@@ -74,7 +74,7 @@ export class MorsePlayer {
     return buildSequence(tokens, timing);
   }
 
-  /** Joue un texte et resout a `true` si la lecture est allee au bout. */
+  /** Joue un texte et résout à `true` si la lecture est allée au bout. */
   async play(text: string, options: PlayOptions = {}): Promise<boolean> {
     const elements = this.buildElements(text);
     if (elements.length === 0) return false;
@@ -104,20 +104,20 @@ export class MorsePlayer {
       },
     });
 
-    // La vibration est confiee au systeme en une seule fois : l'ordonnancement
-    // par l'OS est bien plus regulier qu'une serie d'appels depuis JavaScript.
+    // La vibration est confiée au système en une seule fois : l'ordonnancement
+    // par l'OS est bien plus régulier qu'une série d'appels depuis JavaScript.
     this.store.haptics.playSequence(elements);
 
     options.onStart?.(sequenceDuration(elements));
     const completed = await handle.finished;
     this.lamp?.off();
-    // Filet de securite : une lecture interrompue en plein signal doit laisser
-    // toutes les sorties eteintes, pas seulement la diode.
+    // Filet de sécurité : une lecture interrompue en plein signal doit laisser
+    // toutes les sorties éteintes, pas seulement la diode.
     if (lastSignalElement) options.onSignal?.(false, lastSignalElement);
     if (!completed) this.store.haptics.cancel();
     options.onEnd?.(completed);
-    // `unlocked` a faux signifie que le navigateur a refuse le contexte audio :
-    // la lecture visuelle et haptique a tout de meme eu lieu.
+    // `unlocked` à faux signifie que le navigateur a refusé le contexte audio :
+    // la lecture visuelle et haptique à tout de même eu lieu.
     return completed && unlocked;
   }
 

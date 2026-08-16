@@ -1,4 +1,4 @@
-/* Ossature : bandeau lateral fixe sur ordinateur, tiroir sur telephone. */
+/* Ossature : bandeau latéral fixe sur ordinateur, tiroir sur téléphone. */
 
 .shell {
   display: grid;
@@ -6,7 +6,7 @@
   min-height: 100dvh;
 }
 
-/* --- Bandeau lateral --- */
+/* --- Bandeau latéral --- */
 
 .sidebar {
   position: sticky;
@@ -239,14 +239,14 @@
 
 /*
  * L'attribut `hidden` vaut `display: none` dans la feuille du navigateur, mais
- * une regle d'auteur le supplante toujours : sans cette ligne, le voile du
- * tiroir reste invisible tout en interceptant les appuis sur telephone.
+ * une règle d'auteur le supplante toujours : sans cette ligne, le voile du
+ * tiroir reste invisible tout en interceptant les appuis sur téléphone.
  */
 .overlay[hidden] {
   display: none !important;
 }
 
-/* --- Telephone et tablette --- */
+/* --- Téléphone et tablette --- */
 
 @media (max-width: 900px) {
   .shell {

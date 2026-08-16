@@ -1,10 +1,10 @@
-/** Statistiques et progression, conservees localement dans le navigateur. */
+/** Statistiques et progression, conservées localement dans le navigateur. */
 
 export type TrainingMode = 'listen' | 'send' | 'words' | 'read';
 
 export const MODE_LABELS: Record<TrainingMode, string> = {
-  listen: 'Ecoute',
-  send: 'Emission',
+  listen: 'Écoute',
+  send: 'Émission',
   words: 'Mots et indicatifs',
   read: 'Lecture visuelle',
 };
@@ -12,7 +12,7 @@ export const MODE_LABELS: Record<TrainingMode, string> = {
 export interface CharStat {
   attempts: number;
   correct: number;
-  /** Somme des temps de reponse, pour en tirer une moyenne. */
+  /** Somme des temps de réponse, pour en tirer une moyenne. */
   totalMs: number;
   lastSeen: number;
 }
@@ -34,28 +34,28 @@ export interface Totals {
   attempts: number;
   correct: number;
   trainingMs: number;
-  /** Caracteres emis au manipulateur, tous exercices confondus. */
+  /** Caractères émis au manipulateur, tous exercices confondus. */
   sent: number;
 }
 
 export interface Streak {
   current: number;
   longest: number;
-  /** Derniere journee d'entrainement, au format AAAA-MM-JJ local. */
+  /** Dernière journée d'entraînement, au format AAAA-MM-JJ local. */
   lastDay: string | null;
 }
 
 export interface Progress {
   kochLevel: number;
   chars: Record<string, CharStat>;
-  /** Historique borne aux dernieres sessions, du plus recent au plus ancien. */
+  /** Historique borne aux dernières sessions, du plus récent au plus ancien. */
   sessions: SessionRecord[];
   totals: Totals;
   streak: Streak;
-  /** Identifiant du succes vers l'horodatage de deblocage. */
+  /** Identifiant du succès vers l'horodatage de déblocage. */
   achievements: Record<string, number>;
   /**
-   * Evenements ponctuels a memoriser une fois pour toutes : premier SOS emis,
+   * Événements ponctuels à mémoriser une fois pour toutes : premier SOS émis,
    * page d'histoire lue jusqu'au bout, etc. La valeur est l'horodatage.
    */
   flags: Record<string, number>;
@@ -75,7 +75,7 @@ export function emptyProgress(): Progress {
   };
 }
 
-/** Journee locale au format AAAA-MM-JJ, base des series quotidiennes. */
+/** Journée locale au format AAAA-MM-JJ, base des séries quotidiennes. */
 export function dayKey(date: Date = new Date()): string {
   const year = date.getFullYear();
   const month = `${date.getMonth() + 1}`.padStart(2, '0');
@@ -90,7 +90,7 @@ function previousDay(key: string): string {
   return dayKey(date);
 }
 
-/** Enregistre une reponse sur un caractere donne. */
+/** Enregistre une réponse sur un caractère donné. */
 export function recordAttempt(
   progress: Progress,
   char: string,
@@ -107,14 +107,14 @@ export function recordAttempt(
   if (correct) progress.totals.correct += 1;
 }
 
-/** Precision sur un caractere, ou `null` s'il n'a jamais ete teste. */
+/** Précision sur un caractère, ou `null` s'il n'a jamais été testé. */
 export function charAccuracy(progress: Progress, char: string): number | null {
   const stat = progress.chars[char];
   if (!stat || stat.attempts === 0) return null;
   return stat.correct / stat.attempts;
 }
 
-/** Temps de reponse moyen sur un caractere, en millisecondes. */
+/** Temps de réponse moyen sur un caractère, en millisecondes. */
 export function charSpeed(progress: Progress, char: string): number | null {
   const stat = progress.chars[char];
   if (!stat || stat.attempts === 0) return null;
@@ -126,7 +126,7 @@ export function overallAccuracy(progress: Progress): number | null {
   return progress.totals.correct / progress.totals.attempts;
 }
 
-/** Ajoute une session terminee et met a jour totaux et serie quotidienne. */
+/** Ajoute une session terminée et met à jour totaux et série quotidienne. */
 export function commitSession(progress: Progress, record: SessionRecord): void {
   progress.sessions.unshift(record);
   if (progress.sessions.length > MAX_SESSION_HISTORY) {
@@ -138,8 +138,8 @@ export function commitSession(progress: Progress, record: SessionRecord): void {
 }
 
 /**
- * Met a jour la serie de jours consecutifs. Deux sessions le meme jour ne
- * comptent qu'une fois ; un jour saute remet le compteur a un.
+ * Met à jour la série de jours consécutifs. Deux sessions le même jour ne
+ * comptent qu'une fois ; un jour saute remet le compteur à un.
  */
 export function touchStreak(progress: Progress, today = dayKey()): void {
   const { streak } = progress;
@@ -149,7 +149,7 @@ export function touchStreak(progress: Progress, today = dayKey()): void {
   streak.lastDay = today;
 }
 
-/** Caracteres les plus fragiles, du plus rate au moins rate. */
+/** Caractères les plus fragiles, du plus rate au moins rate. */
 export function weakestChars(
   progress: Progress,
   charset: string[],
@@ -169,7 +169,7 @@ export function weakestChars(
     .slice(0, limit);
 }
 
-/** Nombre de sessions par jour sur les `days` derniers jours, du plus ancien au plus recent. */
+/** Nombre de sessions par jour sur les `days` derniers jours, du plus ancien au plus récent. */
 export function activityByDay(progress: Progress, days = 30): Array<{ day: string; count: number }> {
   const counts = new Map<string, number>();
   for (const session of progress.sessions) {

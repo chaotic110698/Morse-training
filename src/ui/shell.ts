@@ -1,9 +1,9 @@
 /**
- * Ossature de l'application : bandeau lateral, en-tete et zone de contenu.
+ * Ossature de l'application : bandeau latéral, en-tête et zone de contenu.
  *
  * Sur ordinateur le bandeau reste ouvert en permanence, avec des sections
- * repliables. Sur telephone il devient un tiroir qui glisse par-dessus la page
- * et se referme des qu'on choisit une destination — meme balisage, meme code,
+ * repliables. Sur téléphone il devient un tiroir qui glisse par-dessus la page
+ * et se referme dès qu'on choisit une destination — même balisage, même code,
  * seule la mise en page change.
  */
 
@@ -45,7 +45,7 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
     try {
       window.localStorage.setItem(COLLAPSED_KEY, JSON.stringify([...collapsed]));
     } catch {
-      // Le repliage du menu n'est qu'un confort : on ignore l'echec.
+      // Le repliage du menu n'est qu'un confort : on ignore l'échec.
     }
   }
 
@@ -117,7 +117,7 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
     h(
       'div',
       { class: 'sidebar__footer' },
-      h('p', { text: 'Fonctionne hors ligne. Aucune donnee ne quitte votre appareil.' }),
+      h('p', { text: 'Fonctionne hors ligne. Aucune donnée ne quitte votre appareil.' }),
     ),
   );
 
@@ -153,7 +153,7 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
     if (event.key === 'Escape') closeDrawer();
   });
 
-  // --- Theme ---
+  // --- Thème ---
 
   const media = window.matchMedia('(prefers-color-scheme: light)');
   const applyTheme = (): void => {
@@ -181,7 +181,7 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
 
   store.onAchievements((achievements) => {
     for (const achievement of achievements) {
-      toast(`${achievement.icon}  Succes debloque : ${achievement.name}`, 'success');
+      toast(`${achievement.icon}  Succès débloqué : ${achievement.name}`, 'success');
     }
   });
 

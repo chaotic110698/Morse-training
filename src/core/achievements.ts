@@ -1,9 +1,9 @@
 /**
- * Succes.
+ * Succès.
  *
- * Chaque succes se decrit par une valeur mesuree et un objectif, ce qui permet
- * d'afficher une barre de progression plutot qu'un simple verrou. Les succes
- * sont evalues apres chaque session et le deblocage est horodate, de sorte
+ * Chaque succès se décrit par une valeur mesurée et un objectif, ce qui permet
+ * d'afficher une barre de progression plutôt qu'un simple verrou. Les succès
+ * sont évalués après chaque session et le déblocage est horodaté, de sorte
  * qu'un export JSON conserve l'historique.
  */
 
@@ -19,7 +19,7 @@ export interface Achievement {
   tier: AchievementTier;
   group: 'assiduite' | 'ecoute' | 'emission' | 'maitrise';
   goal: number;
-  /** Valeur atteinte, dans la meme unite que `goal`. */
+  /** Valeur atteinte, dans la même unité que `goal`. */
   value: (progress: Progress) => number;
   /** Mise en forme de la valeur, pour l'affichage. */
   format?: (value: number) => string;
@@ -60,11 +60,11 @@ const averageResponseMs = (progress: Progress): number => {
 const hours = (ms: number): number => ms / 3_600_000;
 
 export const ACHIEVEMENTS: Achievement[] = [
-  // --- Assiduite ---
+  // --- Assiduité ---
   {
     id: 'first-session',
     name: 'Premier contact',
-    description: 'Terminer une premiere serie d’entrainement.',
+    description: 'Terminer une première série d’entraînement.',
     icon: '🎧',
     tier: 'bronze',
     group: 'assiduite',
@@ -73,8 +73,8 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'sessions-10',
-    name: 'Habitue du trafic',
-    description: 'Terminer dix series.',
+    name: 'Habitué du trafic',
+    description: 'Terminer dix séries.',
     icon: '📻',
     tier: 'bronze',
     group: 'assiduite',
@@ -83,8 +83,8 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'sessions-50',
-    name: 'Operateur regulier',
-    description: 'Terminer cinquante series.',
+    name: 'Opérateur régulier',
+    description: 'Terminer cinquante séries.',
     icon: '🛰️',
     tier: 'argent',
     group: 'assiduite',
@@ -93,8 +93,8 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'sessions-200',
-    name: 'Veteran des ondes',
-    description: 'Terminer deux cents series.',
+    name: 'Vétéran des ondes',
+    description: 'Terminer deux cents séries.',
     icon: '🏛️',
     tier: 'or',
     group: 'assiduite',
@@ -104,7 +104,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   {
     id: 'streak-3',
     name: 'Trois jours de suite',
-    description: 'S’entrainer trois jours consecutifs.',
+    description: 'S’entraîner trois jours consécutifs.',
     icon: '🔥',
     tier: 'bronze',
     group: 'assiduite',
@@ -113,8 +113,8 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'streak-7',
-    name: 'Semaine complete',
-    description: 'S’entrainer sept jours consecutifs.',
+    name: 'Semaine complète',
+    description: 'S’entraîner sept jours consécutifs.',
     icon: '🗓️',
     tier: 'argent',
     group: 'assiduite',
@@ -124,7 +124,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   {
     id: 'streak-30',
     name: 'Trente jours sans rupture',
-    description: 'S’entrainer trente jours consecutifs.',
+    description: 'S’entraîner trente jours consécutifs.',
     icon: '💎',
     tier: 'or',
     group: 'assiduite',
@@ -134,7 +134,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   {
     id: 'time-1h',
     name: 'Une heure au casque',
-    description: 'Cumuler une heure d’entrainement.',
+    description: 'Cumuler une heure d’entraînement.',
     icon: '⏱️',
     tier: 'bronze',
     group: 'assiduite',
@@ -145,7 +145,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   {
     id: 'time-10h',
     name: 'Dix heures au casque',
-    description: 'Cumuler dix heures d’entrainement.',
+    description: 'Cumuler dix heures d’entraînement.',
     icon: '🕰️',
     tier: 'or',
     group: 'assiduite',
@@ -155,8 +155,8 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'all-modes',
-    name: 'Touche-a-tout',
-    description: 'Utiliser les quatre modes d’entrainement.',
+    name: 'Touche-à-tout',
+    description: 'Utiliser les quatre modes d’entraînement.',
     icon: '🧭',
     tier: 'argent',
     group: 'assiduite',
@@ -164,11 +164,11 @@ export const ACHIEVEMENTS: Achievement[] = [
     value: distinctModes,
   },
 
-  // --- Ecoute ---
+  // --- Écoute ---
   {
     id: 'copied-100',
     name: 'Premiers signaux',
-    description: 'Reconnaitre cent caracteres.',
+    description: 'Reconnaître cent caractères.',
     icon: '✅',
     tier: 'bronze',
     group: 'ecoute',
@@ -178,7 +178,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   {
     id: 'copied-1000',
     name: 'Mille signaux',
-    description: 'Reconnaitre mille caracteres.',
+    description: 'Reconnaître mille caractères.',
     icon: '📈',
     tier: 'argent',
     group: 'ecoute',
@@ -188,7 +188,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   {
     id: 'copied-10000',
     name: 'Dix mille signaux',
-    description: 'Reconnaitre dix mille caracteres.',
+    description: 'Reconnaître dix mille caractères.',
     icon: '🏆',
     tier: 'or',
     group: 'ecoute',
@@ -197,8 +197,8 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'koch-10',
-    name: 'Dix caracteres',
-    description: 'Atteindre le niveau 10 de la methode Koch.',
+    name: 'Dix caractères',
+    description: 'Atteindre le niveau 10 de la méthode Koch.',
     icon: '🔟',
     tier: 'bronze',
     group: 'ecoute',
@@ -208,7 +208,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   {
     id: 'koch-26',
     name: 'Alphabet complet',
-    description: 'Atteindre le niveau 26 de la methode Koch.',
+    description: 'Atteindre le niveau 26 de la méthode Koch.',
     icon: '🔤',
     tier: 'argent',
     group: 'ecoute',
@@ -226,11 +226,11 @@ export const ACHIEVEMENTS: Achievement[] = [
     value: (p) => p.kochLevel,
   },
 
-  // --- Emission ---
+  // --- Émission ---
   {
     id: 'sent-first',
-    name: 'Premiere emission',
-    description: 'Emettre un premier caractere au manipulateur.',
+    name: 'Première émission',
+    description: 'Émettre un premier caractère au manipulateur.',
     icon: '🔑',
     tier: 'bronze',
     group: 'emission',
@@ -239,8 +239,8 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'sent-500',
-    name: 'Manipulateur rode',
-    description: 'Emettre cinq cents caracteres.',
+    name: 'Manipulateur rodé',
+    description: 'Émettre cinq cents caractères.',
     icon: '🤝',
     tier: 'argent',
     group: 'emission',
@@ -250,7 +250,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   {
     id: 'sent-5000',
     name: 'Poignet d’acier',
-    description: 'Emettre cinq mille caracteres.',
+    description: 'Émettre cinq mille caractères.',
     icon: '💪',
     tier: 'or',
     group: 'emission',
@@ -259,8 +259,8 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'sos',
-    name: 'Appel de detresse',
-    description: 'Emettre le signal SOS d’un seul tenant.',
+    name: 'Appel de détresse',
+    description: 'Émettre le signal SOS d’un seul tenant.',
     icon: '🆘',
     tier: 'argent',
     group: 'emission',
@@ -270,7 +270,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   {
     id: 'cq',
     name: 'CQ CQ CQ',
-    description: 'Lancer un appel general au manipulateur.',
+    description: 'Lancer un appel général au manipulateur.',
     icon: '📡',
     tier: 'bronze',
     group: 'emission',
@@ -278,11 +278,11 @@ export const ACHIEVEMENTS: Achievement[] = [
     value: (p) => (p.flags['cq'] ? 1 : 0),
   },
 
-  // --- Maitrise ---
+  // --- Maîtrise ---
   {
     id: 'perfect-session',
     name: 'Sans une faute',
-    description: 'Terminer une serie d’au moins vingt reponses sans erreur.',
+    description: 'Terminer une série d’au moins vingt réponses sans erreur.',
     icon: '🎯',
     tier: 'argent',
     group: 'maitrise',
@@ -291,8 +291,8 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'accuracy-95',
-    name: 'Main sure',
-    description: 'Depasser 95 % de precision globale sur au moins deux cents reponses.',
+    name: 'Main sûre',
+    description: 'Dépasser 95 % de précision globale sur au moins deux cents réponses.',
     icon: '🧠',
     tier: 'or',
     group: 'maitrise',
@@ -303,7 +303,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   {
     id: 'speed-15',
     name: '15 mots par minute',
-    description: 'Reussir une serie a 15 WPM avec au moins 90 % de precision.',
+    description: 'Réussir une série à 15 WPM avec au moins 90 % de précision.',
     icon: '🚴',
     tier: 'bronze',
     group: 'maitrise',
@@ -314,7 +314,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   {
     id: 'speed-20',
     name: '20 mots par minute',
-    description: 'Reussir une serie a 20 WPM avec au moins 90 % de precision.',
+    description: 'Réussir une série à 20 WPM avec au moins 90 % de précision.',
     icon: '🏍️',
     tier: 'argent',
     group: 'maitrise',
@@ -325,7 +325,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   {
     id: 'speed-25',
     name: '25 mots par minute',
-    description: 'Reussir une serie a 25 WPM avec au moins 90 % de precision.',
+    description: 'Réussir une série à 25 WPM avec au moins 90 % de précision.',
     icon: '🚀',
     tier: 'or',
     group: 'maitrise',
@@ -335,8 +335,8 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'reflex',
-    name: 'Reflexe',
-    description: 'Descendre sous 1,2 s de temps de reponse moyen sur cent reponses.',
+    name: 'Réflexe',
+    description: 'Descendre sous 1,2 s de temps de réponse moyen sur cent réponses.',
     icon: '⚡',
     tier: 'argent',
     group: 'maitrise',
@@ -356,10 +356,10 @@ export const ACHIEVEMENTS: Achievement[] = [
 ];
 
 export const ACHIEVEMENT_GROUPS: Array<{ id: Achievement['group']; label: string }> = [
-  { id: 'assiduite', label: 'Assiduite' },
-  { id: 'ecoute', label: 'Ecoute' },
-  { id: 'emission', label: 'Emission' },
-  { id: 'maitrise', label: 'Maitrise' },
+  { id: 'assiduite', label: 'Assiduité' },
+  { id: 'ecoute', label: 'Écoute' },
+  { id: 'emission', label: 'Émission' },
+  { id: 'maitrise', label: 'Maîtrise' },
 ];
 
 export interface AchievementStatus {
@@ -385,7 +385,7 @@ export function evaluateAchievements(progress: Progress): AchievementStatus[] {
 }
 
 /**
- * Debloque les succes atteints et renvoie ceux qui viennent de l'etre, pour
+ * Débloqué les succès atteints et renvoie ceux qui viennent de l'être, pour
  * que l'interface puisse les annoncer.
  */
 export function unlockAchievements(progress: Progress): Achievement[] {
@@ -404,6 +404,6 @@ export function unlockAchievements(progress: Progress): Achievement[] {
 export function formatAchievementValue(status: AchievementStatus): string {
   const { achievement, value } = status;
   if (achievement.format) return achievement.format(value);
-  if (achievement.goal === 1) return status.unlocked ? 'Obtenu' : 'A obtenir';
+  if (achievement.goal === 1) return status.unlocked ? 'Obtenu' : 'À obtenir';
   return `${Math.min(Math.floor(value), achievement.goal)} / ${achievement.goal}`;
 }

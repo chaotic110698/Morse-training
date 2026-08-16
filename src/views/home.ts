@@ -1,4 +1,4 @@
-/** Page d'accueil : point d'entree et etat des lieux en un coup d'oeil. */
+/** Page d'accueil : point d'entrée et état des lieux en un coup d'œil. */
 
 import { h, formatNumber } from '../ui/dom.ts';
 import { formatDuration, formatPercent, overallAccuracy } from '../core/progress.ts';
@@ -17,38 +17,38 @@ const SHORTCUTS: Shortcut[] = [
   {
     path: '/entrainement/ecoute',
     icon: '🎧',
-    title: 'Ecoute — methode Koch',
-    text: "L'exercice central. Deux caracteres pour commencer, a pleine vitesse, puis un de plus des que vous etes fiable.",
+    title: 'Écoute — méthode Koch',
+    text: "L'exercice central. Deux caractères pour commencer, à pleine vitesse, puis un de plus dès que vous êtes fiable.",
   },
   {
     path: '/entrainement/emission',
     icon: '🔑',
-    title: 'Emission au manipulateur',
-    text: 'Manipulateur droit ou palettes iambiques, au doigt sur telephone ou au clavier sur ordinateur.',
+    title: 'Émission au manipulateur',
+    text: 'Manipulateur droit ou palettes iambiques, au doigt sur téléphone ou au clavier sur ordinateur.',
   },
   {
     path: '/entrainement/mots',
     icon: '📡',
     title: 'Mots, codes Q et indicatifs',
-    text: 'Passer du caractere isole au groupe, avec le vrai vocabulaire du trafic telegraphique.',
+    text: 'Passer du caractère isolé au groupe, avec le vrai vocabulaire du trafic télégraphique.',
   },
   {
     path: '/entrainement/lecture',
     icon: '👁️',
     title: 'Lecture visuelle',
-    text: 'Sans son, pour reviser partout. Un complement, jamais un substitut a l’ecoute.',
+    text: 'Sans son, pour réviser partout. Un complément, jamais un substitut à l’écoute.',
   },
   {
     path: '/outils/traducteur',
     icon: '🔁',
     title: 'Traducteur texte et morse',
-    text: "Traduire dans les deux sens, ecouter le resultat, et emettre en lumiere avec la lampe du telephone.",
+    text: "Traduire dans les deux sens, écouter le résultat, et émettre en lumière avec la lampe du téléphone.",
   },
   {
     path: '/apprendre/principes',
     icon: '📐',
     title: 'Comprendre le morse',
-    text: 'Les cinq regles de duree, la vitesse en mots par minute, Farnsworth et Koch expliques.',
+    text: 'Les cinq règles de durée, la vitesse en mots par minute, Farnsworth et Koch expliqués.',
   },
   {
     path: '/apprendre/histoire',
@@ -60,13 +60,13 @@ const SHORTCUTS: Shortcut[] = [
     path: '/apprendre/alphabet',
     icon: '🔤',
     title: 'Alphabet et lexique',
-    text: 'Lettres, chiffres, ponctuation, accents et signaux de procedure. Chaque ligne est ecoutable.',
+    text: 'Lettres, chiffres, ponctuation, accents et signaux de procédure. Chaque ligne est écoutable.',
   },
   {
     path: '/progression/statistiques',
     icon: '📊',
     title: 'Statistiques',
-    text: 'Precision par caractere, points faibles du moment, historique des series.',
+    text: 'Précision par caractère, points faibles du moment, historique des séries.',
   },
 ];
 
@@ -88,19 +88,19 @@ export function homeView(context: ViewContext): View {
           h('h2', { class: 'hero__title', text: started ? 'Reprenons' : 'Apprendre le morse, vraiment' }),
           h('p', { class: 'hero__text' },
             started
-              ? `Vous travaillez ${charset.length} caracteres sur ${kochMaxLevel(settings.kochOrder)}, ` +
-                `avec ${formatPercent(overallAccuracy(progress))} de precision sur ` +
-                `${formatNumber(progress.totals.attempts)} reponses. Continuez la ou vous en etiez.`
-              : "Ce site vous apprend a reconnaitre le morse a l'oreille, pas a dechiffrer des points et " +
-                'des traits sur une feuille. La difference est enorme, et elle se joue des la premiere seance : ' +
-                'on commence tout de suite a vitesse reelle, avec deux caracteres seulement.'),
+              ? `Vous travaillez ${charset.length} caractères sur ${kochMaxLevel(settings.kochOrder)}, ` +
+                `avec ${formatPercent(overallAccuracy(progress))} de précision sur ` +
+                `${formatNumber(progress.totals.attempts)} réponses. Continuez là où vous en étiez.`
+              : "Ce site vous apprend à reconnaître le morse à l'oreille, pas à déchiffrer des points et " +
+                'des traits sur une feuille. La différence est énorme, et elle se joue dès la première séance : ' +
+                'on commence tout de suite à vitesse réelle, avec deux caractères seulement.'),
           h(
             'div',
             { class: 'actions' },
             h('a', {
               class: 'btn btn--primary btn--lg',
               href: '#/entrainement/ecoute',
-              text: started ? 'Reprendre l’entrainement' : 'Commencer maintenant',
+              text: started ? 'Reprendre l’entraînement' : 'Commencer maintenant',
             }),
             h('a', {
               class: 'btn',
@@ -120,33 +120,33 @@ export function homeView(context: ViewContext): View {
               h('span', { class: 'metric__label', text: 'Niveau Koch' })),
             h('div', { class: 'metric metric--card' },
               h('span', { class: 'metric__value', text: formatPercent(overallAccuracy(progress)) }),
-              h('span', { class: 'metric__label', text: 'Precision' })),
+              h('span', { class: 'metric__label', text: 'Précision' })),
             h('div', { class: 'metric metric--card' },
               h('span', { class: 'metric__value', text: `${progress.streak.current} j` }),
-              h('span', { class: 'metric__label', text: 'Serie en cours' })),
+              h('span', { class: 'metric__label', text: 'Série en cours' })),
             h('div', { class: 'metric metric--card' },
               h('span', { class: 'metric__value', text: formatDuration(progress.totals.trainingMs) }),
-              h('span', { class: 'metric__label', text: 'Temps cumule' })),
+              h('span', { class: 'metric__label', text: 'Temps cumulé' })),
             h('div', { class: 'metric metric--card' },
               h('span', { class: 'metric__value', text: `${unlocked}` }),
-              h('span', { class: 'metric__label', text: 'Succes obtenus' })),
+              h('span', { class: 'metric__label', text: 'Succès obtenus' })),
           )
         : h(
             'section',
             { class: 'card' },
-            h('h2', { class: 'card__title', text: 'Par ou commencer' }),
+            h('h2', { class: 'card__title', text: 'Par où commencer' }),
             h(
               'ol',
               { class: 'steps' },
               h('li', {},
                 h('strong', { text: 'Lisez les principes. ' }),
-                'Dix minutes pour comprendre l’unite de temps, la vitesse en WPM et pourquoi il ne faut jamais ralentir les caracteres.'),
+                'Dix minutes pour comprendre l’unité de temps, la vitesse en WPM et pourquoi il ne faut jamais ralentir les caractères.'),
               h('li', {},
-                h('strong', { text: 'Lancez une serie d’ecoute. ' }),
-                'Deux caracteres, vingt-cinq questions. Repondez au son, sans reflechir.'),
+                h('strong', { text: 'Lancez une série d’écoute. ' }),
+                'Deux caractères, vingt-cinq questions. Répondez au son, sans réfléchir.'),
               h('li', {},
                 h('strong', { text: 'Recommencez demain. ' }),
-                'Quinze minutes par jour battent deux heures le dimanche : la reconnaissance auditive se consolide entre les seances.'),
+                'Quinze minutes par jour battent deux heures le dimanche : la reconnaissance auditive se consolide entre les séances.'),
             ),
           ),
 
@@ -169,10 +169,10 @@ export function homeView(context: ViewContext): View {
         { class: 'card card--muted' },
         h('h2', { class: 'card__title', text: 'Ce site fonctionne hors ligne' }),
         h('p', {},
-          "Tout tourne dans votre navigateur : aucun compte, aucun serveur, aucune donnee qui sort de " +
-          "l’appareil. Une fois la page visitee, elle reste disponible sans reseau, et vous pouvez " +
-          "l’installer sur l’ecran d’accueil de votre telephone comme une application. Votre progression " +
-          "s’exporte en JSON depuis la page Succes ou les Reglages."),
+          "Tout tourne dans votre navigateur : aucun compte, aucun serveur, aucune donnée qui sort de " +
+          "l’appareil. Une fois la page visitée, elle reste disponible sans réseau, et vous pouvez " +
+          "l’installer sur l’écran d’accueil de votre téléphone comme une application. Votre progression " +
+          "s’exporte en JSON depuis la page Succès ou les Réglages."),
       ),
     );
   };

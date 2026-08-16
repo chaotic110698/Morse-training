@@ -1,10 +1,10 @@
 /**
- * Exercice d'emission au manipulateur.
+ * Exercice d'émission au manipulateur.
  *
- * L'operateur produit lui-meme le morse ; l'application decode ce qu'elle
- * recoit et le compare a la consigne. Les deux ecoles de manipulateur sont
- * disponibles a tout moment, en haut de la page, sans passer par les reglages :
- * beaucoup d'operateurs pratiquent les deux et alternent selon l'humeur.
+ * L'opérateur produit lui-même le morse ; l'application décode ce qu'elle
+ * reçoit et le compare à la consigne. Les deux écoles de manipulateur sont
+ * disponibles à tout moment, en haut de la page, sans passer par les réglages :
+ * beaucoup d'opérateurs pratiquent les deux et alternent selon l'humeur.
  */
 
 import { h } from '../ui/dom.ts';
@@ -26,17 +26,17 @@ const DRILLS: Array<{ id: Drill; label: string; hint: string }> = [
   {
     id: 'free',
     label: 'Manipulation libre',
-    hint: "Aucune consigne : emettez ce que vous voulez, l'application decode. Ideal pour se chauffer le poignet et regler sa vitesse.",
+    hint: "Aucune consigne : émettez ce que vous voulez, l'application décode. Idéal pour se chauffer le poignet et régler sa vitesse.",
   },
   {
     id: 'chars',
-    label: 'Caracteres',
-    hint: "Un caractere a emettre, tire de votre jeu Koch actuel. C'est l'exercice de base pour ancrer le geste.",
+    label: 'Caractères',
+    hint: "Un caractère à émettre, tire de votre jeu Koch actuel. C'est l'exercice de base pour ancrer le geste.",
   },
   {
     id: 'words',
-    label: 'Mots et abreviations',
-    hint: "Un mot entier, avec ses silences inter-caracteres. Beaucoup plus exigeant : le rythme d'ensemble compte autant que chaque signe.",
+    label: 'Mots et abréviations',
+    hint: "Un mot entier, avec ses silences inter-caractères. Beaucoup plus exigeant : le rythme d'ensemble compte autant que chaque signe.",
   },
 ];
 
@@ -109,7 +109,7 @@ export function sendView(context: ViewContext): View {
     onFirstTouch: () => void store.audio.unlock(),
   });
 
-  // --- Selecteurs ---
+  // --- Sélecteurs ---
 
   const modeSelect = h(
     'select',
@@ -164,7 +164,7 @@ export function sendView(context: ViewContext): View {
   const listenButton = h('button', {
     class: 'btn',
     type: 'button',
-    text: 'Ecouter le modele',
+    text: 'Écouter le modèle',
     on: {
       click: () => {
         if (!target) return;
@@ -229,7 +229,7 @@ export function sendView(context: ViewContext): View {
     if (drill === 'free') {
       promptChar.textContent = '';
       promptCode.textContent = '';
-      promptHint.textContent = "Manipulez librement : ce que vous emettez s'affiche au fur et a mesure.";
+      promptHint.textContent = "Manipulez librement : ce que vous émettez s'affiche au fur et à mesure.";
       listenButton.disabled = true;
       nextButton.disabled = true;
       return;
@@ -242,8 +242,8 @@ export function sendView(context: ViewContext): View {
       .join('   ');
     const remaining = target.slice(expectedIndex);
     promptHint.textContent = remaining
-      ? `A emettre : ${remaining}`
-      : 'Consigne terminee.';
+      ? `À émettre : ${remaining}`
+      : 'Consigne terminée.';
   };
 
   const appendTape = (text: string, kind: 'ok' | 'error' | 'space' | 'free'): void => {
@@ -284,8 +284,8 @@ export function sendView(context: ViewContext): View {
       store.haptics.feedback(clean ? 'ok' : 'error');
       display.className = `display ${clean ? 'display--ok' : 'display--error'}`;
       promptHint.textContent = clean
-        ? 'Emission conforme.'
-        : `${attemptErrors} caractere(s) hors consigne. Reessayez ou passez au suivant.`;
+        ? 'Émission conforme.'
+        : `${attemptErrors} caractère(s) hors consigne. Réessayez ou passez au suivant.`;
       renderProgress();
       if (tracker.finished) finishSession();
       else window.setTimeout(() => nextPrompt(), 900);
@@ -295,9 +295,9 @@ export function sendView(context: ViewContext): View {
   };
 
   /**
-   * Repere les signaux remarquables pour les succes correspondants. Le SOS
-   * compte qu'il soit emis en un seul signal, comme le veut la procedure, ou
-   * en trois lettres separees, comme le fait naturellement un debutant.
+   * Repère les signaux remarquables pour les succès correspondants. Le SOS
+   * compte qu'il soit émis en un seul signal, comme le veut la procédure, ou
+   * en trois lettres séparées, comme le fait naturellement un débutant.
    */
   const detectSpecials = (code: string, char: string | null): void => {
     recent.push(char ?? '?');
@@ -309,7 +309,7 @@ export function sendView(context: ViewContext): View {
       store.raiseFlag('sos');
       if (!already) {
         context.toast(
-          prosign ? 'SOS emis d’un seul tenant, dans les regles.' : 'SOS emis. Bien joue.',
+          prosign ? 'SOS émis d’un seul tenant, dans les règles.' : 'SOS émis. Bien joue.',
           'success',
         );
       }
@@ -320,7 +320,7 @@ export function sendView(context: ViewContext): View {
   const renderProgress = (): void => {
     if (drill === 'free') {
       progressBar.style.width = '0%';
-      progressLabel.textContent = 'Manipulation libre — aucune serie en cours';
+      progressLabel.textContent = 'Manipulation libre — aucune série en cours';
       return;
     }
     const ratio = Math.min(1, tracker.count / tracker.target);
@@ -345,7 +345,7 @@ export function sendView(context: ViewContext): View {
       h('button', {
         class: 'btn btn--primary',
         type: 'button',
-        text: 'Nouvelle serie',
+        text: 'Nouvelle série',
         on: {
           click: () => {
             tracker = new SessionTracker(store, 'send', store.settings.sessionLength);
@@ -392,18 +392,18 @@ export function sendView(context: ViewContext): View {
       h('summary', { text: 'Manipulateur droit ou palettes ?' }),
       h('p', {},
         h('strong', { text: 'Le manipulateur droit ' }),
-        "n’a qu’un contact : c’est la duree de l’appui qui distingue le point du trait, et tout le rythme " +
-        "depend de vous. C’est exigeant, tres personnel — on reconnait un operateur a sa frappe — et c’est " +
-        "la facon historique de manipuler."),
+        "n’a qu’un contact : c’est la durée de l’appui qui distingue le point du trait, et tout le rythme " +
+        "dépend de vous. C’est exigeant, très personnel — on reconnaît un opérateur à sa frappe — et c’est " +
+        "la façon historique de manipuler."),
       h('p', {},
         h('strong', { text: 'Les palettes iambiques ' }),
-        "ont deux contacts, un pour le point et un pour le trait. L’electronique genere les elements a la " +
-        "bonne duree tant que la palette est tenue, et presser les deux ensemble alterne points et traits. " +
-        "Le mode B ajoute un element supplementaire apres un relachement en pince ; le mode A s’arrete net. " +
-        "Si vous debutez aux palettes, restez en mode A."),
+        "ont deux contacts, un pour le point et un pour le trait. L’électronique génère les éléments à la " +
+        "bonne durée tant que la palette est tenue, et presser les deux ensemble alterne points et traits. " +
+        "Le mode B ajoute un élément supplémentaire après un relâchement en pince ; le mode A s’arrête net. " +
+        "Si vous débutez aux palettes, restez en mode A."),
       h('p', {},
-        "Sur telephone, utilisez les boutons ci-dessus. Sur ordinateur, ils sont relies aux touches " +
-        "indiquees sur chaque bouton, modifiables dans les reglages."),
+        "Sur téléphone, utilisez les boutons ci-dessus. Sur ordinateur, ils sont reliés aux touches " +
+        "indiquées sur chaque bouton, modifiables dans les réglages."),
     ),
   );
 

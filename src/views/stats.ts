@@ -1,9 +1,9 @@
 /**
  * Page « Statistiques ».
  *
- * L'objectif n'est pas d'accumuler des chiffres mais de repondre a une seule
- * question : sur quoi dois-je travailler maintenant ? D'ou la carte de chaleur
- * par caractere, placee avant l'historique.
+ * L'objectif n'est pas d'accumuler des chiffres mais de répondre à une seule
+ * question : sur quoi dois-je travailler maintenant ? D'où la carte de chaleur
+ * par caractère, placée avant l'historique.
  */
 
 import { h, svg, formatNumber, formatDate } from '../ui/dom.ts';
@@ -50,19 +50,19 @@ export function statsView(context: ViewContext): View {
         h('span', { class: 'metric__label', text: 'Niveau Koch' })),
       h('div', { class: 'metric metric--card' },
         h('span', { class: 'metric__value', text: formatPercent(overallAccuracy(progress)) }),
-        h('span', { class: 'metric__label', text: 'Precision globale' })),
+        h('span', { class: 'metric__label', text: 'Précision globale' })),
       h('div', { class: 'metric metric--card' },
         h('span', { class: 'metric__value', text: formatNumber(progress.totals.attempts) }),
-        h('span', { class: 'metric__label', text: 'Reponses' })),
+        h('span', { class: 'metric__label', text: 'Réponses' })),
       h('div', { class: 'metric metric--card' },
         h('span', { class: 'metric__value', text: formatNumber(progress.totals.sent) }),
-        h('span', { class: 'metric__label', text: 'Caracteres emis' })),
+        h('span', { class: 'metric__label', text: 'Caractères émis' })),
       h('div', { class: 'metric metric--card' },
         h('span', { class: 'metric__value', text: formatDuration(progress.totals.trainingMs) }),
-        h('span', { class: 'metric__label', text: 'Temps cumule' })),
+        h('span', { class: 'metric__label', text: 'Temps cumulé' })),
       h('div', { class: 'metric metric--card' },
         h('span', { class: 'metric__value', text: `${progress.streak.current} j` }),
-        h('span', { class: 'metric__label', text: `Serie en cours (record ${progress.streak.longest})` })),
+        h('span', { class: 'metric__label', text: `Série en cours (record ${progress.streak.longest})` })),
     );
 
     // --- Carte de chaleur ---
@@ -79,8 +79,8 @@ export function statsView(context: ViewContext): View {
             class: `heat ${accuracyClass(accuracy)}`,
             title:
               attempts === 0
-                ? `${char} — jamais teste`
-                : `${char} (${prettyCode(encodeChar(char) ?? '')}) — ${formatPercent(accuracy)} sur ${attempts} reponses` +
+                ? `${char} — jamais testé`
+                : `${char} (${prettyCode(encodeChar(char) ?? '')}) — ${formatPercent(accuracy)} sur ${attempts} réponses` +
                   (speed ? `, ${(speed / 1000).toFixed(1)} s en moyenne` : ''),
           },
           h('span', { class: 'heat__char', text: char }),
@@ -89,7 +89,7 @@ export function statsView(context: ViewContext): View {
       }),
     );
 
-    // --- Activite ---
+    // --- Activité ---
     const barWidth = 100 / activity.length;
     const chart = svg(
       'svg',
@@ -98,7 +98,7 @@ export function statsView(context: ViewContext): View {
         viewBox: '0 0 100 32',
         preserveAspectRatio: 'none',
         role: 'img',
-        'aria-label': `Activite des trente derniers jours, ${progress.sessions.length} series enregistrees`,
+        'aria-label': `Activité des trente derniers jours, ${progress.sessions.length} séries enregistrées`,
       },
       ...activity.map((day, index) => {
         const height = (day.count / maxActivity) * 28;
@@ -117,7 +117,7 @@ export function statsView(context: ViewContext): View {
     const history = progress.sessions.slice(0, 15);
     const historyTable =
       history.length === 0
-        ? h('p', { class: 'empty', text: "Aucune serie enregistree pour l'instant." })
+        ? h('p', { class: 'empty', text: "Aucune série enregistrée pour l'instant." })
         : h(
             'div',
             { class: 'table-wrap' },
@@ -129,7 +129,7 @@ export function statsView(context: ViewContext): View {
                   h('th', { attrs: { scope: 'col' }, text: 'Date' }),
                   h('th', { attrs: { scope: 'col' }, text: 'Exercice' }),
                   h('th', { attrs: { scope: 'col' }, text: 'Score' }),
-                  h('th', { attrs: { scope: 'col' }, text: 'Precision' }),
+                  h('th', { attrs: { scope: 'col' }, text: 'Précision' }),
                   h('th', { attrs: { scope: 'col' }, text: 'Vitesse' }))),
               h(
                 'tbody',
@@ -151,10 +151,10 @@ export function statsView(context: ViewContext): View {
       h(
         'section',
         { class: 'card' },
-        h('h2', { class: 'card__title', text: 'Ou en est chaque caractere' }),
+        h('h2', { class: 'card__title', text: 'Où en est chaque caractère' }),
         h('p', { class: 'card__hint' },
-          `Les ${charset.length} caracteres de votre niveau actuel, dans l'ordre ${order.label}. ` +
-          'Survolez une case pour le detail.'),
+          `Les ${charset.length} caractères de votre niveau actuel, dans l'ordre ${order.label}. ` +
+          'Survolez une case pour le détail.'),
         heatmap,
         weak.length > 0
           ? h('p', { class: 'card__hint' },
@@ -162,23 +162,23 @@ export function statsView(context: ViewContext): View {
               ...weak.map((entry, index) =>
                 h('strong', { text: `${index > 0 ? ', ' : ''}${entry.char} (${formatPercent(entry.accuracy)})` }),
               ),
-              ". Le mode Ecoute propose une option pour insister dessus.")
-          : h('p', { class: 'card__hint', text: 'Pas encore assez de reponses pour degager des points faibles.' }),
+              ". Le mode Écoute propose une option pour insister dessus.")
+          : h('p', { class: 'card__hint', text: 'Pas encore assez de réponses pour dégager des points faibles.' }),
       ),
       h(
         'section',
         { class: 'card' },
-        h('h2', { class: 'card__title', text: 'Activite des trente derniers jours' }),
+        h('h2', { class: 'card__title', text: 'Activité des trente derniers jours' }),
         chart,
         h('p', { class: 'card__hint' },
-          `${formatNumber(progress.totals.sessions)} series au total, ` +
-          `${formatDuration(progress.totals.trainingMs)} d'entrainement cumule. ` +
-          'La regularite pese bien plus lourd que la duree de chaque seance.'),
+          `${formatNumber(progress.totals.sessions)} séries au total, ` +
+          `${formatDuration(progress.totals.trainingMs)} d'entraînement cumulé. ` +
+          'La régularité pèse bien plus lourd que la durée de chaque séance.'),
       ),
       h(
         'section',
         { class: 'card' },
-        h('h2', { class: 'card__title', text: 'Dernieres series' }),
+        h('h2', { class: 'card__title', text: 'Dernières séries' }),
         historyTable,
       ),
     );

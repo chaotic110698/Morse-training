@@ -1,9 +1,9 @@
 /**
- * Page « Succes ».
+ * Page « Succès ».
  *
- * Les succes sont un ressort d'assiduite, pas une monnaie : ils recompensent
- * la regularite et les paliers reellement significatifs en telegraphie
- * (vitesse propre, alphabet complet, premiere emission), et jamais le simple
+ * Les succès sont un ressort d'assiduité, pas une monnaie : ils récompensent
+ * la régularité et les paliers réellement significatifs en télégraphie
+ * (vitesse propre, alphabet complet, première émission), et jamais le simple
  * fait de cliquer.
  */
 
@@ -24,7 +24,7 @@ export function achievementsView(context: ViewContext): View {
     const file = buildSaveFile(store.settings, store.progress);
     const stamp = new Date().toISOString().slice(0, 10);
     downloadText(`morse-training-${stamp}.json`, JSON.stringify(file, null, 2));
-    context.toast('Sauvegarde exportee.', 'success');
+    context.toast('Sauvegarde exportée.', 'success');
   };
 
   const importInput = h('input', {
@@ -43,7 +43,7 @@ export function achievementsView(context: ViewContext): View {
             return;
           }
           store.replaceState(result.settings, result.progress);
-          context.toast('Sauvegarde importee.', 'success');
+          context.toast('Sauvegarde importée.', 'success');
         });
         reader.readAsText(file);
         input.value = '';
@@ -104,10 +104,10 @@ export function achievementsView(context: ViewContext): View {
         'div',
         { class: 'hero hero--compact' },
         h('div', {},
-          h('h2', { class: 'hero__title', text: `${unlocked} succes sur ${statuses.length}` }),
+          h('h2', { class: 'hero__title', text: `${unlocked} succès sur ${statuses.length}` }),
           h('p', { class: 'hero__text' },
-            "Tout est stocke dans ce navigateur uniquement. Exportez un fichier JSON pour conserver votre " +
-            "progression ou la transferer sur un autre appareil.")),
+            "Tout est stocké dans ce navigateur uniquement. Exportez un fichier JSON pour conserver votre " +
+            "progression ou la transférer sur un autre appareil.")),
         h(
           'div',
           { class: 'actions' },

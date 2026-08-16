@@ -1,9 +1,9 @@
 /**
  * Page « Alphabet et lexique ».
  *
- * Reference complete du code, ecoutable ligne a ligne. Le tableau est un outil
- * de consultation : c'est en ecoutant, pas en lisant, qu'on apprend le morse,
- * d'ou le bouton de lecture sur chaque entree.
+ * Référence complète du code, écoutable ligne à ligne. Le tableau est un outil
+ * de consultation : c'est en écoutant, pas en lisant, qu'on apprend le morse,
+ * d'où le bouton de lecture sur chaque entrée.
  */
 
 import { h } from '../ui/dom.ts';
@@ -40,21 +40,21 @@ const GROUPS: Group[] = [
     id: 'digits',
     title: 'Chiffres',
     description:
-      "Tous longs de cinq elements, construits par symetrie : le 1 commence par un point et finit par quatre traits, le 9 fait l'inverse.",
+      "Tous longs de cinq éléments, construits par symétrie : le 1 commence par un point et finit par quatre traits, le 9 fait l'inverse.",
     entries: toEntries(DIGITS),
   },
   {
     id: 'punctuation',
     title: 'Ponctuation et signes',
     description:
-      "Plus longs et moins frequents. En trafic reel, seuls quelques-uns servent vraiment : le point, la virgule, le point d'interrogation et la barre oblique.",
+      "Plus longs et moins fréquents. En trafic réel, seuls quelques-uns servent vraiment : le point, la virgule, le point d'interrogation et la barre oblique.",
     entries: toEntries(PUNCTUATION),
   },
   {
     id: 'prosigns',
-    title: 'Signaux de procedure',
+    title: 'Signaux de procédure',
     description:
-      "Emis d'un seul tenant, sans silence interne : ce sont des signaux a part entiere, pas des suites de lettres.",
+      "Émis d'un seul tenant, sans silence interne : ce sont des signaux à part entière, pas des suites de lettres.",
     entries: PROSIGNS.map((prosign) => ({
       label: prosign.name,
       code: prosign.code,
@@ -63,9 +63,9 @@ const GROUPS: Group[] = [
   },
   {
     id: 'extended',
-    title: 'Caracteres accentues',
+    title: 'Caractères accentués',
     description:
-      "Normalises par l'Union internationale des telecommunications mais tres peu utilises en pratique. Ils ne font pas partie des jeux d'entrainement.",
+      "Normalises par l'Union internationale des télécommunications mais très peu utilisés en pratique. Ils ne font pas partie des jeux d'entraînement.",
     entries: toEntries(EXTENDED),
   },
 ];
@@ -81,8 +81,8 @@ export function alphabetView(context: ViewContext): View {
 
   const playEntry = (entry: Entry): void => {
     player.stop();
-    // Les prosignes n'ont pas de silence inter-caractere : on developpe donc
-    // le code d'un bloc plutot que de passer par la traduction d'un texte.
+    // Les prosignes n'ont pas de silence inter-caractère : on développe donc
+    // le code d'un bloc plutôt que de passer par la traduction d'un texte.
     const elements = elementsForCode(entry.code, store.timing, entry.label, 0);
     void player.playElements(elements);
   };
@@ -119,7 +119,7 @@ export function alphabetView(context: ViewContext): View {
                   {
                     class: 'lexicon__card',
                     type: 'button',
-                    attrs: { 'aria-label': `Ecouter ${entry.label}` },
+                    attrs: { 'aria-label': `Écouter ${entry.label}` },
                     on: { click: () => playEntry(entry) },
                   },
                   h('span', { class: 'lexicon__char', text: entry.label }),
@@ -137,7 +137,7 @@ export function alphabetView(context: ViewContext): View {
     }
 
     if (blocks.length === 0) {
-      blocks.push(h('p', { class: 'empty', text: `Aucun resultat pour « ${filter} ».` }));
+      blocks.push(h('p', { class: 'empty', text: `Aucun résultat pour « ${filter} ».` }));
     }
     container.replaceChildren(...blocks);
   };
@@ -167,7 +167,7 @@ export function alphabetView(context: ViewContext): View {
         },
       },
     }),
-    h('span', { text: 'Afficher le rythme parle' }),
+    h('span', { text: 'Afficher le rythme parlé' }),
   );
 
   render();
@@ -179,9 +179,9 @@ export function alphabetView(context: ViewContext): View {
       'article',
       { class: 'prose prose--tight' },
       h('p', { class: 'prose__lead' },
-        "Le code complet, ecoutable d’un clic. Utilisez cette page comme une reference : pour apprendre, " +
-        "passez par le mode Ecoute, qui vous fait reconnaitre les caracteres au son plutot que de les " +
-        "memoriser sous forme de points et de traits."),
+        "Le code complet, écoutable d’un clic. Utilisez cette page comme une référence : pour apprendre, " +
+        "passez par le mode Écoute, qui vous fait reconnaître les caractères au son plutôt que de les " +
+        "mémoriser sous forme de points et de traits."),
     ),
     h('div', { class: 'toolbar' }, search, spokenToggle, lamp.element),
     container,

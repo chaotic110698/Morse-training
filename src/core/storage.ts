@@ -2,9 +2,9 @@
  * Persistance locale.
  *
  * Tout tient dans le `localStorage` du navigateur : aucun compte, aucun
- * serveur, aucune donnee qui sort de l'appareil. En contrepartie la
- * progression est liee au navigateur, d'ou l'export et l'import JSON qui
- * permettent de la sauvegarder ou de la transferer sur un autre appareil.
+ * serveur, aucune donnée qui sort de l'appareil. En contrepartie la
+ * progression est liée au navigateur, d'où l'export et l'import JSON qui
+ * permettent de la sauvegarder ou de la transférer sur un autre appareil.
  */
 
 import { DEFAULT_SETTINGS, normalizeSettings, type Settings } from './settings.ts';
@@ -27,7 +27,7 @@ interface Persisted {
   progress: Partial<Progress>;
 }
 
-/** Vrai si le stockage local est utilisable (navigation privee, quotas, etc.). */
+/** Vrai si le stockage local est utilisable (navigation privée, quotas, etc.). */
 export function storageAvailable(): boolean {
   try {
     const probe = '__morse_probe__';
@@ -83,7 +83,7 @@ export function loadState(): { settings: Settings; progress: Progress } {
       progress: normalizeProgress(parsed.progress),
     };
   } catch {
-    // Donnees corrompues : on repart proprement plutot que de bloquer le site.
+    // Données corrompues : on repart proprement plutôt que de bloquer le site.
     return { settings: { ...DEFAULT_SETTINGS }, progress: emptyProgress() };
   }
 }
@@ -103,7 +103,7 @@ export function clearState(): void {
   try {
     window.localStorage.removeItem(STORAGE_KEY);
   } catch {
-    // Rien a faire : l'appelant reinitialise deja l'etat en memoire.
+    // Rien à faire : l'appelant réinitialise déjà l'état en mémoire.
   }
 }
 
@@ -124,7 +124,7 @@ export interface ImportResult {
   progress?: Progress;
 }
 
-/** Relit un fichier d'export et le valide avant de le proposer a l'application. */
+/** Relit un fichier d'export et le valide avant de le proposer à l'application. */
 export function parseSaveFile(text: string): ImportResult {
   let parsed: unknown;
   try {
@@ -133,7 +133,7 @@ export function parseSaveFile(text: string): ImportResult {
     return { ok: false, message: "Le fichier n'est pas du JSON valide." };
   }
   if (!parsed || typeof parsed !== 'object') {
-    return { ok: false, message: 'Le fichier est vide ou mal forme.' };
+    return { ok: false, message: 'Le fichier est vide ou mal formé.' };
   }
   const file = parsed as Partial<SaveFile>;
   if (file.app !== 'morse-training') {
@@ -142,18 +142,18 @@ export function parseSaveFile(text: string): ImportResult {
   if (typeof file.version !== 'number' || file.version > SCHEMA_VERSION) {
     return {
       ok: false,
-      message: "Ce fichier a ete cree par une version plus recente de l'application.",
+      message: "Ce fichier a été créé par une version plus récente de l'application.",
     };
   }
   return {
     ok: true,
-    message: 'Sauvegarde importee.',
+    message: 'Sauvegarde importée.',
     settings: normalizeSettings(file.settings),
     progress: normalizeProgress(file.progress),
   };
 }
 
-/** Declenche le telechargement d'un fichier texte cote navigateur. */
+/** Déclenche le téléchargement d'un fichier texte côté navigateur. */
 export function downloadText(filename: string, text: string, mime = 'application/json'): void {
   const blob = new Blob([text], { type: `${mime};charset=utf-8` });
   const url = URL.createObjectURL(blob);
@@ -163,6 +163,6 @@ export function downloadText(filename: string, text: string, mime = 'application
   document.body.append(anchor);
   anchor.click();
   anchor.remove();
-  // Laisse au navigateur le temps de demarrer le telechargement.
+  // Laisse au navigateur le temps de démarrer le téléchargement.
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

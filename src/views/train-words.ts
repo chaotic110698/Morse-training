@@ -1,9 +1,9 @@
 /**
- * Exercice de copie de mots, abreviations, codes Q et indicatifs.
+ * Exercice de copie de mots, abréviations, codes Q et indicatifs.
  *
- * Passer du caractere isole au groupe est la vraie difficulte du morse : il
- * faut retenir le debut pendant qu'arrive la suite. Les indicatifs et les
- * groupes aleatoires sont volontairement proposes, car ils interdisent toute
+ * Passer du caractère isolé au groupe est la vraie difficulté du morse : il
+ * faut retenir le début pendant qu'arrive la suite. Les indicatifs et les
+ * groupes aléatoires sont volontairement proposés, car ils interdisent toute
  * anticipation par le sens.
  */
 
@@ -36,12 +36,12 @@ export function wordsView(context: ViewContext): View {
     class: 'input input--answer',
     type: 'text',
     attrs: {
-      placeholder: 'Ce que vous avez copie',
+      placeholder: 'Ce que vous avez copié',
       autocomplete: 'off',
       autocorrect: 'off',
       autocapitalize: 'characters',
       spellcheck: 'false',
-      'aria-label': 'Votre reponse',
+      'aria-label': 'Votre réponse',
     },
     on: {
       keydown: (event) => {
@@ -58,7 +58,7 @@ export function wordsView(context: ViewContext): View {
     'select',
     {
       class: 'select',
-      attrs: { 'aria-label': "Jeu d'entrainement" },
+      attrs: { 'aria-label': "Jeu d'entraînement" },
       on: {
         change: (event) => {
           setId = (event.target as HTMLSelectElement).value;
@@ -74,7 +74,7 @@ export function wordsView(context: ViewContext): View {
   const playButton = h('button', {
     class: 'btn btn--primary',
     type: 'button',
-    text: 'Ecouter',
+    text: 'Écouter',
     on: { click: () => playCurrent() },
   });
 
@@ -106,7 +106,7 @@ export function wordsView(context: ViewContext): View {
   const renderIdle = (): void => {
     display.className = 'display display--word';
     display.replaceChildren(
-      h('p', { class: 'display__hint', text: 'Ecoutez, puis saisissez ce que vous avez copie.' }),
+      h('p', { class: 'display__hint', text: 'Écoutez, puis saisissez ce que vous avez copié.' }),
     );
   };
 
@@ -190,7 +190,7 @@ export function wordsView(context: ViewContext): View {
         { class: 'summary__scores' },
         h('div', { class: 'metric' },
           h('span', { class: 'metric__value', text: formatPercent(tracker.accuracy) }),
-          h('span', { class: 'metric__label', text: 'Precision' })),
+          h('span', { class: 'metric__label', text: 'Précision' })),
         h('div', { class: 'metric' },
           h('span', { class: 'metric__value', text: `${tracker.correct}/${tracker.count}` }),
           h('span', { class: 'metric__label', text: 'Copies exactes' })),
@@ -202,15 +202,15 @@ export function wordsView(context: ViewContext): View {
             ...misses.map((item) =>
               h('li', {},
                 h('strong', { text: item.char }),
-                ' — vous avez ecrit ',
+                ' — vous avez écrit ',
                 h('em', { text: item.answer ?? 'rien' })),
             ),
           )
-        : h('p', { class: 'summary__misses summary__misses--clean', text: 'Copie parfaite sur toute la serie.' }),
+        : h('p', { class: 'summary__misses summary__misses--clean', text: 'Copie parfaite sur toute la série.' }),
       h('button', {
         class: 'btn btn--primary',
         type: 'button',
-        text: 'Nouvelle serie',
+        text: 'Nouvelle série',
         on: { click: () => restart() },
       }),
     );
@@ -247,15 +247,15 @@ export function wordsView(context: ViewContext): View {
       { class: 'help' },
       h('summary', { text: 'Comment aborder les groupes' }),
       h('p', {},
-        "N’essayez pas de tout retenir en tete : notez au fur et a mesure, comme le font les operateurs. " +
-        "La copie sur papier, ou ici dans le champ de saisie, libere la memoire de travail pour ecouter " +
+        "N’essayez pas de tout retenir en tête : notez au fur et à mesure, comme le font les opérateurs. " +
+        "La copie sur papier, ou ici dans le champ de saisie, libère la mémoire de travail pour écouter " +
         "la suite."),
       h('p', {},
-        "Si vous perdez un caractere, laissez-le tomber et continuez. Un operateur experimente perd des " +
-        "caracteres en permanence ; ce qui compte est de ne pas perdre le fil apres."),
+        "Si vous perdez un caractère, laissez-le tomber et continuez. Un opérateur expérimenté perd des " +
+        "caractères en permanence ; ce qui compte est de ne pas perdre le fil après."),
       h('p', {},
-        "Les indicatifs et les groupes aleatoires sont les exercices les plus durs, et les plus formateurs : " +
-        "aucun mot ne peut etre devine, chaque caractere doit etre reellement entendu."),
+        "Les indicatifs et les groupes aléatoires sont les exercices les plus durs, et les plus formateurs : " +
+        "aucun mot ne peut être deviné, chaque caractère doit être réellement entendu."),
     ),
   );
 

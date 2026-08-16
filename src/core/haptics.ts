@@ -1,11 +1,11 @@
 /**
  * Retour haptique via l'API Vibration.
  *
- * Support reel : Chrome, Edge, Firefox et Samsung Internet sous Android le
- * proposent. Safari sur iOS ne l'expose pas, et aucune API web ne donne acces
+ * Support réel : Chrome, Edge, Firefox et Samsung Internet sous Android le
+ * proposent. Safari sur iOS ne l'expose pas, et aucune API web ne donne accès
  * au moteur haptique fin d'un iPhone : sur iOS le retour tactile est donc
- * silencieusement indisponible. La detection ci-dessous permet a l'interface
- * d'expliquer la situation plutot que de proposer un reglage sans effet.
+ * silencieusement indisponible. La détection ci-dessous permet à l'interface
+ * d'expliquer la situation plutôt que de proposer un réglage sans effet.
  */
 
 import type { TimedElement } from './timing.ts';
@@ -28,16 +28,16 @@ export class Haptics {
     return this.enabled && hapticsSupported();
   }
 
-  /** Vibration ponctuelle d'une duree donnee, en millisecondes. */
+  /** Vibration ponctuelle d'une durée donnée, en millisecondes. */
   pulse(ms: number): void {
     if (!this.available) return;
     navigator.vibrate(Math.max(1, Math.round(ms)));
   }
 
   /**
-   * Joue une sequence entiere d'un seul appel. Confier le motif complet au
-   * systeme est nettement plus precis que declencher une vibration par
-   * element depuis JavaScript, car l'ordonnancement est fait par l'OS.
+   * Joue une séquence entière d'un seul appel. Confier le motif complet au
+   * système est nettement plus précis que déclencher une vibration par
+   * élément depuis JavaScript, car l'ordonnancement est fait par l'OS.
    */
   playSequence(elements: TimedElement[]): void {
     if (!this.available) return;
@@ -46,10 +46,10 @@ export class Haptics {
   }
 
   /**
-   * Maintient la vibration jusqu'a `release()`. Au manipulateur droit la duree
-   * de l'appui n'est pas connue a l'avance : on demande donc une vibration
-   * longue qu'on interrompt au relachement, ce qui reproduit exactement la
-   * duree du contact.
+   * Maintient la vibration jusqu'à `release()`. Au manipulateur droit la durée
+   * de l'appui n'est pas connue à l'avance : on demande donc une vibration
+   * longue qu'on interrompt au relâchement, ce qui reproduit exactement la
+   * durée du contact.
    */
   hold(maxMs = 4000): void {
     if (!this.available) return;

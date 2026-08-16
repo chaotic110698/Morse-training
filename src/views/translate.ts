@@ -1,9 +1,9 @@
 /**
- * Traducteur reversible texte <-> morse.
+ * Traducteur réversible texte <-> morse.
  *
- * Les deux champs sont lies : ecrire dans l'un met l'autre a jour. La lecture
+ * Les deux champs sont liés : écrire dans l'un met l'autre à jour. La lecture
  * part toujours du champ que l'on vient de modifier, de sorte qu'une notation
- * morse saisie a la main est jouee telle quelle, meme si elle ne correspond a
+ * morse saisie à la main est jouée telle quelle, même si elle ne correspond à
  * aucune lettre connue.
  */
 
@@ -15,7 +15,7 @@ import { Torch, torchPossiblySupported } from '../core/torch.ts';
 import { sequenceDuration } from '../core/timing.ts';
 import type { View, ViewContext } from '../ui/router.ts';
 
-/** Au dela de cette vitesse, la lampe d'un telephone ne suit plus le rythme. */
+/** Au-delà de cette vitesse, la lampe d'un téléphone ne suit plus le rythme. */
 const TORCH_MAX_WPM = 10;
 
 export function translateView(context: ViewContext): View {
@@ -29,11 +29,11 @@ export function translateView(context: ViewContext): View {
   let torchEnabled = false;
   let screenFlashEnabled = false;
 
-  // --- Flash d'ecran ---
+  // --- Flash d'écran ---
 
-  // Un voile plein ecran, cree une seule fois et seulement s'il est demande :
-  // il porte un avertissement, car un clignotement rapide plein ecran est
-  // penible et deconseille aux personnes photosensibles.
+  // Un voile plein écran, créé une seule fois et seulement s'il est demandé :
+  // il porte un avertissement, car un clignotement rapide plein écran est
+  // pénible et déconseillé aux personnes photosensibles.
   const flashLayer = h('div', { class: 'flash-layer', attrs: { 'aria-hidden': 'true' } });
 
   // --- Champs ---
@@ -42,7 +42,7 @@ export function translateView(context: ViewContext): View {
     class: 'input translate__field',
     attrs: {
       rows: 5,
-      placeholder: 'Ecrivez ici… par exemple : CQ DE F5ABC',
+      placeholder: 'Écrivez ici… par exemple : CQ DE F5ABC',
       'aria-label': 'Texte en clair',
       autocapitalize: 'characters',
       spellcheck: 'false',
@@ -87,7 +87,7 @@ export function translateView(context: ViewContext): View {
   const renderStrip = (activeIndex = -1): void => {
     const text = textArea.value.toUpperCase();
     if (!text.trim()) {
-      strip.replaceChildren(h('span', { class: 'translate__strip-empty', text: 'Rien a lire pour le moment.' }));
+      strip.replaceChildren(h('span', { class: 'translate__strip-empty', text: 'Rien à lire pour le moment.' }));
       return;
     }
     strip.replaceChildren(
@@ -116,9 +116,9 @@ export function translateView(context: ViewContext): View {
     );
     const uniqueUnknown = [...new Set(unknown)];
     meta.textContent = seconds
-      ? `Duree a l'emission : ${seconds < 60 ? `${seconds.toFixed(1)} s` : `${Math.floor(seconds / 60)} min ${Math.round(seconds % 60)} s`}` +
+      ? `Durée à l'émission : ${seconds < 60 ? `${seconds.toFixed(1)} s` : `${Math.floor(seconds / 60)} min ${Math.round(seconds % 60)} s`}` +
         ` · ${store.settings.charWpm} WPM` +
-        (uniqueUnknown.length > 0 ? ` · caracteres sans code morse ignores : ${uniqueUnknown.join(' ')}` : '')
+        (uniqueUnknown.length > 0 ? ` · caractères sans code morse ignorés : ${uniqueUnknown.join(' ')}` : '')
       : '';
     playButton.disabled = elements.length === 0;
   };
@@ -128,7 +128,7 @@ export function translateView(context: ViewContext): View {
   const playButton = h('button', {
     class: 'btn btn--primary btn--lg',
     type: 'button',
-    text: 'Emettre',
+    text: 'Émettre',
     on: { click: () => (player.playing ? stop() : void play()) },
   });
 
@@ -136,14 +136,14 @@ export function translateView(context: ViewContext): View {
     player.stop();
     torch.set(false);
     flashLayer.classList.remove('is-lit');
-    playButton.textContent = 'Emettre';
+    playButton.textContent = 'Émettre';
     renderStrip();
   };
 
   const play = async (): Promise<void> => {
     const elements = currentElements();
     if (elements.length === 0) return;
-    playButton.textContent = 'Arreter';
+    playButton.textContent = 'Arrêter';
 
     await player.playElements(elements, {
       onChar: (index) => renderStrip(index),
@@ -154,7 +154,7 @@ export function translateView(context: ViewContext): View {
       onEnd: () => {
         torch.set(false);
         flashLayer.classList.remove('is-lit');
-        playButton.textContent = 'Emettre';
+        playButton.textContent = 'Émettre';
         renderStrip();
       },
     });
@@ -179,7 +179,7 @@ export function translateView(context: ViewContext): View {
         if (!result.ok) {
           input.checked = false;
           torchEnabled = false;
-          context.toast(result.message ?? "La lampe n'a pas pu etre activee.", 'error');
+          context.toast(result.message ?? "La lampe n'a pas pu être activée.", 'error');
           renderTorchNote(result.message);
           return;
         }
@@ -187,7 +187,7 @@ export function translateView(context: ViewContext): View {
         renderTorchNote();
         if (store.settings.charWpm > TORCH_MAX_WPM) {
           context.toast(
-            `A ${store.settings.charWpm} WPM la lampe ne suivra pas. Descendez vers ${TORCH_MAX_WPM} WPM.`,
+            `À ${store.settings.charWpm} WPM la lampe ne suivra pas. Descendez vers ${TORCH_MAX_WPM} WPM.`,
             'info',
           );
         }
@@ -202,12 +202,12 @@ export function translateView(context: ViewContext): View {
     }
     if (!torchPossiblySupported()) {
       torchNote.textContent =
-        "Ce navigateur ne permet pas de piloter la lampe. C'est notamment le cas de Safari sur iPhone et iPad : aucune interface web n'y donne acces au flash. Le flash d'ecran ci-dessous reste disponible.";
+        "Ce navigateur ne permet pas de piloter la lampe. C'est notamment le cas de Safari sur iPhone et iPad : aucune interface web n'y donne accès au flash. Le flash d'écran ci-dessous reste disponible.";
       return;
     }
     torchNote.textContent = torchEnabled
-      ? `Lampe prete. La camera arriere reste ouverte tant que l'option est active. Au dela de ${TORCH_MAX_WPM} mots par minute, la commutation du flash ne suit plus : baissez la vitesse pour un signal lisible.`
-      : `Passe par la camera arriere, seul chemin qu'offre le web vers le flash : l'autorisation camera sera demandee. A utiliser vers ${TORCH_MAX_WPM} mots par minute au plus.`;
+      ? `Lampe prête. La caméra arrière reste ouverte tant que l'option est active. Au-delà de ${TORCH_MAX_WPM} mots par minute, la commutation du flash ne suit plus : baissez la vitesse pour un signal lisible.`
+      : `Passe par la caméra arrière, seul chemin qu'offre le web vers le flash : l'autorisation caméra sera demandée. À utiliser vers ${TORCH_MAX_WPM} mots par minute au plus.`;
   };
 
   const screenFlashInput = h('input', {
@@ -240,7 +240,7 @@ export function translateView(context: ViewContext): View {
             await navigator.clipboard.writeText(value);
             context.toast('Copie dans le presse-papiers.', 'success');
           } catch {
-            context.toast("La copie automatique a ete refusee par le navigateur.", 'error');
+            context.toast("La copie automatique a été refusée par le navigateur.", 'error');
           }
         },
       },
@@ -274,9 +274,9 @@ export function translateView(context: ViewContext): View {
       'article',
       { class: 'prose prose--tight' },
       h('p', { class: 'prose__lead' },
-        "Traduisez dans les deux sens : ecrivez du texte pour obtenir le morse, ou collez du morse pour " +
-        "le relire en clair. Le resultat s'ecoute, s'affiche sur la diode, et peut piloter la lampe du " +
-        "telephone pour emettre reellement en lumiere."),
+        "Traduisez dans les deux sens : écrivez du texte pour obtenir le morse, ou collez du morse pour " +
+        "le relire en clair. Le résultat s'écoute, s'affiche sur la diode, et peut piloter la lampe du " +
+        "téléphone pour émettre réellement en lumière."),
     ),
 
     h(
@@ -338,28 +338,28 @@ export function translateView(context: ViewContext): View {
       h('div', { class: 'slider-row' }, speedSlider,
         h('output', { class: 'slider__value', text: `${store.settings.charWpm} WPM` })),
       h('p', { class: 'field__hint' },
-        "Ce curseur regle la vitesse des caracteres et la vitesse globale ensemble, ce qui convient a " +
-        "une emission reelle. Pour dissocier les deux, comme en apprentissage, passez par les reglages."),
+        "Ce curseur règle la vitesse des caractères et la vitesse globale ensemble, ce qui convient à " +
+        "une émission réelle. Pour dissocier les deux, comme en apprentissage, passez par les réglages."),
     ),
 
     h(
       'section',
       { class: 'card' },
-      h('h2', { class: 'card__title', text: 'Emettre en lumiere' }),
+      h('h2', { class: 'card__title', text: 'Émettre en lumière' }),
       h('div', { class: 'field' },
         h('div', { class: 'field__label', text: 'Lampe torche' },),
         h('div', { class: 'field__control' },
-          h('label', { class: 'switch' }, torchInput, h('span', { text: 'Piloter le flash du telephone' }))),
+          h('label', { class: 'switch' }, torchInput, h('span', { text: 'Piloter le flash du téléphone' }))),
         torchNote),
       h('div', { class: 'field' },
-        h('div', { class: 'field__label', text: "Flash de l'ecran" }),
+        h('div', { class: 'field__label', text: "Flash de l'écran" }),
         h('div', { class: 'field__control' },
           h('label', { class: 'switch' }, screenFlashInput,
-            h('span', { text: "Utiliser l'ecran comme lampe" }))),
+            h('span', { text: "Utiliser l'écran comme lampe" }))),
         h('p', { class: 'field__hint' },
-          "Solution de repli quand la lampe n'est pas pilotable, notamment sur iPhone. L'ecran entier " +
-          "s'allume au rythme du signal : c'est efficace de nuit, mais eprouvant pour l'oeil et " +
-          "deconseille aux personnes photosensibles. A reserver a une emission courte, a vitesse lente.")),
+          "Solution de repli quand la lampe n'est pas pilotable, notamment sur iPhone. L'écran entier " +
+          "s'allume au rythme du signal : c'est efficace de nuit, mais éprouvant pour l'œil et " +
+          "déconseillé aux personnes photosensibles. À réserver à une émission courte, à vitesse lente.")),
     ),
 
     h(
@@ -367,15 +367,15 @@ export function translateView(context: ViewContext): View {
       { class: 'help' },
       h('summary', { text: 'Notes sur la traduction' }),
       h('p', {},
-        "Le morse ne distingue pas majuscules et minuscules : tout est ramene en majuscules. Les " +
-        "caracteres sans equivalent, comme les emoji, sont ignores et signales sous les champs."),
+        "Le morse ne distingue pas majuscules et minuscules : tout est ramène en majuscules. Les " +
+        "caractères sans équivalent, comme les emoji, sont ignorés et signalés sous les champs."),
       h('p', {},
-        "Dans le champ morse, un espace separe deux caracteres et une barre oblique separe deux mots. " +
-        "Les points typographiques et les tirets longs sont acceptes et convertis automatiquement, ce qui " +
-        "permet de coller du morse recopie depuis a peu pres n'importe quelle source."),
+        "Dans le champ morse, un espace sépare deux caractères et une barre oblique sépare deux mots. " +
+        "Les points typographiques et les tirets longs sont acceptés et convertis automatiquement, ce qui " +
+        "permet de coller du morse recopié depuis à peu près n'importe quelle source."),
       h('p', {},
-        "Un code inconnu tape a la main sera quand meme emis tel quel : le traducteur joue fidelement ce " +
-        "que vous avez ecrit, il ne corrige pas."),
+        "Un code inconnu tape à la main sera quand même émis tel quel : le traducteur joue fidèlement ce " +
+        "que vous avez écrit, il ne corrige pas."),
     ),
   );
 
