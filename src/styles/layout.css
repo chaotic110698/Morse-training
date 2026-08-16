@@ -154,6 +154,7 @@
   padding: var(--space-3) var(--space-4);
   padding-top: max(var(--space-3), env(safe-area-inset-top));
   background: color-mix(in srgb, var(--bg-elevated) 85%, transparent);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
   position: sticky;
@@ -277,6 +278,7 @@
     inset: 0;
     z-index: 30;
     background: rgb(0 0 0 / 0.5);
+    -webkit-backdrop-filter: blur(2px);
     backdrop-filter: blur(2px);
   }
 
