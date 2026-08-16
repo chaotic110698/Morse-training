@@ -261,6 +261,7 @@ export function settingsView(context: ViewContext): View {
             ...(
               [
                 ['straight', 'Manipulateur droit — une seule touche'],
+                ['paddle-single', 'Palettes — un élément par appui'],
                 ['iambic-a', 'Palettes iambiques — mode A'],
                 ['iambic-b', 'Palettes iambiques — mode B'],
               ] as const
@@ -268,7 +269,7 @@ export function settingsView(context: ViewContext): View {
               h('option', { value, text: label, attrs: { selected: s.keyerMode === value } }),
             ),
           ),
-          'Au manipulateur droit, la durée de l’appui distingue le point du trait. Aux palettes, une touche donne les points, l’autre les traits, et l’électronique cale les durées. Le mode B ajoute un élément après un relâchement en pince ; commencez par le mode A.',
+          "Au manipulateur droit, la durée de l’appui distingue le point du trait. Aux palettes, une touche donne les points, l’autre les traits, et l’électronique cale les durées. « Un élément par appui » ne répète rien tant que la touche reste enfoncée : c’est le réglage à choisir si les éléments partent en rafale avant que vous ayez le temps de relâcher. Les modes iambiques enchaînent au maintien, comme un vrai manipulateur ; le mode B ajoute un élément après un relâchement en pince, commencez donc par le mode A.",
         ),
         field(
           s.keyerMode === 'straight' ? 'Touche du manipulateur' : 'Touche des points',

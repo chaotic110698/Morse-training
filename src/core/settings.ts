@@ -15,7 +15,7 @@ export interface Settings {
   waveform: Waveform;
 
   /** Type de manipulateur pour les exercices d'émission. */
-  keyerMode: 'straight' | 'iambic-a' | 'iambic-b';
+  keyerMode: 'straight' | 'paddle-single' | 'iambic-a' | 'iambic-b';
   /** Ajustement automatique de la frontière point/trait à la frappe réelle. */
   adaptiveKeying: boolean;
   /** Inverse les deux palettes, pour les gauchers. */
@@ -99,7 +99,7 @@ export function normalizeSettings(input: Partial<Settings> | null | undefined): 
     volume: clamp(raw.volume, 0, 1),
     rampMs: Math.round(clamp(raw.rampMs, 1, 20)),
     waveform: WAVEFORMS.includes(raw.waveform) ? raw.waveform : 'sine',
-    keyerMode: (['straight', 'iambic-a', 'iambic-b'] as const).includes(raw.keyerMode)
+    keyerMode: (['straight', 'paddle-single', 'iambic-a', 'iambic-b'] as const).includes(raw.keyerMode)
       ? raw.keyerMode
       : 'straight',
     theme: THEMES.includes(raw.theme) ? raw.theme : 'auto',

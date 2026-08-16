@@ -23,8 +23,10 @@ localement.
   vitesse, et on en ajoute un dès que la reconnaissance dépasse le seuil. Grille
   de réponse tactile sur téléphone, clavier physique sur ordinateur, option de
   révision ciblée sur les caractères les plus ratés.
-- *Émission* — manipulateur droit (une touche, la durée de l'appui fait le
-  point ou le trait) ou palettes iambiques en mode A ou B. Au doigt sur
+- *Émission* — trois manipulateurs : droit (une touche, la durée de l'appui
+  fait le point ou le trait), palettes **un élément par appui** — qui
+  n'enchaînent rien tant que la touche reste enfoncée — et palettes iambiques
+  en mode A ou B. Au doigt sur
   téléphone et sur tablette, au clavier sur ordinateur comme sur iPad, avec
   touches réassignables. Une option de **frappe indulgente** retire toute
   contrainte de temps : chaque élément est comparé au code attendu, une pause
@@ -68,6 +70,17 @@ elles ne peuvent donc pas dériver l'une par rapport à l'autre.
   piste vidéo de la caméra arrière. La commutation du flash prend plusieurs
   dizaines de millisecondes : au-delà d'une dizaine de mots par minute elle ne
   suit plus, ce que l'interface annonce.
+
+## Pourquoi un mode « un élément par appui »
+
+Un manipulateur iambique enchaîne les éléments tant que la palette est tenue :
+c'est sa raison d'être. Mais à 20 mots par minute, un point et le silence qui
+le suit durent 120 ms à eux deux — moins qu'un relâchement de touche. Un
+débutant obtient donc trois points là où il en voulait un, surtout au clavier.
+Le mode « un élément par appui » produit exactement un élément par appui, quelle
+que soit sa durée, et met les appuis en file pour qu'on puisse frapper plus vite
+que la vitesse réglée sans rien perdre. Les modes iambiques restent disponibles
+pour qui veut travailler le geste réel.
 
 ## Compatibilité clavier
 

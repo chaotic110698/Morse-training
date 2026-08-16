@@ -129,6 +129,7 @@ export function sendView(context: ViewContext): View {
       },
     },
     h('option', { value: 'straight', text: 'Manipulateur droit (une touche)' }),
+    h('option', { value: 'paddle-single', text: 'Palettes — un élément par appui' }),
     h('option', { value: 'iambic-a', text: 'Palettes iambiques — mode A' }),
     h('option', { value: 'iambic-b', text: 'Palettes iambiques — mode B' }),
   );
@@ -507,6 +508,14 @@ export function sendView(context: ViewContext): View {
         "n’a qu’un contact : c’est la durée de l’appui qui distingue le point du trait, et tout le rythme " +
         "dépend de vous. C’est exigeant, très personnel — on reconnaît un opérateur à sa frappe — et c’est " +
         "la façon historique de manipuler."),
+      h('p', {},
+        h('strong', { text: 'Les palettes « un élément par appui » ' }),
+        "ont les mêmes deux contacts, mais un appui ne donne qu'un seul élément, quelle que soit sa " +
+        "durée. Sur un manipulateur réel, tenir la palette enchaîne les éléments : à 20 mots par " +
+        "minute un point et son silence durent 120 ms, soit moins qu'un relâchement de touche, si " +
+        "bien qu'on obtient trois points là où on en voulait un. Ce mode supprime le problème, au " +
+        "clavier comme au doigt. Les appuis sont mis en file : vous pouvez frapper plus vite que la " +
+        "vitesse réglée sans rien perdre."),
       h('p', {},
         h('strong', { text: 'Les palettes iambiques ' }),
         "ont deux contacts, un pour le point et un pour le trait. L’électronique génère les éléments à la " +

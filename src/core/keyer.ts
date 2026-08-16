@@ -2,12 +2,20 @@
  * Manipulateur : transforme les appuis de l'utilisateur en éléments morse.
  *
  * Deux familles de manipulateurs coexistent chez les opérateurs, et les deux
- * sont proposées ici :
+ * sont proposées ici, avec une troisième variante destinée à l'apprentissage :
  *
  * - Le **manipulateur droit** (straight key) n'a qu'un contact. C'est la durée
  *   de l'appui qui distingue le point du trait, et c'est l'opérateur qui porte
  *   toute la responsabilité du rythme.
- * - Le **manipulateur double / iambique** (paddle) à deux contacts, un pour le
+ * - Les **palettes sans répétition** ont les mêmes deux contacts qu'un
+ *   manipulateur double, mais un appui ne produit qu'un seul élément, quelle
+ *   que soit sa durée. Ce n'est pas le comportement d'un manipulateur réel :
+ *   c'est une facilité d'apprentissage. À 20 mots par minute, un point et son
+ *   silence durent 120 ms à eux deux, soit moins qu'un relâchement de touche —
+ *   un débutant enchaîne donc les points sans le vouloir. Les appuis sont mis
+ *   en file, ce qui permet de frapper plus vite que la vitesse configurée sans
+ *   rien perdre.
+ * - Le **manipulateur double / iambique** (paddle) a deux contacts, un pour le
  *   point et un pour le trait. L'électronique génère des éléments parfaitement
  *   calibrés tant que la palette est tenue ; presser les deux simultanément
  *   (« squeeze ») alterne points et traits. Les modes A et B ne diffèrent que
@@ -22,7 +30,7 @@
 import { decodeChar } from './morse.ts';
 import type { ElementKind, ResolvedTiming } from './timing.ts';
 
-export type KeyerMode = 'straight' | 'iambic-a' | 'iambic-b';
+export type KeyerMode = 'straight' | 'paddle-single' | 'iambic-a' | 'iambic-b';
 export type PaddleSide = 'dit' | 'dah';
 
 export interface KeyerOptions {
@@ -88,6 +96,8 @@ export class Keyer {
   private currentSide: PaddleSide = 'dit';
   private memory: PaddleSide | null = null;
   private squeezed = false;
+  /** Appuis en attente, en mode palettes sans répétition. */
+  private queue: PaddleSide[] = [];
 
   private elementTimer = 0;
   private charTimer = 0;
@@ -135,6 +145,7 @@ export class Keyer {
     this.iambicState = 'idle';
     this.memory = null;
     this.squeezed = false;
+    this.queue.length = 0;
     this.unitEstimate = this.timing.unit;
   }
 
@@ -214,6 +225,14 @@ export class Keyer {
 
     this.clearGapTimers();
 
+    if (this.options.mode === 'paddle-single') {
+      // Un appui donne un élément, et un seul. La file est bornée à quatre
+      // pour qu'une salve d'appuis involontaires ne parte pas en cascade.
+      if (this.queue.length < 4) this.queue.push(side);
+      if (this.iambicState === 'idle') this.startNextQueued();
+      return;
+    }
+
     if (this.iambicState === 'idle') {
       this.startIambicElement(side);
     } else if (side !== this.currentSide) {
@@ -259,7 +278,26 @@ export class Keyer {
     this.scheduleAbsolute(this.timing.intraChar, () => this.afterIambicSpace());
   }
 
+  /** Démarre l'élément suivant de la file, ou repasse au repos si elle est vide. */
+  private startNextQueued(): void {
+    const next = this.queue.shift();
+    if (!next) {
+      this.iambicState = 'idle';
+      this.squeezed = false;
+      this.startGapTimers();
+      return;
+    }
+    this.startIambicElement(next);
+  }
+
   private afterIambicSpace(): void {
+    // Sans répétition, l'état courant des palettes n'entre pas en compte :
+    // seuls les appuis déjà enregistrés sont joués.
+    if (this.options.mode === 'paddle-single') {
+      this.startNextQueued();
+      return;
+    }
+
     const next = this.chooseNextSide();
     if (next) {
       this.memory = null;
