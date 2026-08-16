@@ -4,8 +4,15 @@ import { VitePWA } from 'vite-plugin-pwa';
 // Le site est publie sur GitHub Pages a l'adresse
 // https://<user>.github.io/Morse-training/ : la base doit donc inclure le
 // nom du depot, sinon les assets sont demandes a la racine du domaine.
+// Empreinte injectée à la construction : affichée dans le bandeau, elle permet
+// de savoir d'un coup d'œil quelle version le navigateur exécute réellement.
+const BUILD_STAMP = new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
+
 export default defineConfig({
   base: '/Morse-training/',
+  define: {
+    __BUILD_STAMP__: JSON.stringify(BUILD_STAMP),
+  },
   build: {
     target: 'es2022',
     sourcemap: true,

@@ -90,6 +90,25 @@ que soit sa durée, et met les appuis en file pour qu'on puisse frapper plus vit
 que la vitesse réglée sans rien perdre. Les modes iambiques restent disponibles
 pour qui veut travailler le geste réel.
 
+## Mises à jour et cache hors ligne
+
+Le site est une PWA : un service worker met les fichiers en cache pour
+fonctionner sans réseau. Deux écueils en découlent, tous deux traités dans
+`src/main.ts` :
+
+- un navigateur ne cherche une nouvelle version qu'au chargement de la page, si
+  bien qu'un onglet laissé ouvert peut servir une version périmée
+  indéfiniment. Une vérification est donc déclenchée périodiquement et à chaque
+  retour sur l'onglet ;
+- activer le nouveau service worker ne suffit pas : tant que la page n'est pas
+  rechargée, elle continue d'exécuter l'ancien code. Le rechargement est donc
+  effectif, après sauvegarde de la progression.
+
+La date de construction est affichée en bas du bandeau latéral, ce qui permet de
+vérifier quelle version s'exécute réellement. En dernier recours, « Forcer la
+mise à jour » dans les réglages désinscrit le service worker, vide les caches et
+recharge, sans toucher à la progression.
+
 ## Compatibilité clavier
 
 `KeyboardEvent.code` désigne la touche physique indépendamment de la

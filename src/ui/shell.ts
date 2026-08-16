@@ -118,6 +118,7 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
       'div',
       { class: 'sidebar__footer' },
       h('p', { text: 'Fonctionne hors ligne. Aucune donnée ne quitte votre appareil.' }),
+      h('p', { class: 'sidebar__version', text: `Version du ${__BUILD_STAMP__}` }),
     ),
   );
 

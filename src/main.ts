@@ -39,13 +39,35 @@ document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') store.saveNow();
 });
 
-// Mise à jour du service worker : on recharge silencieusement au prochain
-// passage, sans interrompre une série d'entraînement en cours.
+/*
+ * Mise à jour du service worker.
+ *
+ * Deux précautions, apprises à la dure : un navigateur ne cherche une nouvelle
+ * version qu'au chargement de la page, si bien qu'un onglet laissé ouvert — le
+ * cas normal sur téléphone — peut servir une version périmée indéfiniment. Et
+ * activer le nouveau service worker ne suffit pas : tant que la page n'est pas
+ * rechargée, elle continue d'exécuter l'ancien code. On vérifie donc
+ * périodiquement, et on recharge réellement, après avoir sauvegardé.
+ */
 const updateSW = registerSW({
   immediate: true,
+  onRegisteredSW(_swUrl, registration) {
+    if (!registration) return;
+    const check = (): void => {
+      void registration.update().catch(() => {
+        // Hors ligne ou serveur injoignable : la prochaine vérification suffira.
+      });
+    };
+    window.setInterval(check, 30 * 60 * 1000);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') check();
+    });
+  },
   onNeedRefresh() {
-    shell.toast('Une nouvelle version est prête. Elle s’appliquera au prochain lancement.', 'info');
-    void updateSW(false);
+    shell.toast('Nouvelle version disponible, rechargement…', 'info');
+    store.saveNow();
+    // Court délai pour que le message soit lu, puis rechargement effectif.
+    window.setTimeout(() => void updateSW(true), 1000);
   },
   onOfflineReady() {
     shell.toast('Le site est disponible hors ligne.', 'success');

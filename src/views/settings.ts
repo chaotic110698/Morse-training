@@ -509,6 +509,9 @@ export function settingsView(context: ViewContext): View {
         'section',
         { class: 'card' },
         h('h2', { class: 'card__title', text: 'Mes données' }),
+        h('p', { class: 'field__hint' },
+          `Version installée : ${__BUILD_STAMP__}. « Forcer la mise à jour » vide le cache hors ligne et recharge le site, ` +
+          "à utiliser si une correction annoncée ne semble pas appliquée. Votre progression n'est pas touchée."),
         h('p', { class: 'card__hint' },
           storageAvailable()
             ? 'Réglages et progression sont enregistrés dans ce navigateur uniquement. Rien n’est envoyé sur un serveur, il n’y à ni compte ni suivi.'
@@ -533,6 +536,30 @@ export function settingsView(context: ViewContext): View {
                 store.updateSettings({ ...DEFAULT_SETTINGS });
                 context.toast('Réglages remis à zéro.', 'info');
                 render();
+              },
+            },
+          }),
+          h('button', {
+            class: 'btn',
+            type: 'button',
+            text: 'Forcer la mise à jour',
+            on: {
+              click: async () => {
+                store.saveNow();
+                // Dernier recours quand le service worker s'obstine à servir
+                // une version périmée : on le désinscrit, on vide les caches,
+                // puis on recharge. La progression est déjà écrite sur disque.
+                try {
+                  const registrations = (await navigator.serviceWorker?.getRegistrations?.()) ?? [];
+                  await Promise.all(registrations.map((registration) => registration.unregister()));
+                  if ('caches' in window) {
+                    const keys = await caches.keys();
+                    await Promise.all(keys.map((key) => caches.delete(key)));
+                  }
+                } catch {
+                  // Même si le nettoyage échoue, le rechargement peut suffire.
+                }
+                window.location.reload();
               },
             },
           }),
