@@ -70,8 +70,11 @@ Le site est publie sur GitHub Pages par le workflow
 publie que depuis la branche par defaut du depot : renommer ou changer cette
 branche ne demande aucune modification du workflow.
 
-Une seule chose est a faire une fois pour toutes dans les reglages du depot :
-choisir **GitHub Actions** comme source dans la section Pages.
+Une seule chose est a verifier une fois pour toutes dans les reglages du depot,
+section Pages : la source doit etre **GitHub Actions**, et non « Deploy from a
+branch ». Ce dernier mode publie le depot tel quel, donc le `index.html` source,
+qui reference `/src/main.ts` : le navigateur recoit alors une page sans style ni
+script, puisque rien n'a ete construit.
 
 La base d'URL est definie dans `vite.config.ts` (`base: '/Morse-training/'`) :
 elle doit correspondre au nom du depot, sinon les assets sont demandes a la
