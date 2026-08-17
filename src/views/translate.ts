@@ -13,6 +13,7 @@ import { MorsePlayer } from '../ui/player.ts';
 import { decodeText, encodeText, normalizeMorseInput, prettyCode, encodeChar } from '../core/morse.ts';
 import { Torch, torchPossiblySupported } from '../core/torch.ts';
 import { sequenceDuration } from '../core/timing.ts';
+import { downloadBlob, renderMorseToWav, slugify, wavExportSupported } from '../core/wav.ts';
 import type { View, ViewContext } from '../ui/router.ts';
 
 /** Au-delà de cette vitesse, la lampe d'un téléphone ne suit plus le rythme. */
@@ -137,6 +138,7 @@ export function translateView(context: ViewContext): View {
         (uniqueUnknown.length > 0 ? ` · caractères sans code morse ignorés : ${uniqueUnknown.join(' ')}` : '')
       : '';
     playButton.disabled = elements.length === 0;
+    exportButton.disabled = elements.length === 0 || !wavExportSupported();
   };
 
   // --- Lecture ---
@@ -161,6 +163,16 @@ export function translateView(context: ViewContext): View {
     if (elements.length === 0) return;
     playButton.textContent = 'Arrêter';
     armFlash(true);
+
+    // Le son peut être refusé — session audio prise par la caméra, appareil en
+    // silencieux. L'émission continue alors en lumière et en vibration, mais
+    // l'utilisateur doit savoir pourquoi il n'entend rien.
+    if (!(await store.audio.unlock())) {
+      context.toast(
+        "Le son n'a pas pu démarrer sur cet appareil. L'émission continue en lumière et en vibration.",
+        'info',
+      );
+    }
 
     await player.playElements(elements, {
       onChar: (index) => renderStrip(index),
@@ -197,6 +209,9 @@ export function translateView(context: ViewContext): View {
           return;
         }
         torchVerified = result.verified === true;
+        // Ouvrir la caméra interrompt la session audio sur iOS : on la reprend
+        // aussitôt, sans quoi l'émission suivante serait muette.
+        await store.audio.unlock();
         context.toast(
           torchVerified
             ? 'La lampe a répondu : elle vient de rester allumée une seconde.'
@@ -244,6 +259,9 @@ export function translateView(context: ViewContext): View {
         torchEnabled = true;
         torchTestButton.disabled = false;
         torchVerified = result.verified === true;
+        // Ouvrir la caméra interrompt la session audio sur iOS : on la reprend
+        // aussitôt, sans quoi l'émission suivante serait muette.
+        await store.audio.unlock();
         context.toast(
           torchVerified
             ? 'Lampe prête : elle vient de clignoter une fois.'
@@ -314,6 +332,40 @@ export function translateView(context: ViewContext): View {
       },
     });
 
+  const exportButton = h('button', {
+    class: 'btn',
+    type: 'button',
+    text: 'Télécharger en WAV',
+    disabled: !wavExportSupported(),
+    on: {
+      click: async () => {
+        const elements = currentElements();
+        if (elements.length === 0) return;
+        const previous = exportButton.textContent ?? 'Télécharger en WAV';
+        exportButton.disabled = true;
+        exportButton.textContent = 'Rendu en cours…';
+        try {
+          const blob = await renderMorseToWav(elements, {
+            frequency: store.settings.frequency,
+            volume: store.settings.volume,
+            rampMs: store.settings.rampMs,
+            waveform: store.settings.waveform,
+          });
+          downloadBlob(
+            `morse-${slugify(textArea.value)}-${store.settings.charWpm}wpm.wav`,
+            blob,
+          );
+          context.toast('Fichier audio téléchargé.', 'success');
+        } catch (error) {
+          context.toast(error instanceof Error ? error.message : 'Le rendu audio a échoué.', 'error');
+        } finally {
+          exportButton.textContent = previous;
+          exportButton.disabled = false;
+        }
+      },
+    },
+  });
+
   const speedSlider = h('input', {
     class: 'slider',
     type: 'range',
@@ -375,6 +427,7 @@ export function translateView(context: ViewContext): View {
         { class: 'actions translate__actions' },
         playButton,
         lamp.element,
+        exportButton,
         h('button', {
           class: 'btn',
           type: 'button',
@@ -446,8 +499,12 @@ export function translateView(context: ViewContext): View {
         "Les points typographiques et les tirets longs sont acceptés et convertis automatiquement, ce qui " +
         "permet de coller du morse recopié depuis à peu près n'importe quelle source."),
       h('p', {},
-        "Un code inconnu tape à la main sera quand même émis tel quel : le traducteur joue fidèlement ce " +
+        "Un code inconnu tapé à la main sera quand même émis tel quel : le traducteur joue fidèlement ce " +
         "que vous avez écrit, il ne corrige pas."),
+      h('p', {},
+        "« Télécharger en WAV » produit un fichier audio de l'émission, à la vitesse et avec la tonalité " +
+        "réglées. Le rendu se fait entièrement dans le navigateur, plus vite que le temps réel, et le " +
+        "fichier s'ouvre partout sans codec particulier."),
     ),
   );
 

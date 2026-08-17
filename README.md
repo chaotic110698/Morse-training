@@ -39,8 +39,12 @@ localement.
 
 **Outils**
 
+- *Enregistreur d'émission* — capte la frappe sans consigne ni note, affiche le
+  texte et le morse décodés, dessine la frise du rythme réel, et exporte en WAV
+  et en texte. Les manipulateurs et leur réglage sont partagés avec l'exercice
+  d'émission.
 - *Traducteur* — texte vers morse et morse vers texte, en direct dans les deux
-  sens. Le résultat s'écoute, défile caractère par caractère, et peut piloter la
+  sens, avec export du résultat en fichier WAV. Le résultat s'écoute, défile caractère par caractère, et peut piloter la
   lampe torche du téléphone pour émettre réellement en lumière. La torche passe
   par la caméra arrière, seul chemin qu'offre le web : elle fonctionne sous
   Android, pas sous iOS, où un flash d'écran est proposé en repli.
@@ -54,7 +58,11 @@ Le tout s'exporte et se réimporte en JSON.
 ## Sorties son, lumière et vibration
 
 Les trois sorties sont construites à partir de la même séquence temporelle,
-elles ne peuvent donc pas dériver l'une par rapport à l'autre.
+elles ne peuvent donc pas dériver l'une par rapport à l'autre. Elles ne
+dépendent pas les unes des autres pour autant : quand le contexte audio refuse
+de démarrer — appareil en silencieux, session prise par la caméra de la torche —
+la séquence bascule sur une horloge d'animation, de sorte que la lumière et la
+vibration continuent de fonctionner, et l'interface explique l'absence de son.
 
 - **Son** — Web Audio, programmé sur l'horloge de l'AudioContext et non avec
   `setTimeout`, avec enveloppe d'attaque réglable pour éviter les clics de
@@ -89,6 +97,15 @@ Le mode « un élément par appui » produit exactement un élément par appui, 
 que soit sa durée, et met les appuis en file pour qu'on puisse frapper plus vite
 que la vitesse réglée sans rien perdre. Les modes iambiques restent disponibles
 pour qui veut travailler le geste réel.
+
+## Export audio
+
+Le rendu WAV se fait dans un `OfflineAudioContext` : même graphe que la lecture
+en direct — oscillateur, enveloppe d'attaque, volume — mais calculé plus vite
+que le temps réel, puis encodé en PCM 16 bits, format qu'ouvre n'importe quel
+lecteur sans codec. Dans l'enregistreur, la séquence rendue provient des
+instants réels de fermeture et d'ouverture du contact : le fichier porte donc le
+rythme de l'opérateur, imperfections comprises, sur une tonalité pure.
 
 ## Mises à jour et cache hors ligne
 

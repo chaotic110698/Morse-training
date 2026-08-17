@@ -45,6 +45,12 @@ const SHORTCUTS: Shortcut[] = [
     text: "Traduire dans les deux sens, écouter le résultat, et émettre en lumière avec la lampe du téléphone.",
   },
   {
+    path: '/outils/enregistreur',
+    icon: '🎙️',
+    title: 'Enregistreur d’émission',
+    text: "Manipuler librement et récupérer sa frappe en fichier audio et en texte, sans note ni consigne.",
+  },
+  {
     path: '/apprendre/principes',
     icon: '📐',
     title: 'Comprendre le morse',

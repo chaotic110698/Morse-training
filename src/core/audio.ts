@@ -94,7 +94,11 @@ export class AudioEngine {
       this.context = new Ctor({ latencyHint: 'interactive' });
       this.buildGraph();
     }
-    if (this.context.state === 'suspended') {
+    // iOS ajoute un état « interrupted », non normalisé, dans lequel bascule le
+    // contexte dès qu'une autre source prend la session audio — l'ouverture de
+    // la caméra pour la torche, par exemple. On tente donc la reprise dès que
+    // l'état n'est pas « running », et non seulement sur « suspended ».
+    if (this.context.state !== 'running') {
       try {
         await this.context.resume();
       } catch {

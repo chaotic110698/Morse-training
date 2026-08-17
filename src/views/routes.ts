@@ -12,6 +12,7 @@ import { statsView } from './stats.ts';
 import { achievementsView } from './achievements.ts';
 import { settingsView } from './settings.ts';
 import { translateView } from './translate.ts';
+import { recordView } from './record.ts';
 import type { RouteDefinition } from '../ui/router.ts';
 
 export const NAV_GROUPS: Array<{ id: string; label: string }> = [
@@ -104,6 +105,15 @@ export const ROUTES: RouteDefinition[] = [
     icon: '🔁',
     group: 'outils',
     factory: translateView,
+  },
+  {
+    path: '/outils/enregistreur',
+    label: 'Enregistreur',
+    title: 'Enregistreur d’émission',
+    description: 'Capter sa frappe et l’exporter en audio et en texte.',
+    icon: '🎙️',
+    group: 'outils',
+    factory: recordView,
   },
   {
     path: '/progression/statistiques',

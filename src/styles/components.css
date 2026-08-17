@@ -1348,3 +1348,70 @@
 .keypad__key {
   -webkit-touch-callout: none;
 }
+
+/* --- Enregistreur d'émission --- */
+
+.record__panel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  text-align: left;
+}
+
+.record__label {
+  font-size: 0.72rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-top: var(--space-2);
+}
+
+.record__label:first-child {
+  margin-top: 0;
+}
+
+.record__text {
+  font-size: 1.5rem;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  word-break: break-word;
+  min-height: 1.6em;
+}
+
+.record__morse {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  word-break: break-all;
+  max-height: 5.5rem;
+  overflow-y: auto;
+}
+
+/* Frise du rythme : largeur proportionnelle à la durée réelle de chaque
+   signal et de chaque silence, ce que le texte décodé ne montre pas. */
+.timeline-strip {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+  gap: 1px;
+  height: 2rem;
+  min-width: 0;
+}
+
+.timeline-strip__cell {
+  background: var(--surface-3);
+  border-radius: 1px;
+}
+
+.timeline-strip__cell.is-on {
+  background: var(--accent);
+}
+
+.timeline-strip__empty {
+  align-self: center;
+  color: var(--text-faint);
+  font-size: 0.85rem;
+}
