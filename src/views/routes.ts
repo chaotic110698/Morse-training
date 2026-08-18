@@ -4,6 +4,7 @@ import { homeView } from './home.ts';
 import { principlesView } from './learn-principles.ts';
 import { historyView } from './learn-history.ts';
 import { alphabetView } from './learn-alphabet.ts';
+import { phoneticView } from './learn-phonetic.ts';
 import { listenView } from './train-listen.ts';
 import { sendView } from './train-send.ts';
 import { wordsView } from './train-words.ts';
@@ -60,6 +61,15 @@ export const ROUTES: RouteDefinition[] = [
     icon: '🔤',
     group: 'apprendre',
     factory: alphabetView,
+  },
+  {
+    path: '/apprendre/alphabet-otan',
+    label: 'Alphabet OTAN',
+    title: 'Alphabet OTAN',
+    description: 'Épeler à la voix : Alfa, Bravo, Charlie…',
+    icon: '🗣️',
+    group: 'apprendre',
+    factory: phoneticView,
   },
   {
     path: '/entrainement/ecoute',

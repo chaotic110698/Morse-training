@@ -1415,3 +1415,206 @@
   color: var(--text-faint);
   font-size: 0.85rem;
 }
+
+/* --- Alphabet radiotéléphonique --- */
+
+.phonetic__grid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: var(--space-2);
+}
+
+/* La note occupe sa propre ligne : logée dans la colonne du mot, elle se
+   retrouvait comprimée à un mot par ligne sur les entrées les plus bavardes. */
+.phonetic__item {
+  display: grid;
+  grid-template-columns: 2.2rem minmax(0, 1fr) auto;
+  grid-template-areas:
+    'symbol body actions'
+    'note   note note';
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-3);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.phonetic__symbol {
+  grid-area: symbol;
+}
+
+.phonetic__body {
+  grid-area: body;
+}
+
+.phonetic__actions {
+  grid-area: actions;
+}
+
+.phonetic__symbol {
+  font-size: 1.45rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--accent);
+}
+
+.phonetic__body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.phonetic__word {
+  font-weight: 600;
+}
+
+.phonetic__say {
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.phonetic__note {
+  grid-area: note;
+  margin: 0;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border);
+  font-size: 0.74rem;
+  line-height: 1.45;
+  color: var(--text-faint);
+}
+
+.phonetic__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.phonetic__code,
+.phonetic__speak {
+  padding: 0.2rem 0.4rem;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition);
+}
+
+.phonetic__code {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+.phonetic__code:hover,
+.phonetic__speak:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* --- Épellation d'un texte --- */
+
+.phonetic__spelled {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  min-height: 2.4rem;
+  align-items: center;
+}
+
+.phonetic__spelled-word {
+  padding: 0.2rem 0.55rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+}
+
+.phonetic__spelled-word strong {
+  color: var(--accent);
+}
+
+.phonetic__spelled-gap {
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+}
+
+.phonetic__spelled-unknown {
+  padding: 0.2rem 0.5rem;
+  border: 1px dashed color-mix(in srgb, var(--error) 45%, transparent);
+  border-radius: var(--radius-sm);
+  color: var(--error);
+}
+
+.phonetic__spelled-empty {
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+/* --- Choix de l'exercice --- */
+
+.quiz-choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--space-2);
+}
+
+.quiz-choices__item {
+  min-height: 3rem;
+  padding: 0 var(--space-3);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 550;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.quiz-choices__item:hover:not([disabled]) {
+  background: var(--surface-3);
+  border-color: var(--border-strong);
+}
+
+.quiz-choices__item[disabled] {
+  cursor: default;
+}
+
+.quiz-choices__item.is-ok {
+  background: var(--ok-soft);
+  border-color: var(--ok);
+  color: var(--ok);
+}
+
+.quiz-choices__item.is-error {
+  background: var(--error-soft);
+  border-color: var(--error);
+  color: var(--error);
+}
+
+/* --- Épellation française --- */
+
+.phonetic__french {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-4);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.phonetic__french-item strong {
+  color: var(--accent);
+  margin-right: 0.15rem;
+}

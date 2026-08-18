@@ -16,6 +16,11 @@ localement.
   dix jalons.
 - *Alphabet et lexique* — lettres, chiffres, ponctuation, caractères accentués
   et signaux de procédure, chaque entrée étant écoutable d'un clic.
+- *Alphabet OTAN* — l'alphabet radiotéléphonique international : les vingt-six
+  mots et les dix chiffres avec une prononciation transcrite pour un
+  francophone, le code morse de chaque lettre en regard, un outil pour épeler un
+  indicatif, un exercice à quatre choix dans les deux sens, l'histoire du code
+  et l'épellation française usuelle au téléphone.
 
 **S'entraîner**
 

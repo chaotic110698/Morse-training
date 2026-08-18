@@ -57,6 +57,12 @@ const SHORTCUTS: Shortcut[] = [
     text: 'Les cinq règles de durée, la vitesse en mots par minute, Farnsworth et Koch expliqués.',
   },
   {
+    path: '/apprendre/alphabet-otan',
+    icon: '🗣️',
+    title: 'Alphabet OTAN',
+    text: "Alfa, Bravo, Charlie… l’épellation à la voix, avec un outil pour dicter et un exercice.",
+  },
+  {
     path: '/apprendre/histoire',
     icon: '📜',
     title: 'Histoire du morse',
