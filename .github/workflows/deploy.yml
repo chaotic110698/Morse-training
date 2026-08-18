@@ -44,29 +44,32 @@ jobs:
       - name: Construire le site
         run: npm run build
 
-      # `configure-pages` avec `enablement` n'active Pages que s'il est éteint :
-      # il ne bascule pas une configuration existante « Deploy from a branch »
-      # vers « GitHub Actions ». Or tant que le mode branche subsiste, le
-      # constructeur historique de GitHub publie les sources brutes à chaque
-      # poussée, en parallèle de ce workflow. Les deux déploiements se courent
-      # après et le dernier arrivé gagne : le site alterne alors, au hasard,
-      # entre la version construite et une page sans style ni script.
+      # GitHub Pages doit être réglé sur « GitHub Actions » comme source.
+      # S'il reste sur « Deploy from a branch », le constructeur historique
+      # publie la racine du dépôt à chaque poussée, en parallèle de ce
+      # workflow : les deux déploiements se courent après et le dernier arrivé
+      # gagne, si bien que le site alterne au hasard entre la version
+      # construite et une page sans style ni script.
       #
-      # On impose donc explicitement le mode « workflow ». L'étape est tolérante
-      # à l'échec — elle demande des droits que le jeton n'a pas toujours — mais
-      # affiche son code de retour, pour qu'un refus se voie dans le journal.
-      - name: Imposer la publication par GitHub Actions
+      # Ce réglage ne peut pas être corrigé ici : le jeton d'Actions se voit
+      # refuser l'écriture sur la configuration Pages avec un 403
+      # « Resource not accessible by integration ». On se contente donc de le
+      # vérifier et d'avertir bruyamment, plutôt que de laisser un site
+      # instable sans explication.
+      - name: Vérifier la source de GitHub Pages
         continue-on-error: true
         run: |
-          echo "Bascule de GitHub Pages en mode « workflow »…"
-          curl -sS -X PUT \
+          code=$(curl -sS -o /tmp/pages.json -w '%{http_code}' \
             -H "Authorization: Bearer ${{ github.token }}" \
             -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/${{ github.repository }}/pages" \
-            -d '{"build_type":"workflow"}' \
-            -o /tmp/pages.json -w 'HTTP %{http_code}\n'
-          cat /tmp/pages.json 2>/dev/null || true
+            "https://api.github.com/repos/${{ github.repository }}/pages")
+          type=$(python3 -c "import json;print(json.load(open('/tmp/pages.json')).get('build_type','?'))" 2>/dev/null || echo '?')
+          echo "Réponse $code, source déclarée : $type"
+          if [ "$type" = "workflow" ]; then
+            echo "Configuration correcte : le site est publié par ce workflow."
+          else
+            echo "::warning title=Source GitHub Pages à corriger::La source de Pages n'est pas « GitHub Actions » (valeur lue : $type). Le constructeur historique publie les sources brutes en parallèle et écrase le site une fois sur deux. Corrigez dans Settings puis Pages, section Build and deployment, Source = GitHub Actions."
+          fi
 
       - uses: actions/configure-pages@v5
         with:
