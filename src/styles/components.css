@@ -522,10 +522,27 @@
   transition: background var(--transition), border-color var(--transition), transform var(--transition);
 }
 
+/*
+ * Une grille de codes n'a pas les mêmes besoins qu'une grille de lettres : un
+ * code peut compter six signes là où une lettre en compte un. Des cellules
+ * calibrées pour une lettre coupaient les codes longs en deux lignes, qui
+ * débordaient ensuite du bouton.
+ */
+/* Six signes en chasse fixe, écartement et marges compris, demandent un peu
+   plus de six rem : la cellule est dimensionnée avec de la marge. */
+.answer-grid--codes {
+  grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+}
+
 .answer-grid__key--code {
   font-family: var(--font-mono);
-  font-size: 0.85rem;
-  letter-spacing: 0.1em;
+  font-size: 1rem;
+  /* L'écartement remplace le séparateur : il n'autorise aucun retour à la ligne. */
+  letter-spacing: 0.24em;
+  text-indent: 0.24em;
+  white-space: nowrap;
+  padding: 0 var(--space-2);
+  overflow: hidden;
 }
 
 .answer-grid__key:hover {
@@ -1111,6 +1128,17 @@
 
   .answer-grid {
     grid-template-columns: repeat(auto-fill, minmax(2.9rem, 1fr));
+  }
+
+  .answer-grid--codes {
+    grid-template-columns: repeat(auto-fill, minmax(5.6rem, 1fr));
+  }
+
+  .answer-grid__key--code {
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    text-indent: 0.2em;
+    padding: 0 var(--space-1);
   }
 
   .answer-grid__key {

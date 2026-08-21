@@ -162,7 +162,16 @@ export function prettyCode(code: MorseCode): string {
   return [...code].map((c) => (c === '.' ? '·' : '–')).join(' ');
 }
 
-/** Nom parle d'un code, utile pour la lecture à voix haute et l'accessibilité. */
+/**
+ * Variante compacte, sans séparateur entre les signes : l'écartement est confié
+ * à la typographie. Indispensable dans un bouton étroit, où l'espace fine de
+ * `prettyCode` reste sécable et coupe le code en deux lignes.
+ */
+export function compactCode(code: MorseCode): string {
+  return [...code].map((c) => (c === '.' ? '\u00b7' : '\u2013')).join('');
+}
+
+/** Nom parlé d'un code, utile pour la lecture à voix haute et l'accessibilité. */
 export function spokenCode(code: MorseCode): string {
   return [...code].map((c) => (c === '.' ? 'ti' : 'taa')).join('-');
 }

@@ -11,7 +11,7 @@
 import { h } from '../ui/dom.ts';
 import { SessionTracker } from '../ui/session.ts';
 import { isTypingTarget } from '../ui/keys.ts';
-import { encodeChar, prettyCode } from '../core/morse.ts';
+import { compactCode, encodeChar, prettyCode } from '../core/morse.ts';
 import { kochCharset, kochMaxLevel } from '../core/koch.ts';
 import { formatPercent } from '../core/progress.ts';
 import { MorsePlayer } from '../ui/player.ts';
@@ -112,6 +112,9 @@ export function readView(context: ViewContext): View {
 
   const renderGrid = (): void => {
     const set = charset();
+    // Une grille de codes réclame des cellules bien plus larges qu'une grille
+    // de lettres : un code peut compter six signes.
+    grid.classList.toggle('answer-grid--codes', direction === 'char-to-code');
     if (direction === 'code-to-char') {
       grid.replaceChildren(
         ...set.map((char) =>
@@ -130,7 +133,8 @@ export function readView(context: ViewContext): View {
           h('button', {
             class: 'answer-grid__key answer-grid__key--code',
             type: 'button',
-            text: prettyCode(encodeChar(char) ?? ''),
+            text: compactCode(encodeChar(char) ?? ''),
+            attrs: { 'aria-label': `Code de ${char}` },
             data: { answer: char },
             on: { click: () => submit(char) },
           }),
