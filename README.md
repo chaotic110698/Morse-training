@@ -103,6 +103,28 @@ que soit sa durée, et met les appuis en file pour qu'on puisse frapper plus vit
 que la vitesse réglée sans rien perdre. Les modes iambiques restent disponibles
 pour qui veut travailler le geste réel.
 
+## Bruit de fond de réception
+
+Un récepteur ne laisse passer qu'une bande étroite autour de la tonalité : le
+bruit entendu en trafic réel n'est pas du bruit blanc mais un souffle coloré,
+dans lequel les signaux se détachent. `src/core/noise.ts` le reproduit en
+filtrant du bruit blanc par deux passe-bande en cascade centrés sur la
+tonalité, dans un contexte hors ligne.
+
+Le tampon obtenu est **normalisé à une valeur efficace de 1** avant d'être
+bouclé, avec un fondu enchaîné qui rend le raccord inaudible. Cette
+normalisation est ce qui rend le niveau calculable : le gain appliqué vaut
+alors exactement la valeur efficace visée, et un rapport signal/bruit affiché
+en décibels veut dire quelque chose. Sans elle, le filtrage retirerait une part
+variable de l'énergie et le réglage ne signifierait rien.
+
+Le rapport se règle par préréglages, de conditions excellentes à la limite de
+copie. Le bruit démarre avec une série d'entraînement, un enregistrement ou une
+émission, et s'arrête avec eux. Accessoirement, il maintient la sortie audio
+active : beaucoup de casques, surtout en Bluetooth, signalent l'extinction de
+cette sortie par un craquement qu'on prend sinon pour un élément du code. Un
+silence de fin réglable joue le même rôle quand le bruit est désactivé.
+
 ## Export audio
 
 Le rendu WAV se fait dans un `OfflineAudioContext` : même graphe que la lecture

@@ -152,6 +152,7 @@ export function translateView(context: ViewContext): View {
 
   const stop = (): void => {
     player.stop();
+    store.audio.stopNoise();
     torch.set(false);
     armFlash(false);
     playButton.textContent = 'Émettre';
@@ -163,6 +164,7 @@ export function translateView(context: ViewContext): View {
     if (elements.length === 0) return;
     playButton.textContent = 'Arrêter';
     armFlash(true);
+    void store.audio.startNoise();
 
     // Le son peut être refusé — session audio prise par la caméra, appareil en
     // silencieux. L'émission continue alors en lumière et en vibration, mais
@@ -181,6 +183,7 @@ export function translateView(context: ViewContext): View {
         if (screenFlashEnabled) flashLayer.classList.toggle('is-lit', on);
       },
       onEnd: () => {
+        store.audio.stopNoise();
         torch.set(false);
         armFlash(false);
         playButton.textContent = 'Émettre';
@@ -332,6 +335,20 @@ export function translateView(context: ViewContext): View {
       },
     });
 
+  // L'export peut reproduire l'ambiance de la séance ou rester net : un fichier
+  // destiné à être réécouté gagne souvent à être propre, mais pas toujours.
+  const exportNoiseToggle = h(
+    'label',
+    { class: 'switch' },
+    h('input', { type: 'checkbox' }),
+    h('span', { text: 'avec le bruit de fond' }),
+  );
+
+  const exportWithNoise = (): number | null => {
+    const checked = (exportNoiseToggle.querySelector('input') as HTMLInputElement).checked;
+    return checked ? store.settings.noiseSnrDb : null;
+  };
+
   const exportButton = h('button', {
     class: 'btn',
     type: 'button',
@@ -350,6 +367,7 @@ export function translateView(context: ViewContext): View {
             volume: store.settings.volume,
             rampMs: store.settings.rampMs,
             waveform: store.settings.waveform,
+            noiseSnrDb: exportWithNoise(),
           });
           downloadBlob(
             `morse-${slugify(textArea.value)}-${store.settings.charWpm}wpm.wav`,
@@ -428,6 +446,7 @@ export function translateView(context: ViewContext): View {
         playButton,
         lamp.element,
         exportButton,
+        exportNoiseToggle,
         h('button', {
           class: 'btn',
           type: 'button',
@@ -513,6 +532,7 @@ export function translateView(context: ViewContext): View {
     destroy: () => {
       unsubscribe();
       player.stop();
+      store.audio.stopNoise();
       torch.release();
       flashLayer.remove();
     },

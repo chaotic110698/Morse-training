@@ -227,6 +227,10 @@ export function listenView(context: ViewContext): View {
       ? drawWeakestFirst(set, store.settings.sessionLength, (char) => charAccuracy(store.progress, char))
       : drawKochChars(set, store.settings.sessionLength);
     phase = 'running';
+    // Le bruit de bande accompagne la série entière : il campe l'ambiance et
+    // maintient la sortie audio active, ce qui supprime le craquement
+    // d'extinction entre deux caractères.
+    void store.audio.startNoise();
     summary.replaceChildren();
     primaryButton.textContent = 'Arrêter';
     replayButton.disabled = false;
@@ -237,6 +241,7 @@ export function listenView(context: ViewContext): View {
   const stopSession = (): void => {
     window.clearTimeout(advanceTimer);
     player.stop();
+    store.audio.stopNoise();
     phase = 'idle';
     current = null;
     answerable = false;
@@ -259,10 +264,11 @@ export function listenView(context: ViewContext): View {
     answerable = true;
     renderDisplay();
     await player.play(current, {
-      onEnd: () => {
-        // Le chronomètre part à la fin du son : on mesure le temps de
-        // reconnaissance, pas la durée du caractère.
-        questionReadyAt = performance.now();
+      // Le chronomètre part à l'extinction du dernier signal, et non à la fin
+      // de la séquence : le silence de fin ne doit pas être compté comme du
+      // temps de réflexion, ni permettre de répondre avant son démarrage.
+      onSignal: (on) => {
+        if (!on) questionReadyAt = performance.now();
       },
     });
   };
@@ -270,8 +276,8 @@ export function listenView(context: ViewContext): View {
   const replay = (): void => {
     if (phase !== 'running' || !current) return;
     void player.play(current, {
-      onEnd: () => {
-        questionReadyAt = performance.now();
+      onSignal: (on) => {
+        if (!on) questionReadyAt = performance.now();
       },
     });
   };
@@ -311,6 +317,7 @@ export function listenView(context: ViewContext): View {
   };
 
   const finishSession = (): void => {
+    store.audio.stopNoise();
     phase = 'summary';
     current = null;
     answerable = false;
@@ -470,6 +477,7 @@ export function listenView(context: ViewContext): View {
       window.removeEventListener('keydown', onKeyDown);
       unsubscribe();
       player.stop();
+      store.audio.stopNoise();
       tracker.commit(level());
     },
   };

@@ -11,6 +11,7 @@ import { keyLabel, resolveCode } from '../ui/keys.ts';
 import { MorsePlayer } from '../ui/player.ts';
 import { SignalLamp } from '../ui/lamp.ts';
 import { hapticsSupported } from '../core/haptics.ts';
+import { bandNoiseSupported, presetForDb, SNR_PRESETS } from '../core/noise.ts';
 import { KOCH_ORDERS, kochMaxLevel } from '../core/koch.ts';
 import { buildSaveFile, downloadText, parseSaveFile, storageAvailable } from '../core/storage.ts';
 import { DEFAULT_SETTINGS } from '../core/settings.ts';
@@ -236,8 +237,62 @@ export function settingsView(context: ViewContext): View {
             ),
           ),
         ),
+        field(
+          'Silence de fin',
+          slider({
+            min: 0,
+            max: 10,
+            value: s.tailUnits,
+            format: (value) => (value === 0 ? 'aucun' : `${value} unités`),
+            onInput: (value) => store.updateSettings({ tailUnits: value }),
+          }),
+          `Silence ajouté après le dernier signal, soit ${Math.round(s.tailUnits * timing.unit * 1000)} ms à la vitesse actuelle. Il détache la fin de l’émission de l’extinction de la sortie audio, que beaucoup de casques — surtout en Bluetooth — signalent par un léger craquement qu’on prend alors pour un élément du code.`,
+        ),
         h('p', { class: 'field__hint' },
           'Sur iPhone et iPad, le son du navigateur suit le bouton silencieux physique. Si vous n’entendez rien, vérifiez-le avant tout le reste.'),
+      ),
+
+      // --- Bruit de fond ---
+      h(
+        'section',
+        { class: 'card' },
+        h('h2', { class: 'card__title', text: 'Bruit de fond' }),
+        field(
+          'Bruit de réception',
+          h(
+            'label',
+            { class: 'switch' },
+            h('input', {
+              type: 'checkbox',
+              attrs: { checked: s.noiseEnabled, disabled: !bandNoiseSupported() },
+              on: {
+                change: (event) =>
+                  store.updateSettings({ noiseEnabled: (event.target as HTMLInputElement).checked }),
+              },
+            }),
+            h('span', { text: 'Un fond de bande pendant les séances' }),
+          ),
+          bandNoiseSupported()
+            ? "Un récepteur ne laisse passer qu'une bande étroite autour de la tonalité : le bruit qu'on entend en trafic réel n'est pas du bruit blanc mais un souffle coloré, dans lequel les signaux se détachent. Il démarre avec une série d'entraînement ou un enregistrement et s'arrête avec elle. Accessoirement, il maintient la sortie audio active et supprime le craquement d'extinction entre deux caractères."
+            : "Ce navigateur ne sait pas fabriquer le bruit filtré : la génération hors ligne lui manque.",
+        ),
+        field(
+          'Conditions d’écoute',
+          h(
+            'div',
+            { class: 'segmented segmented--wrap', attrs: { role: 'group', 'aria-label': 'Conditions d’écoute' } },
+            ...SNR_PRESETS.map((preset) =>
+              h('button', {
+                class: `segmented__item${presetForDb(s.noiseSnrDb).id === preset.id ? ' is-active' : ''}`,
+                type: 'button',
+                text: preset.label,
+                title: `${preset.db} dB — ${preset.hint}`,
+                on: { click: () => store.updateSettings({ noiseSnrDb: preset.db }) },
+              }),
+            ),
+          ),
+          `Rapport signal sur bruit : ${s.noiseSnrDb} dB. ${presetForDb(s.noiseSnrDb).hint} Copier dans le bruit est la compétence qui compte vraiment sur l’air ; descendre d’un cran quand la copie devient facile vaut mieux que d’accélérer.`,
+        ),
       ),
 
       // --- Manipulateur ---

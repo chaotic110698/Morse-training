@@ -301,6 +301,7 @@ export function sendView(context: ViewContext): View {
     if (!started) {
       started = true;
       tracker.start();
+      void store.audio.startNoise();
     }
     if (promptStartedAt === 0) promptStartedAt = performance.now();
   };
@@ -427,6 +428,7 @@ export function sendView(context: ViewContext): View {
   };
 
   const finishSession = (): void => {
+    store.audio.stopNoise();
     const accuracy = tracker.accuracy;
     tracker.commit(null);
     summary.replaceChildren(
@@ -544,6 +546,7 @@ export function sendView(context: ViewContext): View {
       keyer.dispose();
       player.stop();
       store.audio.stopSidetone();
+      store.audio.stopNoise();
       store.haptics.release();
       tracker.commit(null);
     },

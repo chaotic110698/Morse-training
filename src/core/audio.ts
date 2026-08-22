@@ -18,8 +18,13 @@
  */
 
 import type { TimedElement } from './timing.ts';
+import { createBandNoiseBuffer, noiseGainFor } from './noise.ts';
 
 export interface AudioSettings {
+  /** Bruit de fond de réception pendant les séances. */
+  noiseEnabled: boolean;
+  /** Rapport signal/bruit visé, en décibels. */
+  noiseSnrDb: number;
   /** Fréquence de la tonalité, en hertz. */
   frequency: number;
   /** Volume principal, de 0 à 1. */
@@ -31,6 +36,8 @@ export interface AudioSettings {
 }
 
 export const DEFAULT_AUDIO_SETTINGS: AudioSettings = {
+  noiseEnabled: true,
+  noiseSnrDb: 20,
   frequency: 650,
   volume: 0.35,
   rampMs: 5,
@@ -64,6 +71,12 @@ export class AudioEngine {
   private sidetoneOsc: OscillatorNode | null = null;
   private sidetoneGain: GainNode | null = null;
   private activeHandle: PlaybackHandle | null = null;
+  private noiseGain: GainNode | null = null;
+  private noiseSource: AudioBufferSourceNode | null = null;
+  private noiseBuffer: AudioBuffer | null = null;
+  /** Fréquence pour laquelle le tampon a été filtré, pour ne le refaire qu'utile. */
+  private noiseBufferFrequency = 0;
+  private noiseWanted = false;
   private rafId = 0;
   private settings: AudioSettings;
 
@@ -117,6 +130,85 @@ export class AudioEngine {
     this.sidetoneOsc?.frequency.setTargetAtTime(this.settings.frequency, now, 0.01);
     if (this.playbackOsc) this.playbackOsc.type = this.settings.waveform;
     if (this.sidetoneOsc) this.sidetoneOsc.type = this.settings.waveform;
+    this.applyNoiseLevel();
+    // Le filtrage dépend de la tonalité : changer celle-ci périme le tampon.
+    if (this.noiseBufferFrequency !== this.settings.frequency) {
+      this.noiseBuffer = null;
+      if (this.noiseWanted) void this.startNoise();
+    }
+  }
+
+  /** Niveau courant du bruit, déduit du volume et du rapport signal/bruit. */
+  private applyNoiseLevel(): void {
+    const ctx = this.context;
+    if (!ctx || !this.noiseGain) return;
+    const target =
+      this.noiseWanted && this.settings.noiseEnabled
+        ? noiseGainFor(this.settings.volume, this.settings.noiseSnrDb)
+        : 0;
+    this.noiseGain.gain.setTargetAtTime(target, ctx.currentTime, 0.05);
+  }
+
+  /** Vrai si le bruit de fond est en train de jouer. */
+  get noiseRunning(): boolean {
+    return this.noiseSource !== null;
+  }
+
+  /**
+   * Démarre le bruit de fond. Il monte en une fraction de seconde, et reste
+   * ensuite continu : c'est aussi ce qui empêche l'appareil de couper sa sortie
+   * entre deux caractères, coupure dont beaucoup de casques signalent la fin
+   * par un craquement.
+   */
+  async startNoise(): Promise<void> {
+    this.noiseWanted = true;
+    if (!this.settings.noiseEnabled) return;
+    if (!(await this.unlock())) return;
+    const ctx = this.context;
+    if (!ctx || !this.noiseGain) return;
+
+    if (!this.noiseBuffer || this.noiseBufferFrequency !== this.settings.frequency) {
+      const buffer = await createBandNoiseBuffer(ctx.sampleRate, this.settings.frequency);
+      if (!buffer) return;
+      this.noiseBuffer = buffer;
+      this.noiseBufferFrequency = this.settings.frequency;
+    }
+    // Une reprise pendant la génération du tampon a pu tout annuler.
+    if (!this.noiseWanted) return;
+
+    this.stopNoiseSource();
+    const source = ctx.createBufferSource();
+    source.buffer = this.noiseBuffer;
+    source.loop = true;
+    source.connect(this.noiseGain);
+    source.start();
+    this.noiseSource = source;
+    this.applyNoiseLevel();
+  }
+
+  /** Coupe le bruit de fond, avec une descente douce. */
+  stopNoise(): void {
+    this.noiseWanted = false;
+    const ctx = this.context;
+    if (!ctx || !this.noiseGain) {
+      this.stopNoiseSource();
+      return;
+    }
+    this.noiseGain.gain.cancelScheduledValues(ctx.currentTime);
+    this.noiseGain.gain.setValueAtTime(this.noiseGain.gain.value, ctx.currentTime);
+    this.noiseGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.2);
+    const source = this.noiseSource;
+    this.noiseSource = null;
+    if (source) window.setTimeout(() => source.stop(), 400);
+  }
+
+  private stopNoiseSource(): void {
+    try {
+      this.noiseSource?.stop();
+    } catch {
+      // Une source déjà arrêtée lève : sans conséquence.
+    }
+    this.noiseSource = null;
   }
 
   private buildGraph(): void {
@@ -143,6 +235,11 @@ export class AudioEngine {
     // manipulateur ne doivent jamais se couper l'une l'autre.
     [this.playbackOsc, this.playbackGain] = makeVoice();
     [this.sidetoneOsc, this.sidetoneGain] = makeVoice();
+
+    // Le bruit a sa propre voie, réglée indépendamment des tonalités.
+    this.noiseGain = ctx.createGain();
+    this.noiseGain.gain.value = 0;
+    this.noiseGain.connect(ctx.destination);
   }
 
   private get ramp(): number {
@@ -309,6 +406,8 @@ export class AudioEngine {
   /** Libère les ressources audio. */
   dispose(): void {
     this.stop();
+    this.stopNoiseSource();
+    this.noiseWanted = false;
     this.playbackOsc?.stop();
     this.sidetoneOsc?.stop();
     void this.context?.close();

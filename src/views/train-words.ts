@@ -112,12 +112,15 @@ export function wordsView(context: ViewContext): View {
 
   const playCurrent = (): void => {
     if (!entry) return;
+    void store.audio.startNoise();
     player.stop();
     void player.play(entry.text, {
-      onEnd: () => {
-        readyAt = performance.now();
-        input.focus();
+      // Le chronomètre part à l'extinction du dernier signal, pour que le
+      // silence de fin ne soit pas compté comme du temps de réflexion.
+      onSignal: (on) => {
+        if (!on) readyAt = performance.now();
       },
+      onEnd: () => input.focus(),
     });
   };
 
@@ -182,6 +185,7 @@ export function wordsView(context: ViewContext): View {
   };
 
   const finish = (): void => {
+    store.audio.stopNoise();
     tracker.commit(null);
     const misses = tracker.entries.filter((item) => !item.correct);
     summary.replaceChildren(
@@ -263,6 +267,7 @@ export function wordsView(context: ViewContext): View {
     element,
     destroy: () => {
       player.stop();
+      store.audio.stopNoise();
       tracker.commit(null);
     },
   };

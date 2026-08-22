@@ -9,6 +9,7 @@
  */
 
 import { sequenceDuration, type TimedElement } from './timing.ts';
+import { createBandNoiseBuffer, noiseGainFor } from './noise.ts';
 
 export interface RenderOptions {
   frequency: number;
@@ -19,6 +20,11 @@ export interface RenderOptions {
   sampleRate?: number;
   /** Silence ajouté en fin de fichier, en secondes. */
   tail?: number;
+  /**
+   * Rapport signal/bruit à appliquer, en décibels. Absent, le fichier ne
+   * contient que la tonalité, sans aucun fond.
+   */
+  noiseSnrDb?: number | null;
 }
 
 /** Durée maximale rendue, garde-fou contre une saisie démesurée. */
@@ -80,6 +86,24 @@ export async function renderMorseToWav(
       envelope.gain.linearRampToValueAtTime(0, cursor + hold + ramp);
     }
     cursor += element.duration;
+  }
+
+  // Le bruit est mélangé avant la sortie, au même niveau qu'à l'écoute : le
+  // tampon est normalisé à une valeur efficace de 1, donc le gain vaut
+  // directement la valeur efficace visée.
+  if (typeof options.noiseSnrDb === 'number') {
+    const noiseBuffer = await createBandNoiseBuffer(sampleRate, options.frequency);
+    if (noiseBuffer) {
+      const noise = ctx.createBufferSource();
+      noise.buffer = noiseBuffer;
+      noise.loop = true;
+      const noiseGain = ctx.createGain();
+      noiseGain.gain.value = noiseGainFor(options.volume, options.noiseSnrDb);
+      noise.connect(noiseGain);
+      noiseGain.connect(ctx.destination);
+      noise.start(0);
+      noise.stop(duration);
+    }
   }
 
   oscillator.start(0);

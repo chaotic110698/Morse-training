@@ -36,6 +36,8 @@ export class AppStore {
       volume: this.settings.volume,
       rampMs: this.settings.rampMs,
       waveform: this.settings.waveform,
+      noiseEnabled: this.settings.noiseEnabled,
+      noiseSnrDb: this.settings.noiseSnrDb,
     });
     this.haptics = new Haptics();
     this.haptics.setEnabled(this.settings.haptics);
@@ -73,6 +75,8 @@ export class AppStore {
       volume: this.settings.volume,
       rampMs: this.settings.rampMs,
       waveform: this.settings.waveform,
+      noiseEnabled: this.settings.noiseEnabled,
+      noiseSnrDb: this.settings.noiseSnrDb,
     });
     this.haptics.setEnabled(this.settings.haptics);
     this.scheduleSave();
@@ -106,6 +110,8 @@ export class AppStore {
       volume: settings.volume,
       rampMs: settings.rampMs,
       waveform: settings.waveform,
+      noiseEnabled: settings.noiseEnabled,
+      noiseSnrDb: settings.noiseSnrDb,
     });
     this.haptics.setEnabled(settings.haptics);
     this.saveNow();

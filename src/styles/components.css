@@ -1646,3 +1646,9 @@
   color: var(--accent);
   margin-right: 0.15rem;
 }
+
+/* Un groupe de boutons qui peut passer à la ligne, pour les listes de
+   préréglages trop longues pour tenir sur une seule. */
+.segmented--wrap {
+  flex-wrap: wrap;
+}

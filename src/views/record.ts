@@ -205,6 +205,13 @@ export function recordView(context: ViewContext): View {
     on: { click: () => reset() },
   });
 
+  const exportNoiseToggle = h(
+    'label',
+    { class: 'switch' },
+    h('input', { type: 'checkbox' }),
+    h('span', { text: 'avec le bruit de fond' }),
+  );
+
   const wavButton = h('button', {
     class: 'btn',
     type: 'button',
@@ -223,6 +230,9 @@ export function recordView(context: ViewContext): View {
             volume: store.settings.volume,
             rampMs: store.settings.rampMs,
             waveform: store.settings.waveform,
+            noiseSnrDb: (exportNoiseToggle.querySelector('input') as HTMLInputElement).checked
+              ? store.settings.noiseSnrDb
+              : null,
           });
           downloadBlob(`morse-frappe-${slugify(text || 'enregistrement')}.wav`, blob);
           context.toast('Enregistrement audio téléchargé.', 'success');
@@ -329,6 +339,7 @@ export function recordView(context: ViewContext): View {
     reset();
     recording = true;
     void store.audio.unlock();
+    void store.audio.startNoise();
     recordButton.textContent = 'Arrêter l’enregistrement';
     renderOutput();
   };
@@ -339,6 +350,7 @@ export function recordView(context: ViewContext): View {
     keyer.flush();
     recording = false;
     store.audio.stopSidetone();
+    store.audio.stopNoise();
     store.haptics.release();
     lamp.off();
     recordButton.textContent = 'Démarrer l’enregistrement';
@@ -386,7 +398,7 @@ export function recordView(context: ViewContext): View {
     h('div', { class: 'tape-wrap' }, timeline, buffer),
     keypad.element,
     h('div', { class: 'actions' }, recordButton, clearButton),
-    h('div', { class: 'actions' }, wavButton, textButton, copyButton),
+    h('div', { class: 'actions' }, wavButton, exportNoiseToggle, textButton, copyButton),
     h(
       'details',
       { class: 'help' },
@@ -415,6 +427,7 @@ export function recordView(context: ViewContext): View {
       keypad.destroy();
       keyer.dispose();
       store.audio.stopSidetone();
+      store.audio.stopNoise();
       store.haptics.release();
     },
   };

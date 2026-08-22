@@ -40,6 +40,16 @@ export interface Settings {
   haptics: boolean;
   /** Sons de confirmation et d'erreur de l'interface. */
   uiSounds: boolean;
+  /** Bruit de fond de réception pendant les séances. */
+  noiseEnabled: boolean;
+  /** Rapport signal/bruit visé, en décibels. */
+  noiseSnrDb: number;
+  /**
+   * Silence ajouté après le dernier signal, en unités. Il détache la fin de
+   * l'émission de l'extinction de la sortie audio, dont beaucoup de casques
+   * signalent l'arrivée par un craquement.
+   */
+  tailUnits: number;
 
   theme: Theme;
   /** Ordre d'introduction des caractères en méthode Koch. */
@@ -69,6 +79,9 @@ export const DEFAULT_SETTINGS: Settings = {
   visualSignal: true,
   haptics: true,
   uiSounds: true,
+  noiseEnabled: true,
+  noiseSnrDb: 20,
+  tailUnits: 3,
 
   theme: 'auto',
   kochOrder: 'lcwo',
@@ -106,5 +119,7 @@ export function normalizeSettings(input: Partial<Settings> | null | undefined): 
     kochOrder: ORDERS.includes(raw.kochOrder) ? raw.kochOrder : 'lcwo',
     kochThreshold: clamp(raw.kochThreshold, 0.6, 1),
     sessionLength: Math.round(clamp(raw.sessionLength, 5, 100)),
+    noiseSnrDb: Math.round(clamp(raw.noiseSnrDb, 0, 40)),
+    tailUnits: Math.round(clamp(raw.tailUnits, 0, 10)),
   };
 }

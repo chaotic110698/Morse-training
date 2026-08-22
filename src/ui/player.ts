@@ -82,7 +82,20 @@ export class MorsePlayer {
     return this.playElements(elements, options);
   }
 
-  async playElements(elements: TimedElement[], options: PlayOptions = {}): Promise<boolean> {
+  /**
+   * Ajoute le silence de fin réglé par l'utilisateur. Il détache le dernier
+   * signal de l'extinction de la sortie audio : sur beaucoup de casques, cette
+   * extinction s'accompagne d'un craquement qu'on prend sinon pour un élément
+   * du code.
+   */
+  private withTail(elements: TimedElement[]): TimedElement[] {
+    const units = this.store.settings.tailUnits;
+    if (units <= 0 || elements.length === 0) return elements;
+    return [...elements, { on: false, duration: units * this.store.timing.unit }];
+  }
+
+  async playElements(input: TimedElement[], options: PlayOptions = {}): Promise<boolean> {
+    const elements = this.withTail(input);
     this.stopped = false;
     const unlocked = await this.store.audio.unlock();
     if (this.stopped) return false;
