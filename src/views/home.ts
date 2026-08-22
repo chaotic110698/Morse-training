@@ -93,6 +93,12 @@ const SHORTCUTS: Shortcut[] = [
     text: 'Émettre demande une licence : ce qu’elle autorise, comment se passe l’examen, et par où commencer.',
   },
   {
+    path: '/licence/bandes',
+    icon: '🎚️',
+    title: 'Bandes et puissances',
+    text: 'Les vingt-cinq bandes de la région 1, leur statut réglementaire, et de quoi situer une fréquence.',
+  },
+  {
     path: '/progression/statistiques',
     icon: '📊',
     title: 'Statistiques',

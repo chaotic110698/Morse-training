@@ -8,6 +8,11 @@ import { phoneticView } from './learn-phonetic.ts';
 import { communicationView } from './learn-communication.ts';
 import { radioView } from './learn-radio.ts';
 import { licenceExamView } from './licence-exam.ts';
+import { licenceFrameworkView } from './licence-framework.ts';
+import { licenceEmissionsView } from './licence-emissions.ts';
+import { licenceBandsView } from './licence-bands.ts';
+import { licenceTrafficView } from './licence-traffic.ts';
+import { licenceStationView } from './licence-station.ts';
 import { listenView } from './train-listen.ts';
 import { sendView } from './train-send.ts';
 import { wordsView } from './train-words.ts';
@@ -101,6 +106,51 @@ export const ROUTES: RouteDefinition[] = [
     icon: '🎓',
     group: 'licence',
     factory: licenceExamView,
+  },
+  {
+    path: '/licence/cadre',
+    label: 'Le cadre réglementaire',
+    title: 'Le cadre réglementaire',
+    description: 'Qui décide quoi, du traité mondial à l’arrêté français.',
+    icon: '⚖️',
+    group: 'licence',
+    factory: licenceFrameworkView,
+  },
+  {
+    path: '/licence/emissions',
+    label: 'Classes d’émission',
+    title: 'Classes d’émission et conditions techniques',
+    description: 'Les trois caractères, et ce que la station doit respecter.',
+    icon: '📶',
+    group: 'licence',
+    factory: licenceEmissionsView,
+  },
+  {
+    path: '/licence/bandes',
+    label: 'Bandes et puissances',
+    title: 'Fréquences, puissances et statuts',
+    description: 'Les vingt-cinq bandes de la région 1, leur statut et leurs limites.',
+    icon: '🎚️',
+    group: 'licence',
+    factory: licenceBandsView,
+  },
+  {
+    path: '/licence/trafic',
+    label: 'Le trafic et ses règles',
+    title: 'Le trafic et ses règles',
+    description: 'S’identifier, écouter, ce qu’on peut dire, et le journal de bord.',
+    icon: '📋',
+    group: 'licence',
+    factory: licenceTrafficView,
+  },
+  {
+    path: '/licence/station',
+    label: 'La station et l’indicatif',
+    title: 'La station et l’indicatif',
+    description: 'Structure des indicatifs, déclarations, sanctions et trafic à l’étranger.',
+    icon: '🪪',
+    group: 'licence',
+    factory: licenceStationView,
   },
   {
     path: '/entrainement/ecoute',

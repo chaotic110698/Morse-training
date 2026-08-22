@@ -34,6 +34,29 @@ localement.
   situe la fréquence dans le plan de bandes, et le tableau des bandes
   radioamateur de la région 1.
 
+**Licence** — préparation au certificat d'opérateur du service amateur
+
+- *Le certificat d'opérateur* — ce que la licence autorise, le déroulement des
+  deux épreuves, le barème et ce qu'il implique, l'inscription, et la
+  distinction entre le certificat et la notification d'indicatif.
+- *Le cadre réglementaire* — les trois niveaux de règles, les six acteurs et,
+  surtout, la répartition des compétences entre l'ARCEP, le ministre et l'ANFR.
+- *Classes d'émission* — les trois caractères expliqués comme un système, avec
+  un décodeur interactif, les trois tables, les classes réellement rencontrées,
+  et les conditions techniques imposées à la station.
+- *Bandes et puissances* — les trois régions de l'UIT, les quatre statuts
+  d'attribution, les vingt-cinq bandes de la région 1 avec leur largeur calculée
+  et leur statut segment par segment, et un vérificateur de fréquence.
+- *Le trafic et ses règles* — quand s'identifier, quoi vérifier avant d'émettre,
+  ce qu'on a le droit de dire, et le journal de bord.
+- *La station et l'indicatif* — structure des indicatifs français, suffixes
+  d'exploitation, déclarations, urbanisme et droit à l'antenne, sanctions, et
+  trafic à l'étranger sous la recommandation CEPT.
+
+Le contenu de cette section est rédigé pour ce site à partir du cours de F6GPX
+publié par le Radio-Club de la Haute Île, crédité et lié depuis la page
+d'entrée. Voir `docs/formation/LISEZMOI.md`.
+
 **S'entraîner**
 
 - *Écoute (Koch)* — l'exercice central : on commence à deux caractères, à pleine

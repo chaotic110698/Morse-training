@@ -69,7 +69,10 @@ export function radioView(_context: ViewContext): View {
 
   // --- Tableau des bandes ---
 
-  const bandRows = BANDS.map((band) =>
+  // Page de découverte : on s'arrête au 23 cm. Au-delà, les bandes
+  // millimétriques n'apprennent rien à qui débute et noient les autres. Le
+  // tableau exhaustif, avec les statuts, est sur la page Licence.
+  const bandRows = BANDS.filter((band) => band.domain !== 'SHF' && band.domain !== 'EHF').map((band) =>
     h(
       'tr',
       {},
@@ -272,6 +275,12 @@ export function radioView(_context: ViewContext): View {
       h('p', { class: 'card__hint' },
         "La télégraphie occupe toujours le bas de bande, par convention internationale. C’est là qu’il " +
         "faut écouter pour entendre du morse, et là qu’on s’installe pour en émettre."),
+      h('p', { class: 'field__hint' },
+        "Ce tableau s’arrête au 23 centimètres. Le service amateur dispose aussi de neuf bandes " +
+        "millimétriques au-delà, réservées en pratique aux expérimentateurs ; elles figurent, avec le " +
+        "statut réglementaire de chaque bande, dans ",
+        h('a', { href: '#/licence/bandes', text: 'Bandes et puissances' }),
+        "."),
     ),
 
     h(

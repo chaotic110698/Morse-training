@@ -547,3 +547,276 @@
 .syllabus__list::marker {
   color: var(--text-faint);
 }
+
+/* --- Acteurs de la réglementation --- */
+
+.actors {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: var(--space-3);
+}
+
+.actor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.actor__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.actor__short {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--accent);
+  letter-spacing: 0.03em;
+}
+
+.actor__scope {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+}
+
+.actor__name {
+  margin: 0;
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.actor__role {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+/* --- Statuts d'attribution --- */
+
+/* La pastille sert de repère visuel commun entre le tableau et les fiches :
+   c'est le même code qu'on retrouve aux deux endroits. */
+.status {
+  display: inline-block;
+  min-width: 1.5rem;
+  padding: 0.05rem 0.35rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-align: center;
+  color: var(--accent-text);
+  background: var(--text-faint);
+}
+
+.status--a { background: var(--ok); }
+.status--b { background: var(--accent); }
+.status--c { background: var(--text-muted); }
+.status--d { background: var(--error); }
+
+.status__range {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.statuses {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--space-3);
+}
+
+.status-card {
+  padding: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.status-card__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.status-card__name {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.status-card__note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+/* --- Décodeur de classe d'émission --- */
+
+.decoder__input {
+  max-width: 7rem;
+  font-family: var(--font-mono);
+  font-size: 1.6rem;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.decoder__output {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: var(--space-4) 0;
+}
+
+.decoder__row {
+  display: grid;
+  grid-template-columns: minmax(0, 12rem) 2.2rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+}
+
+.decoder__row--unknown {
+  opacity: 0.5;
+}
+
+.decoder__position {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+}
+
+.decoder__char {
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-align: center;
+}
+
+.decoder__label {
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.decoder__known {
+  margin: 0;
+  padding: var(--space-3);
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 32rem) {
+  .decoder__row {
+    grid-template-columns: 2.2rem minmax(0, 1fr);
+  }
+
+  .decoder__position {
+    grid-column: 1 / -1;
+  }
+}
+
+/* --- Puces d'exemple --- */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chip {
+  padding: var(--space-1) var(--space-3);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition);
+}
+
+.chip:hover,
+.chip:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* --- Suffixes d'exploitation --- */
+
+.phrasebook-plain {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--space-3);
+}
+
+.suffix {
+  padding: var(--space-4);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.suffix__code {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.suffix__spoken {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-faint);
+}
+
+.suffix__meaning {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+/* --- Utilitaires partagés --- */
+
+.mono {
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+/* Estompe les lignes hors programme sans les cacher : elles restent lisibles
+   pour qui les cherche, et s'effacent pour qui révise. */
+.is-dim {
+  opacity: 0.55;
+}
+
+.converter__value {
+  font-weight: 600;
+}
+
+.card--accent {
+  border-left: 3px solid var(--accent);
+}
