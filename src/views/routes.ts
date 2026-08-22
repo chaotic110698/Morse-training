@@ -7,6 +7,7 @@ import { alphabetView } from './learn-alphabet.ts';
 import { phoneticView } from './learn-phonetic.ts';
 import { communicationView } from './learn-communication.ts';
 import { radioView } from './learn-radio.ts';
+import { licenceExamView } from './licence-exam.ts';
 import { listenView } from './train-listen.ts';
 import { sendView } from './train-send.ts';
 import { wordsView } from './train-words.ts';
@@ -21,6 +22,7 @@ import type { RouteDefinition } from '../ui/router.ts';
 export const NAV_GROUPS: Array<{ id: string; label: string }> = [
   { id: 'accueil', label: 'Accueil' },
   { id: 'apprendre', label: 'Apprendre' },
+  { id: 'licence', label: 'Licence' },
   { id: 'entrainement', label: 'S’entraîner' },
   { id: 'outils', label: 'Outils' },
   { id: 'progression', label: 'Progression' },
@@ -90,6 +92,15 @@ export const ROUTES: RouteDefinition[] = [
     icon: '📻',
     group: 'apprendre',
     factory: radioView,
+  },
+  {
+    path: '/licence/examen',
+    label: 'Le certificat d’opérateur',
+    title: 'Le certificat d’opérateur',
+    description: 'Ce que la licence autorise, et comment se passe l’examen.',
+    icon: '🎓',
+    group: 'licence',
+    factory: licenceExamView,
   },
   {
     path: '/entrainement/ecoute',

@@ -87,6 +87,12 @@ const SHORTCUTS: Shortcut[] = [
     text: 'Ce qu’est une onde, comment elle voyage, à quoi servent les bandes et comment les choisir.',
   },
   {
+    path: '/licence/examen',
+    icon: '🎓',
+    title: 'Le certificat d’opérateur',
+    text: 'Émettre demande une licence : ce qu’elle autorise, comment se passe l’examen, et par où commencer.',
+  },
+  {
     path: '/progression/statistiques',
     icon: '📊',
     title: 'Statistiques',

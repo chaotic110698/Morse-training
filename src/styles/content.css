@@ -24,6 +24,14 @@
   margin-top: var(--space-5);
 }
 
+/* Le reset aplatit les titres : sans cette règle, un h3 se colle au paragraphe
+   qui le suit et ne se distingue plus du corps de texte. */
+.prose h3 {
+  margin: var(--space-5) 0 var(--space-2);
+  font-size: 1.05rem;
+  font-weight: 650;
+}
+
 .prose__note {
   color: var(--text-muted);
   font-size: 0.88rem;
@@ -472,4 +480,70 @@
 .converter__label {
   color: var(--text-muted);
   font-size: 0.86rem;
+}
+
+/* --- Les épreuves de l'examen --- */
+
+.exam-trials {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--space-3);
+}
+
+.exam-trial {
+  padding: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+}
+
+.exam-trial__name {
+  margin: 0 0 var(--space-1);
+  font-size: 1.05rem;
+}
+
+.exam-trial__meta {
+  margin: 0 0 var(--space-2);
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.exam-trial__program {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* --- Programme de l'examen --- */
+
+.syllabus {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: var(--space-5);
+  margin-top: var(--space-4);
+}
+
+.syllabus__title {
+  margin: 0 0 var(--space-2);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text-faint);
+}
+
+.syllabus__list {
+  margin: 0;
+  padding-left: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.syllabus__list::marker {
+  color: var(--text-faint);
 }
