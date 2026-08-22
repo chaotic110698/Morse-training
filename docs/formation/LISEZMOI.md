@@ -1,31 +1,48 @@
 # Documents de formation
 
-Déposez ici les supports servant à construire les cours du site : documents de
-formation à la licence radioamateur, mémentos réglementaires, tableaux de
-bandes, etc.
+Supports servant de base aux cours du site.
 
-## Comment déposer un fichier
+## Documents déposés
 
-Depuis l'interface web de GitHub, sur la page du dépôt :
-**Add file** puis **Upload files**, et glissez le fichier dans ce dossier.
-Formats acceptés sans difficulté : `.pdf` avec texte sélectionnable, `.md`,
-`.txt`, `.odt`, `.docx`.
+### `cours_radio.pdf`
 
-Un PDF issu d'un scan, dont le texte est en réalité une image, demande une
-reconnaissance de caractères : signalez-le, le traitement n'est pas le même.
+*Préparation au certificat d'opérateur du service amateur — Premier livre :
+COURS, Réglementation et Technique*, par **F6GPX**, Radio-Club de la Haute Île
+(F5KFF / F6KGL), édition de novembre 2025. 200 pages.
+
+Le PDF réunit en fait deux livres :
+
+| Partie | Pages | Contenu |
+| ------ | ----- | ------- |
+| Introduction | 2-7 | Déroulement de l'examen, barème, démarches, plan du cours |
+| Réglementation | 8-33 | R-1 classes d'émission · R-2 fréquences · R-3 épellation, code Q, contact · R-4 journal, indicatifs, CEPT · R-5 bases techniques |
+| Technique | 34-96 | Ch. 0 algèbre · 1-4 électricité · 5-8 composants actifs · 9-12 radioélectricité |
+| Annexes | 98-100 | Formules à connaître, bibliographie |
+| Exercices | 102-200 | 49 séries, 489 questions à choix multiple avec corrigé |
+
+Chaque question du recueil porte une référence vers le paragraphe du cours
+qu'elle vérifie (`R1-2a`, `T023b`…), ce qui permet de relier révision et
+exercices.
 
 ## Droits d'utilisation
 
-Le contenu technique — physique des ondes, formules, plans de bandes, textes
-réglementaires — n'appartient à personne et peut être librement expliqué. En
-revanche, la **rédaction** d'un support de formation est protégée par le droit
-d'auteur.
+Le document porte sa licence en page 2 :
 
-Pour chaque document déposé, précisez donc dans le tableau ci-dessous ce qu'on
-peut en faire. En l'absence d'indication, le document sera traité comme une
-simple source documentaire : les cours du site seront rédigés à partir de lui,
-sans en reprendre le texte.
+> **Creative Commons Attribution — Pas d'Utilisation Commerciale — Partage dans
+> les Mêmes Conditions 4.0 International** (CC BY-NC-SA 4.0)
+> <http://creativecommons.org/licenses/by-nc-sa/4.0/>
 
-| Fichier | Origine | Utilisation autorisée |
-| ------- | ------- | --------------------- |
-| _(à compléter)_ | | |
+Cette licence autorise la reproduction et l'adaptation, à trois conditions :
+créditer l'auteur, ne pas en faire un usage commercial, et placer toute œuvre
+dérivée sous la même licence.
+
+**Choix retenu** : les cours du site sont **rédigés de façon originale**, en se
+servant du document comme source documentaire. Le contenu lui-même — physique,
+formules, textes réglementaires — n'appartient à personne ; seule sa rédaction
+est protégée. Cette voie évite d'imposer la clause de partage à l'identique au
+reste du site.
+
+L'auteur est malgré tout crédité sur le site, et le lien vers son cours donné :
+c'est la moindre des choses, et cela couvre les passages qui, sur un sujet
+aussi contraint qu'une formule ou un article de loi, ressembleraient
+nécessairement à l'original.
