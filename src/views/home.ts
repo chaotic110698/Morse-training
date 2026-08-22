@@ -18,7 +18,7 @@ const SHORTCUTS: Shortcut[] = [
     path: '/entrainement/ecoute',
     icon: '🎧',
     title: 'Écoute — méthode Koch',
-    text: "L'exercice central. Deux caractères pour commencer, à pleine vitesse, puis un de plus dès que vous êtes fiable.",
+    text: "L’exercice central. Deux caractères pour commencer, à pleine vitesse, puis un de plus dès que vous êtes fiable.",
   },
   {
     path: '/entrainement/emission',
@@ -72,7 +72,19 @@ const SHORTCUTS: Shortcut[] = [
     path: '/apprendre/alphabet',
     icon: '🔤',
     title: 'Alphabet et lexique',
-    text: 'Lettres, chiffres, ponctuation, accents et signaux de procédure. Chaque ligne est écoutable.',
+    text: 'Lettres, chiffres, ponctuation et accents, rangés par catégorie. Chaque ligne est écoutable.',
+  },
+  {
+    path: '/apprendre/communication',
+    icon: '💬',
+    title: 'Communiquer en morse',
+    text: 'Signaux de procédure, codes Q, abréviations et indicatifs, avec un générateur d’indicatif fictif.',
+  },
+  {
+    path: '/apprendre/radio',
+    icon: '📻',
+    title: 'Comprendre la radio',
+    text: 'Ce qu’est une onde, comment elle voyage, à quoi servent les bandes et comment les choisir.',
   },
   {
     path: '/progression/statistiques',
@@ -103,7 +115,7 @@ export function homeView(context: ViewContext): View {
               ? `Vous travaillez ${charset.length} caractères sur ${kochMaxLevel(settings.kochOrder)}, ` +
                 `avec ${formatPercent(overallAccuracy(progress))} de précision sur ` +
                 `${formatNumber(progress.totals.attempts)} réponses. Continuez là où vous en étiez.`
-              : "Ce site vous apprend à reconnaître le morse à l'oreille, pas à déchiffrer des points et " +
+              : "Ce site vous apprend à reconnaître le morse à l’oreille, pas à déchiffrer des points et " +
                 'des traits sur une feuille. La différence est énorme, et elle se joue dès la première séance : ' +
                 'on commence tout de suite à vitesse réelle, avec deux caractères seulement.'),
           h(

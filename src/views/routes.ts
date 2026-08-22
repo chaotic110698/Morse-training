@@ -5,6 +5,8 @@ import { principlesView } from './learn-principles.ts';
 import { historyView } from './learn-history.ts';
 import { alphabetView } from './learn-alphabet.ts';
 import { phoneticView } from './learn-phonetic.ts';
+import { communicationView } from './learn-communication.ts';
+import { radioView } from './learn-radio.ts';
 import { listenView } from './train-listen.ts';
 import { sendView } from './train-send.ts';
 import { wordsView } from './train-words.ts';
@@ -70,6 +72,24 @@ export const ROUTES: RouteDefinition[] = [
     icon: '🗣️',
     group: 'apprendre',
     factory: phoneticView,
+  },
+  {
+    path: '/apprendre/communication',
+    label: 'Communiquer en morse',
+    title: 'Communiquer en morse',
+    description: 'Signaux de procédure, codes Q, abréviations et indicatifs.',
+    icon: '💬',
+    group: 'apprendre',
+    factory: communicationView,
+  },
+  {
+    path: '/apprendre/radio',
+    label: 'Comprendre la radio',
+    title: 'Comprendre la radio',
+    description: 'Ondes, bandes, propagation et modes d’émission.',
+    icon: '📻',
+    group: 'apprendre',
+    factory: radioView,
   },
   {
     path: '/entrainement/ecoute',

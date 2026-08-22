@@ -130,7 +130,7 @@ export function parseSaveFile(text: string): ImportResult {
   try {
     parsed = JSON.parse(text);
   } catch {
-    return { ok: false, message: "Le fichier n'est pas du JSON valide." };
+    return { ok: false, message: "Le fichier n’est pas du JSON valide." };
   }
   if (!parsed || typeof parsed !== 'object') {
     return { ok: false, message: 'Le fichier est vide ou mal formé.' };
@@ -142,7 +142,7 @@ export function parseSaveFile(text: string): ImportResult {
   if (typeof file.version !== 'number' || file.version > SCHEMA_VERSION) {
     return {
       ok: false,
-      message: "Ce fichier a été créé par une version plus récente de l'application.",
+      message: "Ce fichier a été créé par une version plus récente de l’application.",
     };
   }
   return {

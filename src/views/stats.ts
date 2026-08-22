@@ -117,7 +117,7 @@ export function statsView(context: ViewContext): View {
     const history = progress.sessions.slice(0, 15);
     const historyTable =
       history.length === 0
-        ? h('p', { class: 'empty', text: "Aucune série enregistrée pour l'instant." })
+        ? h('p', { class: 'empty', text: "Aucune série enregistrée pour l’instant." })
         : h(
             'div',
             { class: 'table-wrap' },
@@ -153,7 +153,7 @@ export function statsView(context: ViewContext): View {
         { class: 'card' },
         h('h2', { class: 'card__title', text: 'Où en est chaque caractère' }),
         h('p', { class: 'card__hint' },
-          `Les ${charset.length} caractères de votre niveau actuel, dans l'ordre ${order.label}. ` +
+          `Les ${charset.length} caractères de votre niveau actuel, dans l’ordre ${order.label}. ` +
           'Survolez une case pour le détail.'),
         heatmap,
         weak.length > 0
@@ -172,7 +172,7 @@ export function statsView(context: ViewContext): View {
         chart,
         h('p', { class: 'card__hint' },
           `${formatNumber(progress.totals.sessions)} séries au total, ` +
-          `${formatDuration(progress.totals.trainingMs)} d'entraînement cumulé. ` +
+          `${formatDuration(progress.totals.trainingMs)} d’entraînement cumulé. ` +
           'La régularité pèse bien plus lourd que la durée de chaque séance.'),
       ),
       h(

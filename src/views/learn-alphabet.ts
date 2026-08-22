@@ -9,7 +9,7 @@
 import { h } from '../ui/dom.ts';
 import { SignalLamp } from '../ui/lamp.ts';
 import { MorsePlayer } from '../ui/player.ts';
-import { DIGITS, EXTENDED, LETTERS, PROSIGNS, PUNCTUATION, prettyCode, spokenCode } from '../core/morse.ts';
+import { DIGITS, EXTENDED, LETTERS, PUNCTUATION, prettyCode, spokenCode } from '../core/morse.ts';
 import { elementsForCode } from '../core/timing.ts';
 import type { View, ViewContext } from '../ui/router.ts';
 
@@ -33,39 +33,28 @@ const GROUPS: Group[] = [
   {
     id: 'letters',
     title: 'Lettres',
-    description: "Les vingt-six lettres latines. C'est ici que commence tout apprentissage.",
+    description: "Les vingt-six lettres latines. C’est ici que commence tout apprentissage.",
     entries: toEntries(LETTERS),
   },
   {
     id: 'digits',
     title: 'Chiffres',
     description:
-      "Tous longs de cinq éléments, construits par symétrie : le 1 commence par un point et finit par quatre traits, le 9 fait l'inverse.",
+      "Tous longs de cinq éléments, construits par symétrie : le 1 commence par un point et finit par quatre traits, le 9 fait l’inverse.",
     entries: toEntries(DIGITS),
   },
   {
     id: 'punctuation',
     title: 'Ponctuation et signes',
     description:
-      "Plus longs et moins fréquents. En trafic réel, seuls quelques-uns servent vraiment : le point, la virgule, le point d'interrogation et la barre oblique.",
+      "Plus longs et moins fréquents. En trafic réel, seuls quelques-uns servent vraiment : le point, la virgule, le point d’interrogation et la barre oblique.",
     entries: toEntries(PUNCTUATION),
-  },
-  {
-    id: 'prosigns',
-    title: 'Signaux de procédure',
-    description:
-      "Émis d'un seul tenant, sans silence interne : ce sont des signaux à part entière, pas des suites de lettres.",
-    entries: PROSIGNS.map((prosign) => ({
-      label: prosign.name,
-      code: prosign.code,
-      note: prosign.meaning,
-    })),
   },
   {
     id: 'extended',
     title: 'Caractères accentués',
     description:
-      "Normalises par l'Union internationale des télécommunications mais très peu utilisés en pratique. Ils ne font pas partie des jeux d'entraînement.",
+      "Normalises par l’Union internationale des télécommunications mais très peu utilisés en pratique. Ils ne font pas partie des jeux d’entraînement.",
     entries: toEntries(EXTENDED),
   },
 ];
@@ -103,9 +92,19 @@ export function alphabetView(context: ViewContext): View {
 
       blocks.push(
         h(
-          'section',
-          { class: 'lexicon__group' },
-          h('h2', { class: 'lexicon__title', text: group.title }),
+          'details',
+          {
+            class: 'lexicon__group',
+            // Seul l'alphabet est déplié au départ. Un filtre actif ouvre tout :
+            // masquer un résultat trouvé serait le contraire d'une recherche.
+            attrs: { open: needle !== '' || group.id === 'letters' },
+          },
+          h(
+            'summary',
+            { class: 'lexicon__summary' },
+            h('span', { class: 'lexicon__title', text: group.title }),
+            h('span', { class: 'lexicon__count', text: `${entries.length}` }),
+          ),
           h('p', { class: 'lexicon__description', text: group.description }),
           h(
             'ul',
@@ -182,6 +181,10 @@ export function alphabetView(context: ViewContext): View {
         "Le code complet, écoutable d’un clic. Utilisez cette page comme une référence : pour apprendre, " +
         "passez par le mode Écoute, qui vous fait reconnaître les caractères au son plutôt que de les " +
         "mémoriser sous forme de points et de traits."),
+      h('p', { class: 'prose__note' },
+        "Les signaux de procédure, les codes Q et les abréviations du trafic sont réunis dans ",
+        h('a', { href: '#/apprendre/communication', text: 'Communiquer en morse' }),
+        "."),
     ),
     h('div', { class: 'toolbar' }, search, spokenToggle, lamp.element),
     container,

@@ -1,7 +1,7 @@
 /** Présentation lisible des codes de touches physiques (`KeyboardEvent.code`). */
 
 const NAMES: Record<string, string> = {
-  Space: "Barre d'espace",
+  Space: "Barre d’espace",
   ArrowLeft: 'Flèche gauche',
   ArrowRight: 'Flèche droite',
   ArrowUp: 'Flèche haut',

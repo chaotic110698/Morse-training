@@ -72,8 +72,8 @@ export function principlesView(context: ViewContext): View {
     { class: 'prose' },
     h('p', { class: 'prose__lead' },
       "Le code morse ne repose que sur deux signes et sur une règle de durée. Tout le reste " +
-      "— la vitesse, les méthodes d'apprentissage, les manipulateurs — découle de cette base " +
-      "d'une simplicité remarquable."),
+      "— la vitesse, les méthodes d’apprentissage, les manipulateurs — découle de cette base " +
+      "d’une simplicité remarquable."),
 
     h('h2', { text: 'Deux signes, et rien d’autre' }),
     h('p', {},

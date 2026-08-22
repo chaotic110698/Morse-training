@@ -58,7 +58,7 @@ export function wordsView(context: ViewContext): View {
     'select',
     {
       class: 'select',
-      attrs: { 'aria-label': "Jeu d'entraînement" },
+      attrs: { 'aria-label': "Jeu d’entraînement" },
       on: {
         change: (event) => {
           setId = (event.target as HTMLSelectElement).value;
@@ -130,7 +130,7 @@ export function wordsView(context: ViewContext): View {
       return;
     }
     answered = false;
-    entry = drawVocabulary(setId);
+    entry = drawVocabulary(setId, store.settings.callsign);
     input.value = '';
     input.disabled = false;
     validateButton.textContent = 'Valider';
@@ -233,7 +233,7 @@ export function wordsView(context: ViewContext): View {
   renderHint();
   tracker.start();
   renderProgress();
-  entry = drawVocabulary(setId);
+  entry = drawVocabulary(setId, store.settings.callsign);
   renderIdle();
 
   const element = h(

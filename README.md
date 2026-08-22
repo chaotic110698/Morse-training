@@ -14,13 +14,25 @@ localement.
   recalculé en direct selon vos réglages.
 - *Histoire du morse* — du télégraphe Chappe à la fin de la veille maritime, en
   dix jalons.
-- *Alphabet et lexique* — lettres, chiffres, ponctuation, caractères accentués
-  et signaux de procédure, chaque entrée étant écoutable d'un clic.
+- *Alphabet et lexique* — lettres, chiffres, ponctuation et caractères
+  accentués, rangés en catégories repliables, chaque entrée étant écoutable
+  d'un clic.
 - *Alphabet OTAN* — l'alphabet radiotéléphonique international : les vingt-six
   mots et les dix chiffres avec une prononciation transcrite pour un
   francophone, le code morse de chaque lettre en regard, un outil pour épeler un
   indicatif, un exercice à quatre choix dans les deux sens, l'histoire du code
   et l'épellation française usuelle au téléphone.
+- *Communiquer en morse* — le vocabulaire du trafic : signaux de procédure,
+  codes Q, abréviations et mots courants, chacun écoutable ; puis les indicatifs
+  d'appel, leur structure, les différences entre pays et les suffixes de
+  situation, avec un générateur d'indicatifs fictifs. Un indicatif adopté est
+  tiré plus souvent dans le mode *Mots et indicatifs*.
+- *Comprendre la radio* — ce qu'est une onde, les trois chemins de propagation,
+  l'ionosphère et le cycle solaire, les domaines de fréquences, les modes
+  d'émission, la composition d'une station et ce que l'écoute et l'émission
+  demandent en France. Avec un convertisseur fréquence / longueur d'onde qui
+  situe la fréquence dans le plan de bandes, et le tableau des bandes
+  radioamateur de la région 1.
 
 **S'entraîner**
 

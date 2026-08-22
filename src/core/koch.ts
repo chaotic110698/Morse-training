@@ -35,20 +35,20 @@ export const KOCH_ORDERS: KochOrder[] = [
     id: 'lcwo',
     label: 'LCWO (recommandé)',
     description:
-      "L'ordre le plus utilisé aujourd'hui. Les premiers caractères sont choisis pour sonner très différemment les uns des autres.",
+      "L’ordre le plus utilisé aujourd’hui. Les premiers caractères sont choisis pour sonner très différemment les uns des autres.",
     sequence: [...LCWO],
   },
   {
     id: 'classic',
     label: 'Koch historique',
-    description: "L'ordre d'origine des travaux de Ludwig Koch, repris par de nombreux logiciels.",
+    description: "L’ordre d’origine des travaux de Ludwig Koch, repris par de nombreux logiciels.",
     sequence: [...CLASSIC],
   },
   {
     id: 'alphabetical',
     label: 'Alphabétique',
     description:
-      "De A à Z puis les chiffres. Moins efficace à l'oreille, mais rassurant quand on débute.",
+      "De A à Z puis les chiffres. Moins efficace à l’oreille, mais rassurant quand on débute.",
     sequence: [...ALPHABETICAL],
   },
 ];

@@ -273,7 +273,7 @@ export function settingsView(context: ViewContext): View {
             h('span', { text: 'Un fond de bande pendant les séances' }),
           ),
           bandNoiseSupported()
-            ? "Un récepteur ne laisse passer qu'une bande étroite autour de la tonalité : le bruit qu'on entend en trafic réel n'est pas du bruit blanc mais un souffle coloré, dans lequel les signaux se détachent. Il démarre avec une série d'entraînement ou un enregistrement et s'arrête avec elle. Accessoirement, il maintient la sortie audio active et supprime le craquement d'extinction entre deux caractères."
+            ? "Un récepteur ne laisse passer qu’une bande étroite autour de la tonalité : le bruit qu’on entend en trafic réel n’est pas du bruit blanc mais un souffle coloré, dans lequel les signaux se détachent. Il démarre avec une série d’entraînement ou un enregistrement et s’arrête avec elle. Accessoirement, il maintient la sortie audio active et supprime le craquement d’extinction entre deux caractères."
             : "Ce navigateur ne sait pas fabriquer le bruit filtré : la génération hors ligne lui manque.",
         ),
         field(
@@ -368,7 +368,7 @@ export function settingsView(context: ViewContext): View {
             }),
             h('span', { text: "Aucune contrainte de temps entre les éléments" }),
           ),
-          "Dans les exercices guidés, le décodage cesse d'être arbitré par un chronomètre : chaque élément est comparé au code attendu. Un début valide vous laisse tout le temps voulu, le caractère se valide dès que son code est complet, et seule une erreur réelle interrompt la saisie. En manipulation libre, les silences sont simplement interprétés bien plus largement.",
+          "Dans les exercices guidés, le décodage cesse d’être arbitré par un chronomètre : chaque élément est comparé au code attendu. Un début valide vous laisse tout le temps voulu, le caractère se valide dès que son code est complet, et seule une erreur réelle interrompt la saisie. En manipulation libre, les silences sont simplement interprétés bien plus largement.",
         ),
         field(
           'Seuil adaptatif',
@@ -566,7 +566,7 @@ export function settingsView(context: ViewContext): View {
         h('h2', { class: 'card__title', text: 'Mes données' }),
         h('p', { class: 'field__hint' },
           `Version installée : ${__BUILD_STAMP__}. « Forcer la mise à jour » vide le cache hors ligne et recharge le site, ` +
-          "à utiliser si une correction annoncée ne semble pas appliquée. Votre progression n'est pas touchée."),
+          "à utiliser si une correction annoncée ne semble pas appliquée. Votre progression n’est pas touchée."),
         h('p', { class: 'card__hint' },
           storageAvailable()
             ? 'Réglages et progression sont enregistrés dans ce navigateur uniquement. Rien n’est envoyé sur un serveur, il n’y à ni compte ni suivi.'

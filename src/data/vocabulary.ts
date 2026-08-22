@@ -142,7 +142,7 @@ export const VOCABULARY_SETS: VocabularySet[] = [
   {
     id: 'abbreviations',
     label: 'Abréviations',
-    description: "Le vocabulaire de base d'un contact en télégraphie.",
+    description: "Le vocabulaire de base d’un contact en télégraphie.",
     entries: ABBREVIATIONS,
   },
   {
@@ -172,14 +172,19 @@ export const VOCABULARY_SETS: VocabularySet[] = [
   {
     id: 'groups',
     label: 'Groupes aléatoires',
-    description: "L'exercice le plus exigeant : cinq caractères sans aucune logique.",
+    description: "L’exercice le plus exigeant : cinq caractères sans aucune logique.",
     entries: [],
   },
 ];
 
 /** Tire un item du jeu demande, en générant à la volée si nécessaire. */
-export function drawVocabulary(setId: string): VocabularyEntry {
+export function drawVocabulary(setId: string, ownCallsign = ''): VocabularyEntry {
   if (setId === 'callsigns') {
+    // L'indicatif d'essai revient plus souvent : le premier qu'on doit savoir
+    // copier sans faute est le sien.
+    if (ownCallsign && Math.random() < 0.35) {
+      return { text: ownCallsign, meaning: 'Votre indicatif d’essai' };
+    }
     return { text: randomCallsign(), meaning: 'Indicatif généré aléatoirement' };
   }
   if (setId === 'groups') {

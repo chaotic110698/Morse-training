@@ -26,17 +26,17 @@ const DRILLS: Array<{ id: Drill; label: string; hint: string }> = [
   {
     id: 'free',
     label: 'Manipulation libre',
-    hint: "Aucune consigne : émettez ce que vous voulez, l'application décode. Idéal pour se chauffer le poignet et régler sa vitesse.",
+    hint: "Aucune consigne : émettez ce que vous voulez, l’application décode. Idéal pour se chauffer le poignet et régler sa vitesse.",
   },
   {
     id: 'chars',
     label: 'Caractères',
-    hint: "Un caractère à émettre, tire de votre jeu Koch actuel. C'est l'exercice de base pour ancrer le geste.",
+    hint: "Un caractère à émettre, tire de votre jeu Koch actuel. C’est l’exercice de base pour ancrer le geste.",
   },
   {
     id: 'words',
     label: 'Mots et abréviations',
-    hint: "Un mot entier, avec ses silences inter-caractères. Beaucoup plus exigeant : le rythme d'ensemble compte autant que chaque signe.",
+    hint: "Un mot entier, avec ses silences inter-caractères. Beaucoup plus exigeant : le rythme d’ensemble compte autant que chaque signe.",
   },
 ];
 
@@ -163,7 +163,7 @@ export function sendView(context: ViewContext): View {
 
   const drillSelect = h(
     'div',
-    { class: 'segmented', attrs: { role: 'group', 'aria-label': "Type d'exercice" } },
+    { class: 'segmented', attrs: { role: 'group', 'aria-label': "Type d’exercice" } },
     ...DRILLS.map((entry) =>
       h('button', {
         class: 'segmented__item',
@@ -252,7 +252,7 @@ export function sendView(context: ViewContext): View {
     if (drill === 'free') {
       promptChar.textContent = '';
       promptCode.textContent = '';
-      promptHint.textContent = "Manipulez librement : ce que vous émettez s'affiche au fur et à mesure.";
+      promptHint.textContent = "Manipulez librement : ce que vous émettez s’affiche au fur et à mesure.";
       listenButton.disabled = true;
       nextButton.disabled = true;
       return;
@@ -512,10 +512,10 @@ export function sendView(context: ViewContext): View {
         "la façon historique de manipuler."),
       h('p', {},
         h('strong', { text: 'Les palettes « un élément par appui » ' }),
-        "ont les mêmes deux contacts, mais un appui ne donne qu'un seul élément, quelle que soit sa " +
+        "ont les mêmes deux contacts, mais un appui ne donne qu’un seul élément, quelle que soit sa " +
         "durée. Sur un manipulateur réel, tenir la palette enchaîne les éléments : à 20 mots par " +
-        "minute un point et son silence durent 120 ms, soit moins qu'un relâchement de touche, si " +
-        "bien qu'on obtient trois points là où on en voulait un. Ce mode supprime le problème, au " +
+        "minute un point et son silence durent 120 ms, soit moins qu’un relâchement de touche, si " +
+        "bien qu’on obtient trois points là où on en voulait un. Ce mode supprime le problème, au " +
         "clavier comme au doigt. Les appuis sont mis en file : vous pouvez frapper plus vite que la " +
         "vitesse réglée sans rien perdre."),
       h('p', {},
@@ -526,14 +526,14 @@ export function sendView(context: ViewContext): View {
         "Si vous débutez aux palettes, restez en mode A."),
       h('p', {},
         "Sur téléphone et sur tablette, utilisez les boutons ci-dessus. Avec un clavier — y compris " +
-        "celui d'un iPad — ils sont reliés aux touches indiquées sur chaque bouton, modifiables dans " +
+        "celui d’un iPad — ils sont reliés aux touches indiquées sur chaque bouton, modifiables dans " +
         "les réglages."),
       h('p', {},
         h('strong', { text: 'La frappe indulgente ' }),
         "enlève toute contrainte de temps : chaque élément est comparé au code attendu, un début " +
-        "valide vous laisse réfléchir aussi longtemps qu'il le faut, et seul un élément qui ne " +
-        "correspond pas arrête la saisie. Le code attendu s'allume au fur et à mesure sous la " +
-        "consigne. C'est le bon réglage pour apprendre le geste ; désactivez-le quand vous voulez " +
+        "valide vous laisse réfléchir aussi longtemps qu’il le faut, et seul un élément qui ne " +
+        "correspond pas arrête la saisie. Le code attendu s’allume au fur et à mesure sous la " +
+        "consigne. C’est le bon réglage pour apprendre le geste ; désactivez-le quand vous voulez " +
         "travailler le rythme, qui est ce qui compte en trafic réel."),
     ),
   );

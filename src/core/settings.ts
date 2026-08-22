@@ -52,6 +52,11 @@ export interface Settings {
   tailUnits: number;
 
   theme: Theme;
+  /**
+   * Indicatif fictif adopté par l'opérateur. Sert d'exemple d'entraînement, il
+   * n'a aucune valeur officielle et ne doit pas être émis sur l'air.
+   */
+  callsign: string;
   /** Ordre d'introduction des caractères en méthode Koch. */
   kochOrder: KochOrderId;
   /** Précision à atteindre pour débloquer le caractère suivant, de 0 à 1. */
@@ -84,6 +89,7 @@ export const DEFAULT_SETTINGS: Settings = {
   tailUnits: 3,
 
   theme: 'auto',
+  callsign: '',
   kochOrder: 'lcwo',
   kochThreshold: 0.9,
   sessionLength: 25,
@@ -121,5 +127,6 @@ export function normalizeSettings(input: Partial<Settings> | null | undefined): 
     sessionLength: Math.round(clamp(raw.sessionLength, 5, 100)),
     noiseSnrDb: Math.round(clamp(raw.noiseSnrDb, 0, 40)),
     tailUnits: Math.round(clamp(raw.tailUnits, 0, 10)),
+    callsign: String(raw.callsign ?? '').toUpperCase().replace(/[^A-Z0-9/]/g, '').slice(0, 12),
   };
 }

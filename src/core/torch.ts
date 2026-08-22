@@ -40,14 +40,14 @@ export interface TorchResult {
 
 const MESSAGES: Record<TorchFailure, string> = {
   unsupported:
-    "Ce navigateur ne permet pas de piloter la lampe. C'est le cas de Safari sur iPhone et iPad : aucune interface web n'y donne accès au flash.",
+    "Ce navigateur ne permet pas de piloter la lampe. C’est le cas de Safari sur iPhone et iPad : aucune interface web n’y donne accès au flash.",
   denied:
-    "L'accès à la caméra a été refusé. La lampe passe par la caméra arrière, il n'existe pas d'autre chemin.",
-  'no-camera': "Aucune caméra arrière n'a été trouvée sur cet appareil.",
+    "L’accès à la caméra a été refusé. La lampe passe par la caméra arrière, il n’existe pas d’autre chemin.",
+  'no-camera': "Aucune caméra arrière n’a été trouvée sur cet appareil.",
   'no-torch': "La caméra de cet appareil ne déclare pas de lampe pilotable.",
   ineffective:
-    "Le navigateur a accepté la demande mais la lampe ne s'est pas allumée : cet appareil ne la pilote pas réellement depuis une page web.",
-  error: "La lampe n'a pas pu être activée.",
+    "Le navigateur a accepté la demande mais la lampe ne s’est pas allumée : cet appareil ne la pilote pas réellement depuis une page web.",
+  error: "La lampe n’a pas pu être activée.",
 };
 
 /**
@@ -213,7 +213,7 @@ export class Torch {
         if (this.failureAnnounced) return;
         this.failureAnnounced = true;
         const detail = error instanceof Error ? ` (${error.message})` : '';
-        this.onFailure?.(`La lampe a cessé de répondre en cours d'émission${detail}.`);
+        this.onFailure?.(`La lampe a cessé de répondre en cours d’émission${detail}.`);
       });
   }
 

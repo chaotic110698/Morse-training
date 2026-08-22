@@ -163,8 +163,8 @@ export function listenView(context: ViewContext): View {
           '.'),
         h('p', { class: 'display__hint' },
           set.length <= 3
-            ? `C'est volontaire, et c'est tout l'intérêt de la méthode Koch : on démarre à deux caractères ` +
-              `à pleine vitesse plutôt qu'à l'alphabet entier au ralenti. Un caractère de plus se débloque ` +
+            ? `C’est volontaire, et c’est tout l’intérêt de la méthode Koch : on démarre à deux caractères ` +
+              `à pleine vitesse plutôt qu’à l’alphabet entier au ralenti. Un caractère de plus se débloque ` +
               `dès que vous dépassez ${Math.round(store.settings.kochThreshold * 100)} % sur une série complète de ` +
               `${store.settings.sessionLength}. Si vous connaissez déjà une partie du code, montez le niveau avec le bouton + ci-dessus.`
             : `Un caractère de plus se débloque dès que vous dépassez ${Math.round(store.settings.kochThreshold * 100)} % ` +

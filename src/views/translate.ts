@@ -42,7 +42,7 @@ export function translateView(context: ViewContext): View {
     'div',
     {
       class: 'flash-layer',
-      attrs: { role: 'button', tabindex: '-1', 'aria-label': "Arrêter l'émission lumineuse" },
+      attrs: { role: 'button', tabindex: '-1', 'aria-label': "Arrêter l’émission lumineuse" },
       on: { click: () => stop() },
     },
     h('span', { class: 'flash-layer__hint', text: 'Touchez l’écran pour arrêter' }),
@@ -133,7 +133,7 @@ export function translateView(context: ViewContext): View {
     );
     const uniqueUnknown = [...new Set(unknown)];
     meta.textContent = seconds
-      ? `Durée à l'émission : ${seconds < 60 ? `${seconds.toFixed(1)} s` : `${Math.floor(seconds / 60)} min ${Math.round(seconds % 60)} s`}` +
+      ? `Durée à l’émission : ${seconds < 60 ? `${seconds.toFixed(1)} s` : `${Math.floor(seconds / 60)} min ${Math.round(seconds % 60)} s`}` +
         ` · ${store.settings.charWpm} WPM` +
         (uniqueUnknown.length > 0 ? ` · caractères sans code morse ignorés : ${uniqueUnknown.join(' ')}` : '')
       : '';
@@ -171,7 +171,7 @@ export function translateView(context: ViewContext): View {
     // l'utilisateur doit savoir pourquoi il n'entend rien.
     if (!(await store.audio.unlock())) {
       context.toast(
-        "Le son n'a pas pu démarrer sur cet appareil. L'émission continue en lumière et en vibration.",
+        "Le son n’a pas pu démarrer sur cet appareil. L’émission continue en lumière et en vibration.",
         'info',
       );
     }
@@ -218,7 +218,7 @@ export function translateView(context: ViewContext): View {
         context.toast(
           torchVerified
             ? 'La lampe a répondu : elle vient de rester allumée une seconde.'
-            : "Demande envoyée sans erreur. Si rien ne s'est allumé, c'est que cet appareil ne pilote pas son flash depuis une page web.",
+            : "Demande envoyée sans erreur. Si rien ne s’est allumé, c’est que cet appareil ne pilote pas son flash depuis une page web.",
           torchVerified ? 'success' : 'info',
         );
         renderTorchNote();
@@ -255,7 +255,7 @@ export function translateView(context: ViewContext): View {
           input.checked = false;
           torchEnabled = false;
           torchTestButton.disabled = true;
-          context.toast(result.message ?? "La lampe n'a pas pu être activée.", 'error');
+          context.toast(result.message ?? "La lampe n’a pas pu être activée.", 'error');
           renderTorchNote(result.message);
           return;
         }
@@ -289,14 +289,14 @@ export function translateView(context: ViewContext): View {
     }
     if (!torchPossiblySupported()) {
       torchNote.textContent =
-        "Ce navigateur ne permet pas de piloter la lampe. C'est notamment le cas de Safari sur iPhone et iPad : aucune interface web n'y donne accès au flash. Le flash d'écran ci-dessous reste disponible.";
+        "Ce navigateur ne permet pas de piloter la lampe. C’est notamment le cas de Safari sur iPhone et iPad : aucune interface web n’y donne accès au flash. Le flash d’écran ci-dessous reste disponible.";
       return;
     }
     torchNote.textContent = torchEnabled
       ? (torchVerified
-          ? `Lampe confirmée par l'appareil. La caméra arrière reste ouverte tant que l'option est active. Au-delà de ${TORCH_MAX_WPM} mots par minute, la commutation du flash ne suit plus : baissez la vitesse pour un signal lisible.`
-          : `Demande acceptée, mais cet appareil ne dit pas si la lampe s'est réellement allumée. Utilisez « Tester la lampe » et regardez le flash : c'est le seul verdict fiable. Au-delà de ${TORCH_MAX_WPM} mots par minute, la commutation ne suit plus.`)
-      : `Passe par la caméra arrière, seul chemin qu'offre le web vers le flash : l'autorisation caméra sera demandée. À utiliser vers ${TORCH_MAX_WPM} mots par minute au plus.`;
+          ? `Lampe confirmée par l’appareil. La caméra arrière reste ouverte tant que l’option est active. Au-delà de ${TORCH_MAX_WPM} mots par minute, la commutation du flash ne suit plus : baissez la vitesse pour un signal lisible.`
+          : `Demande acceptée, mais cet appareil ne dit pas si la lampe s’est réellement allumée. Utilisez « Tester la lampe » et regardez le flash : c’est le seul verdict fiable. Au-delà de ${TORCH_MAX_WPM} mots par minute, la commutation ne suit plus.`)
+      : `Passe par la caméra arrière, seul chemin qu’offre le web vers le flash : l’autorisation caméra sera demandée. À utiliser vers ${TORCH_MAX_WPM} mots par minute au plus.`;
   };
 
   const screenFlashInput = h('input', {
@@ -413,7 +413,7 @@ export function translateView(context: ViewContext): View {
       { class: 'prose prose--tight' },
       h('p', { class: 'prose__lead' },
         "Traduisez dans les deux sens : écrivez du texte pour obtenir le morse, ou collez du morse pour " +
-        "le relire en clair. Le résultat s'écoute, s'affiche sur la diode, et peut piloter la lampe du " +
+        "le relire en clair. Le résultat s’écoute, s’affiche sur la diode, et peut piloter la lampe du " +
         "téléphone pour émettre réellement en lumière."),
     ),
 
@@ -494,14 +494,14 @@ export function translateView(context: ViewContext): View {
             torchTestButton)),
         torchNote),
       h('div', { class: 'field' },
-        h('div', { class: 'field__label', text: "Flash de l'écran" }),
+        h('div', { class: 'field__label', text: "Flash de l’écran" }),
         h('div', { class: 'field__control' },
           h('label', { class: 'switch' }, screenFlashInput,
-            h('span', { text: "Utiliser l'écran comme lampe" }))),
+            h('span', { text: "Utiliser l’écran comme lampe" }))),
         h('p', { class: 'field__hint' },
-          "Solution de repli quand la lampe n'est pas pilotable, notamment sur iPhone. L'écran entier " +
-          "s'allume au rythme du signal, mais seulement pendant l'émission : cocher la case ne change " +
-          "rien à l'affichage. Touchez l'écran à tout moment pour arrêter. C'est efficace de nuit, mais " +
+          "Solution de repli quand la lampe n’est pas pilotable, notamment sur iPhone. L’écran entier " +
+          "s’allume au rythme du signal, mais seulement pendant l’émission : cocher la case ne change " +
+          "rien à l’affichage. Touchez l’écran à tout moment pour arrêter. C’est efficace de nuit, mais " +
           "éprouvant pour l'œil et déconseillé aux personnes photosensibles ; à réserver à une émission " +
           "courte, à vitesse lente.")),
     ),
@@ -516,14 +516,14 @@ export function translateView(context: ViewContext): View {
       h('p', {},
         "Dans le champ morse, un espace sépare deux caractères et une barre oblique sépare deux mots. " +
         "Les points typographiques et les tirets longs sont acceptés et convertis automatiquement, ce qui " +
-        "permet de coller du morse recopié depuis à peu près n'importe quelle source."),
+        "permet de coller du morse recopié depuis à peu près n’importe quelle source."),
       h('p', {},
         "Un code inconnu tapé à la main sera quand même émis tel quel : le traducteur joue fidèlement ce " +
         "que vous avez écrit, il ne corrige pas."),
       h('p', {},
-        "« Télécharger en WAV » produit un fichier audio de l'émission, à la vitesse et avec la tonalité " +
+        "« Télécharger en WAV » produit un fichier audio de l’émission, à la vitesse et avec la tonalité " +
         "réglées. Le rendu se fait entièrement dans le navigateur, plus vite que le temps réel, et le " +
-        "fichier s'ouvre partout sans codec particulier."),
+        "fichier s’ouvre partout sans codec particulier."),
     ),
   );
 
