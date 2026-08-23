@@ -52,6 +52,18 @@ localement.
 - *La station et l'indicatif* — structure des indicatifs français, suffixes
   d'exploitation, déclarations, urbanisme et droit à l'antenne, sanctions, et
   trafic à l'étranger sous la recommandation CEPT.
+- *Décibels et puissances* — les neuf rapports exigibles, la règle d'addition,
+  le piège des tensions, les unités de référence (dBW, dBm, dBc, dBd, dBi), la
+  puissance crête et le rendement. Avec un convertisseur qui signale si le
+  rapport obtenu fait partie des neuf.
+- *Antennes et lignes* — longueur d'onde, les huit gammes d'ondes, les trois
+  antennes de référence et leurs impédances, directivité et gain, puis les
+  lignes, le TOS, le ROS et l'adaptation. Trois calculateurs : dimensionner un
+  brin, calculer une PAR ou une PIRE de bout en bout, et mesurer des ondes
+  stationnaires à partir de tensions, de puissances ou d'impédances.
+- *Brouillage et sécurité* — compatibilité électromagnétique, immunité et
+  susceptibilité, intermodulation et transmodulation, puis les seuils de
+  tension, le code des couleurs, les protections et la foudre.
 
 Le contenu de cette section est rédigé pour ce site à partir du cours de F6GPX
 publié par le Radio-Club de la Haute Île, crédité et lié depuis la page

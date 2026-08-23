@@ -820,3 +820,172 @@
 .card--accent {
   border-left: 3px solid var(--accent);
 }
+
+/* --- Antennes de référence --- */
+
+.antennas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: var(--space-3);
+}
+
+.antenna {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.antenna__name {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.antenna__alias {
+  font-weight: 400;
+  color: var(--text-faint);
+}
+
+.antenna__length {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--accent);
+}
+
+.antenna__description {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.antenna__impedances {
+  margin: var(--space-1) 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.antenna__impedances li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-1) var(--space-2);
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+}
+
+.antenna__geometry {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.antenna__ohms {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* --- Seuils de tension --- */
+
+.voltages {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: var(--space-3);
+}
+
+.voltage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--error);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.voltage__limit {
+  font-family: var(--font-mono);
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.voltage__env {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* --- Code des couleurs des conducteurs --- */
+
+.wires {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.wire {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/* Le témoin porte la couleur elle-même : c'est l'information, pas un ornement. */
+.wire__swatch {
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+}
+
+.wire__body {
+  min-width: 0;
+}
+
+.wire__role {
+  display: block;
+  font-weight: 700;
+}
+
+.wire__colour {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--accent);
+}
+
+.wire__note {
+  margin: var(--space-1) 0 0;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+/* --- Ligne de résultat mise en avant --- */
+
+.converter__line--result {
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+}
+
+.converter__line--result strong {
+  font-size: 1.15rem;
+}
+
+.is-warn {
+  color: var(--error);
+}

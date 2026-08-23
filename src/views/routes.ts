@@ -13,6 +13,9 @@ import { licenceEmissionsView } from './licence-emissions.ts';
 import { licenceBandsView } from './licence-bands.ts';
 import { licenceTrafficView } from './licence-traffic.ts';
 import { licenceStationView } from './licence-station.ts';
+import { licenceDecibelsView } from './licence-decibels.ts';
+import { licenceAntennasView } from './licence-antennas.ts';
+import { licenceSafetyView } from './licence-safety.ts';
 import { listenView } from './train-listen.ts';
 import { sendView } from './train-send.ts';
 import { wordsView } from './train-words.ts';
@@ -151,6 +154,33 @@ export const ROUTES: RouteDefinition[] = [
     icon: '🪪',
     group: 'licence',
     factory: licenceStationView,
+  },
+  {
+    path: '/licence/decibels',
+    label: 'Décibels et puissances',
+    title: 'Décibels et puissances',
+    description: 'Les neuf rapports, les unités de référence, le rendement.',
+    icon: '🧮',
+    group: 'licence',
+    factory: licenceDecibelsView,
+  },
+  {
+    path: '/licence/antennes',
+    label: 'Antennes et lignes',
+    title: 'Antennes et lignes de transmission',
+    description: 'Dimensionner, calculer une PAR, mesurer des ondes stationnaires.',
+    icon: '🗼',
+    group: 'licence',
+    factory: licenceAntennasView,
+  },
+  {
+    path: '/licence/securite',
+    label: 'Brouillage et sécurité',
+    title: 'Brouillage et sécurité',
+    description: 'Compatibilité électromagnétique, protection des personnes, foudre.',
+    icon: '⚡',
+    group: 'licence',
+    factory: licenceSafetyView,
   },
   {
     path: '/entrainement/ecoute',
