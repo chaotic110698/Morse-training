@@ -145,6 +145,17 @@ export function licenceTransformersView(_context: ViewContext): View {
         "Les tensions suivent ce rapport, les intensités son inverse, et les impédances ",
         h('strong', { text: 'son carré' }),
         ". C’est ce carré que l’examen vérifie le plus souvent, et qu’on oublie le plus facilement."),
+      h('h3', { text: 'Le balun' }),
+      h('p', {},
+        "Un cas particulier revient sans cesse en station. Une antenne symétrique — un doublet — doit " +
+        "être alimentée par une ligne asymétrique — un coaxial, dont la tresse est à la masse. Les " +
+        "raccorder directement fait circuler un courant sur l’extérieur de la tresse, qui se met à " +
+        "rayonner : la ligne devient une antenne parasite. Le ",
+        h('strong', { text: 'balun' }),
+        " — de l’anglais ",
+        h('em', { text: 'balanced to unbalanced' }),
+        " — est le transformateur qui assure ce passage. Il peut au passage transformer l’impédance, " +
+        "un balun 4:1 servant par exemple à raccorder un doublet replié de 300 ohms à un câble de 75."),
     ),
 
     h(

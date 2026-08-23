@@ -150,6 +150,39 @@ export function licenceReceiversView(_context: ViewContext): View {
       ),
     ),
 
+    // --- Les trois commandes qui ne figurent pas sur le schéma ---
+    h(
+      'article',
+      { class: 'prose' },
+      h('h2', { text: 'Trois circuits qui ne se voient pas sur le schéma' }),
+      h('p', {},
+        "La chaîne ci-dessus suffit à recevoir, mais pas à écouter confortablement. Trois circuits " +
+        "s’y ajoutent, dont l’examen demande la fonction."),
+      h(
+        'ul',
+        { class: 'prose__list' },
+        h('li', {},
+          h('strong', { text: 'L’oscillateur de battement, ou BFO. ' }),
+          "Une émission en télégraphie ou en bande latérale unique ne porte aucune porteuse : le " +
+          "démodulateur n’en tirerait rien. Le BFO en fournit une localement, et c’est son battement " +
+          "avec le signal reçu qui produit la note audible. Le décaler de quelques centaines de hertz " +
+          "change la tonalité entendue, pas la fréquence reçue."),
+        h('li', {},
+          h('strong', { text: 'La commande automatique de gain, ou CAG. ' }),
+          "Elle mesure le niveau en sortie de l’étage à fréquence intermédiaire et rétroagit sur le " +
+          "gain de cet étage, de façon que le haut-parleur délivre un niveau à peu près constant, " +
+          "qu’on écoute une station locale ou lointaine. C’est elle qui alimente le S-mètre."),
+        h('li', {},
+          h('strong', { text: 'Le silencieux, ou squelch. ' }),
+          "Il coupe l’amplificateur basse fréquence tant qu’aucun signal ne dépasse un seuil réglable, " +
+          "ce qui évite d’écouter le souffle en permanence. Très employé en FM, il n’a guère de sens " +
+          "en bande latérale unique, où le bruit de fond fait partie de l’écoute."),
+      ),
+      h('p', { class: 'prose__note' },
+        "Ne pas les confondre : la CAG ajuste un gain, le silencieux coupe un son, le BFO fabrique une " +
+        "porteuse. Trois fonctions distinctes, trois circuits distincts."),
+    ),
+
     // --- Fréquence image ---
     h(
       'article',

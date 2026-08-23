@@ -300,6 +300,14 @@ export function licenceStagesView(_context: ViewContext): View {
         " est tout autre chose : c’est un multiplicateur de tension. Deux fréquences à l’entrée, et à la " +
         "sortie leur ",
         h('strong', { text: 'somme' }),
+
+      h('p', {},
+        "Le montage le plus répandu est le ",
+        h('strong', { text: 'mélangeur en anneau' }),
+        ", ou double équilibré : quatre diodes Schottky montées en boucle, entre deux transformateurs " +
+        "à point milieu. Son intérêt est d’équilibrer les deux entrées, de sorte que ni le signal ni " +
+        "l’oscillateur local ne se retrouvent en sortie — il ne reste que la somme et la différence, " +
+        "ce qui simplifie beaucoup le filtrage qui suit."),
         " et leur ",
         h('strong', { text: 'différence' }),
         ". Elles ne s’additionnent pas — elles se multiplient, et c’est la distorsion quadratique du " +

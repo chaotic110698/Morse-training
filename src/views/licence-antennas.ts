@@ -355,8 +355,12 @@ export function licenceAntennasView(_context: ViewContext): View {
         "décibels."),
       h('p', { class: 'prose__note' },
         "Les caractéristiques d’une antenne — impédance et gain — sont identiques à l’émission et à la " +
-        "réception. Selon la position du brin rayonnant, l’onde est polarisée verticalement ou " +
-        "horizontalement ; des polarisations circulaires sont également possibles."),
+        "réception : c’est le ",
+        h('strong', { text: 'principe de réciprocité' }),
+        ". Une antenne qui rayonne bien dans une direction y reçoit tout aussi bien, ce qui permet de " +
+        "juger une antenne à l’écoute avant de la juger à l’émission. Selon la position du brin " +
+        "rayonnant, l’onde est polarisée verticalement ou horizontalement ; des polarisations " +
+        "circulaires sont également possibles."),
     ),
 
     // --- PAR / PIRE ---
