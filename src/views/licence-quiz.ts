@@ -219,6 +219,16 @@ export function licenceQuizView(context: ViewContext): View {
           : document.createTextNode('Tous niveaux confondus, du plus direct au plus exigeant.'),
         card ? document.createTextNode(card.description) : document.createTextNode(''),
       );
+      // Les niveaux se remplissent lot par lot : afficher le nombre disponible
+      // évite de choisir un niveau qui ne tirerait que trois questions sans
+      // qu'on comprenne pourquoi.
+      for (const option of levelSelect.options) {
+        const value = option.value as LevelChoice;
+        const count = availableCount(QUESTIONS, { exam, level: value, topics: [...topics] });
+        const label = value === 'all' ? 'Tous les niveaux' : LEVEL_INFO[value].label;
+        option.textContent = `${label} (${count})`;
+      }
+
       const total = available();
       const asked = askedCount();
       const drawn = Math.min(total, asked);

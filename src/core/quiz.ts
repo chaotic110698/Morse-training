@@ -21,6 +21,8 @@ import {
   CHOICE_COUNT,
   EXAMS,
   EXAM_PREFIX,
+  idNumber,
+  LEVEL_RANGES,
   LEVELS,
   MAX_MARK,
   PASS_RATIO,
@@ -474,7 +476,17 @@ export function validateQuestions(
     if (!ID_PATTERN.test(id)) fail(`identifiant hors format (attendu R-THEME-001) : ${id}`);
 
     if (!EXAMS.includes(question.exam)) fail(`épreuve inconnue : ${String(question.exam)}`);
-    if (!LEVELS.includes(question.level)) fail(`niveau inconnu : ${String(question.level)}`);
+    if (!LEVELS.includes(question.level)) {
+      fail(`niveau inconnu : ${String(question.level)}`);
+    } else {
+      // Chaque niveau a sa plage de numéros : c'est ce qui empêche un lot
+      // rédigé plus tard d'écraser silencieusement un identifiant déjà pris.
+      const range = LEVEL_RANGES[question.level];
+      const number = idNumber(id);
+      if (number !== null && (number < range[0] || number > range[1])) {
+        fail(`numéro ${number} hors de la plage ${range[0]}-${range[1]} du niveau ${question.level}`);
+      }
+    }
 
     const topic = topicById(question.topic);
     if (!topic) {

@@ -11,6 +11,11 @@
  * de cours correspondante, de sorte qu'une erreur mène toujours quelque part.
  */
 
+import { FACILE_REGLEMENTATION, FACILE_TECHNIQUE } from './quiz-facile.ts';
+import { MOYEN_REGLEMENTATION, MOYEN_TECHNIQUE } from './quiz-moyen.ts';
+import { DIFFICILE_REGLEMENTATION, DIFFICILE_TECHNIQUE } from './quiz-difficile.ts';
+import { OPERATEUR_REGLEMENTATION, OPERATEUR_TECHNIQUE } from './quiz-operateur.ts';
+
 export type QuizExam = 'reglementation' | 'technique';
 export type QuizLevel = 'facile' | 'moyen' | 'difficile' | 'operateur';
 
@@ -149,117 +154,42 @@ export interface Question {
 }
 
 /**
- * Le vivier.
+ * Plages de numéros réservées à chaque niveau.
  *
- * Ces premières questions servent à faire tourner le moteur ; le volume vient
- * ensuite, niveau par niveau. L'ordre du fichier n'a aucune importance, le
- * tirage mélange, et `validateQuestions` vérifie la cohérence de l'ensemble.
+ * Les lots de questions sont écrits niveau par niveau, à des mois d'écart. Sans
+ * cloisonnement, le lot suivant renumérote fatalement par-dessus le précédent —
+ * et deux questions différentes portant le même identifiant fausseraient le
+ * suivi de révision sans que rien ne le signale. `validateQuestions` fait
+ * respecter cette table.
+ */
+export const LEVEL_RANGES: Record<QuizLevel, [number, number]> = {
+  facile: [1, 99],
+  moyen: [100, 199],
+  difficile: [200, 299],
+  operateur: [300, 399],
+};
+
+/** Numéro porté par un identifiant, ou `null` s'il est illisible. */
+export function idNumber(id: string): number | null {
+  const match = /-(\d{3})$/.exec(id);
+  return match ? Number(match[1]) : null;
+}
+
+/**
+ * Le vivier complet.
+ *
+ * Il est découpé par niveau : chaque lot vit dans son fichier, ce qui garde des
+ * fichiers relisibles et fait correspondre l'organisation du code à celle de la
+ * rédaction. L'ordre n'a aucune importance — le tirage mélange, et le moteur
+ * dédoublonne.
  */
 export const QUESTIONS: Question[] = [
-  {
-    id: 'R-CERT-001',
-    exam: 'reglementation',
-    level: 'facile',
-    topic: 'certificat',
-    prompt: 'Quel organisme organise l’examen du certificat d’opérateur du service amateur en France ?',
-    choices: [
-      'L’ANFR, l’Agence nationale des fréquences',
-      'L’ARCEP, l’Autorité de régulation des communications',
-      'Le REF, Réseau des émetteurs français',
-      'L’UIT, Union internationale des télécommunications',
-    ],
-    answer: 0,
-    explain:
-      'L’ANFR organise l’examen dans ses centres régionaux. L’ARCEP écrit la décision qui fixe les conditions d’utilisation, le REF est une association, et l’UIT travaille au niveau mondial.',
-  },
-  {
-    id: 'R-TRAF-001',
-    exam: 'reglementation',
-    level: 'moyen',
-    topic: 'trafic',
-    prompt:
-      'Au cours d’une émission qui dure plus d’un quart d’heure sur la même fréquence, à quelle cadence l’indicatif doit-il être retransmis ?',
-    choices: [
-      'Toutes les quinze minutes',
-      'Toutes les cinq minutes',
-      'Toutes les dix minutes',
-      'Une seule fois suffit, au début',
-    ],
-    answer: 0,
-    explain:
-      'L’indicatif se transmet au début et à la fin de toute période d’émission, toutes les quinze minutes au-delà d’un quart d’heure sur la même fréquence, et à chaque changement de fréquence.',
-  },
-  {
-    id: 'R-BANDE-001',
-    exam: 'reglementation',
-    level: 'moyen',
-    topic: 'bandes',
-    prompt: 'Quelle puissance maximale un titulaire du certificat peut-il utiliser sur la bande des 20 mètres ?',
-    choices: ['500 W', '120 W', '250 W', '1 000 W'],
-    answer: 0,
-    explain:
-      'De 479 kHz à 28 MHz, la limite est de 500 W en sortie d’émetteur. Elle tombe à 250 W entre 28 et 30 MHz, puis à 120 W au-dessus de 30 MHz.',
-  },
-  {
-    id: 'R-STAT-001',
-    exam: 'reglementation',
-    level: 'difficile',
-    topic: 'station',
-    prompt:
-      'Un radioamateur français titulaire de l’indicatif F4ABC trafique depuis la Belgique sous le régime CEPT. Quel indicatif annonce-t-il ?',
-    choices: ['ON/F4ABC', 'F4ABC/ON', 'F4ABC/P', 'F4ABC, sans changement'],
-    answer: 0,
-    explain:
-      'Le régime CEPT impose le préfixe du pays visité, suivi d’une barre de fraction puis de l’indicatif d’origine. La Belgique utilise ON, d’où ON/F4ABC.',
-  },
-  {
-    id: 'T-OHM-001',
-    exam: 'technique',
-    level: 'facile',
-    topic: 'ohm',
-    prompt: 'Une résistance de 100 Ω est parcourue par un courant de 0,5 A. Quelle tension mesure-t-on à ses bornes ?',
-    choices: ['50 V', '200 V', '5 V', '0,005 V'],
-    answer: 0,
-    explain: 'La loi d’Ohm donne U = R × I, soit 100 × 0,5 = 50 V.',
-  },
-  {
-    id: 'T-DB-001',
-    exam: 'technique',
-    level: 'moyen',
-    topic: 'decibels',
-    prompt: 'Un amplificateur de gain 3 dB reçoit 100 W à son entrée. Quelle puissance délivre-t-il ?',
-    choices: ['200 W', '103 W', '300 W', '1 000 W'],
-    answer: 0,
-    explain:
-      'Trois décibels doublent la puissance. Le gain en décibels s’ajoute quand les puissances se multiplient : 100 W × 2 = 200 W.',
-  },
-  {
-    id: 'T-CIRC-001',
-    exam: 'technique',
-    level: 'difficile',
-    topic: 'circuits',
-    prompt:
-      'Dans un circuit accordé, on divise la capacité par quatre sans toucher à l’inductance. Que devient la fréquence de résonance ?',
-    choices: [
-      'Elle double',
-      'Elle est divisée par deux',
-      'Elle est multipliée par quatre',
-      'Elle ne change pas',
-    ],
-    answer: 0,
-    explain:
-      'La loi de Thomson place L et C sous une racine carrée : diviser C par quatre divise le produit L × C par quatre, donc sa racine par deux, et la fréquence — qui en est l’inverse — double.',
-  },
-  {
-    id: 'T-RECE-001',
-    exam: 'technique',
-    level: 'operateur',
-    topic: 'recepteurs',
-    prompt:
-      'Un récepteur superhétérodyne reçoit un signal à 14 MHz avec un oscillateur local réglé sur 5 MHz. Quelle est la fréquence image ?',
-    choices: ['4 MHz', '19 MHz', '9 MHz', '24 MHz'],
-    answer: 0,
-    explain:
-      'La fréquence intermédiaire vaut 14 − 5 = 9 MHz. L’image est la fréquence qui donne la même FI par l’autre produit du mélangeur : 4 + 5 = 9 MHz. Elle vaut donc 4 MHz.',
-  },
+  ...FACILE_REGLEMENTATION,
+  ...FACILE_TECHNIQUE,
+  ...MOYEN_REGLEMENTATION,
+  ...MOYEN_TECHNIQUE,
+  ...DIFFICILE_REGLEMENTATION,
+  ...DIFFICILE_TECHNIQUE,
+  ...OPERATEUR_REGLEMENTATION,
+  ...OPERATEUR_TECHNIQUE,
 ];
