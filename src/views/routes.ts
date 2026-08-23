@@ -30,6 +30,7 @@ import { licenceModulationsView } from './licence-modulations.ts';
 import { licenceFormularyView } from './licence-formulary.ts';
 import { licenceQuizView } from './licence-quiz.ts';
 import { licenceHubView } from './licence-hub.ts';
+import { freeView } from './train-free.ts';
 import { listenView } from './train-listen.ts';
 import { sendView } from './train-send.ts';
 import { wordsView } from './train-words.ts';
@@ -352,6 +353,15 @@ export const ROUTES: RouteDefinition[] = [
     icon: '🎧',
     group: 'entrainement',
     factory: listenView,
+  },
+  {
+    path: '/entrainement/libre',
+    label: 'Série libre',
+    title: 'Série libre',
+    description: 'Vos caractères, sans limite de durée, avec les statistiques en direct.',
+    icon: '🎚️',
+    group: 'entrainement',
+    factory: freeView,
   },
   {
     path: '/entrainement/emission',

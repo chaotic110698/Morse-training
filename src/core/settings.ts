@@ -63,6 +63,12 @@ export interface Settings {
   kochThreshold: number;
   /** Nombre de caractères tirés par série d'entraînement. */
   sessionLength: number;
+  /**
+   * Caractères retenus pour la série libre. Vide au départ : la page propose
+   * alors le jeu du niveau Koch en cours, ce qui donne un point de départ
+   * sensé sans rien imposer.
+   */
+  freeCharset: string;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -93,6 +99,7 @@ export const DEFAULT_SETTINGS: Settings = {
   kochOrder: 'lcwo',
   kochThreshold: 0.9,
   sessionLength: 25,
+  freeCharset: '',
 };
 
 const WAVEFORMS: Waveform[] = ['sine', 'square', 'triangle', 'sawtooth'];
@@ -128,5 +135,12 @@ export function normalizeSettings(input: Partial<Settings> | null | undefined): 
     noiseSnrDb: Math.round(clamp(raw.noiseSnrDb, 0, 40)),
     tailUnits: Math.round(clamp(raw.tailUnits, 0, 10)),
     callsign: String(raw.callsign ?? '').toUpperCase().replace(/[^A-Z0-9/]/g, '').slice(0, 12),
+    // La sélection est une chaîne de caractères distincts, dans l'ordre où on
+    // les affiche. On la nettoie comme le reste : une sauvegarde éditée à la
+    // main ne doit pas pouvoir injecter un caractère que le site ne sait pas
+    // coder.
+    freeCharset: [...new Set(String(raw.freeCharset ?? '').toUpperCase())]
+      .filter((char) => /[A-Z0-9.,?/=]/.test(char))
+      .join(''),
   };
 }

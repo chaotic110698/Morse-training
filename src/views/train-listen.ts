@@ -14,8 +14,16 @@ import { MorsePlayer } from '../ui/player.ts';
 import { SessionTracker } from '../ui/session.ts';
 import { isSpaceKey, isTypingTarget } from '../ui/keys.ts';
 import { prettyCode, encodeChar } from '../core/morse.ts';
-import { drawKochChars, drawWeakestFirst, kochCharset, kochMaxLevel, getKochOrder } from '../core/koch.ts';
-import { charAccuracy, formatPercent } from '../core/progress.ts';
+import {
+  drawKochChars,
+  drawWeakestFirst,
+  kochCharset,
+  kochMaxLevel,
+  getKochOrder,
+  MASTERY_ATTEMPTS,
+} from '../core/koch.ts';
+import { charRecord, longSession, SESSION_LENGTHS } from '../core/training.ts';
+import { formatPercent } from '../core/progress.ts';
 import type { View, ViewContext } from '../ui/router.ts';
 
 type Phase = 'idle' | 'running' | 'summary';
@@ -113,6 +121,7 @@ export function listenView(context: ViewContext): View {
       on: {
         change: (event) => {
           reviewMode = (event.target as HTMLInputElement).checked;
+          renderOptions();
           if (phase === 'idle') renderDisplay();
         },
       },
@@ -120,7 +129,26 @@ export function listenView(context: ViewContext): View {
     h('span', { text: 'Insister sur mes points faibles' }),
   );
 
-  actions.append(primaryButton, replayButton, reviewToggle);
+  const lengthSelect = h(
+    'select',
+    {
+      class: 'select select--compact',
+      attrs: { 'aria-label': 'Longueur de la série' },
+      on: {
+        change: (event) => {
+          store.updateSettings({ sessionLength: Number((event.target as HTMLSelectElement).value) });
+          renderOptions();
+          if (phase === 'idle') {
+            renderProgress();
+            renderDisplay();
+          }
+        },
+      },
+    },
+    ...SESSION_LENGTHS.map((entry) => h('option', { value: String(entry.value), text: entry.label })),
+  );
+
+  actions.append(primaryButton, replayButton, lengthSelect, reviewToggle);
 
   // --- Rendu ---
 
@@ -140,6 +168,17 @@ export function listenView(context: ViewContext): View {
         }),
       ),
     );
+  };
+
+  const optionHint = h('p', { class: 'field__hint trainer__options' });
+
+  const renderOptions = (): void => {
+    const chosen = SESSION_LENGTHS.find((entry) => entry.value === store.settings.sessionLength);
+    lengthSelect.value = String(chosen?.value ?? SESSION_LENGTHS[0]?.value ?? 25);
+    optionHint.textContent = reviewMode
+      ? `Le tirage insiste sur ce que vous ratez. Un caractère n’est allégé qu’après ${MASTERY_ATTEMPTS} propositions — en dessous, ` +
+        'une réussite ne prouve rien — et il continue ensuite d’apparaître de temps en temps, pour ne pas se perdre.'
+      : (chosen?.note ?? '');
   };
 
   const renderProgress = (): void => {
@@ -221,11 +260,19 @@ export function listenView(context: ViewContext): View {
 
   const startSession = (): void => {
     const set = charset();
-    tracker = new SessionTracker(store, 'listen', store.settings.sessionLength);
+    const length = store.settings.sessionLength;
+    tracker = new SessionTracker(store, 'listen', length);
     tracker.start();
+    // Une série longue se joue autrement qu'une courte : les caractères
+    // tournent sur une fenêtre plus large, et quelques répétitions immédiates
+    // s'y glissent. Deux fois la même lettre est un piège du trafic réel, que
+    // l'oreille prend pour un signal plus long si elle ne l'a jamais rencontré.
+    const draw = longSession(length)
+      ? { avoid: 3, traps: Math.round(length / 12) }
+      : { avoid: 1, traps: 0 };
     queue = reviewMode
-      ? drawWeakestFirst(set, store.settings.sessionLength, (char) => charAccuracy(store.progress, char))
-      : drawKochChars(set, store.settings.sessionLength);
+      ? drawWeakestFirst(set, length, (char) => charRecord(store.progress, char), draw)
+      : drawKochChars(set, length, 2.5, draw);
     phase = 'running';
     // Le bruit de bande accompagne la série entière : il campe l'ambiance et
     // maintient la sortie audio active, ce qui supprime le craquement
@@ -434,6 +481,7 @@ export function listenView(context: ViewContext): View {
   });
 
   renderHeader();
+  renderOptions();
   renderGrid();
   renderProgress();
   renderDisplay();
@@ -451,6 +499,7 @@ export function listenView(context: ViewContext): View {
     h('div', { class: 'trainer__stage' }, display, lamp.element),
     grid,
     actions,
+    optionHint,
     summary,
     h(
       'details',

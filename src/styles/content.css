@@ -2279,3 +2279,113 @@
     display: none;
   }
 }
+
+/* --- Série libre --- */
+
+.picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-4) 0 var(--space-3);
+}
+
+.picker__char {
+  width: 2.6rem;
+  height: 2.6rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition), color var(--transition);
+}
+
+.picker__char:hover:not(:disabled),
+.picker__char:focus-visible {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.picker__char--on {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.picker__char:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.free-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: var(--space-4);
+}
+
+.free-stat {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.free-stat__value {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.free-stat__label {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.free-chars {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+}
+
+.free-char {
+  display: grid;
+  grid-template-columns: 2rem 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.free-char__key {
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.free-char__bar {
+  height: 6px;
+  background: var(--surface-3);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.free-char__fill {
+  display: block;
+  height: 100%;
+  background: var(--error);
+}
+
+.free-char--clean .free-char__fill {
+  background: var(--ok);
+}
+
+.free-char__score {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.select--compact {
+  min-width: 0;
+  width: auto;
+}
