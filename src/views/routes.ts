@@ -28,6 +28,7 @@ import { licenceDigitalView } from './licence-digital.ts';
 import { licenceReceiversView } from './licence-receivers.ts';
 import { licenceModulationsView } from './licence-modulations.ts';
 import { licenceFormularyView } from './licence-formulary.ts';
+import { licenceQuizView } from './licence-quiz.ts';
 import { listenView } from './train-listen.ts';
 import { sendView } from './train-send.ts';
 import { wordsView } from './train-words.ts';
@@ -301,6 +302,15 @@ export const ROUTES: RouteDefinition[] = [
     icon: '📄',
     group: 'licence',
     factory: licenceFormularyView,
+  },
+  {
+    path: '/licence/questionnaire',
+    label: 'Questionnaire',
+    title: 'Questionnaire de la licence',
+    description: 'Examen blanc, séries libres et révision de ses erreurs.',
+    icon: '📝',
+    group: 'licence',
+    factory: licenceQuizView,
   },
   {
     path: '/entrainement/ecoute',

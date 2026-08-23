@@ -309,6 +309,23 @@ export function licenceExamView(_context: ViewContext): View {
       ),
     ),
 
+    // --- Se tester ---
+    h(
+      'section',
+      { class: 'card card--accent' },
+      h('h2', { class: 'card__title', text: 'Se tester' }),
+      h('p', {},
+        "Relire un chapitre donne l’impression de le savoir ; répondre à une question le prouve ou le " +
+        "dément. Le questionnaire reprend le format officiel et propose un examen blanc chronométré, " +
+        "des séries libres par thème, et une révision qui insiste sur ce que vous ratez."),
+      h(
+        'div',
+        { class: 'actions' },
+        h('a', { class: 'btn btn--primary', href: '#/licence/questionnaire', text: 'Ouvrir le questionnaire' }),
+        h('a', { class: 'btn', href: '#/licence/formulaire', text: 'Le formulaire à imprimer' }),
+      ),
+    ),
+
     // --- Crédits ---
     h(
       'section',

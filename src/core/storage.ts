@@ -8,10 +8,17 @@
  */
 
 import { DEFAULT_SETTINGS, normalizeSettings, type Settings } from './settings.ts';
-import { emptyProgress, MAX_SESSION_HISTORY, type Progress } from './progress.ts';
+import {
+  emptyProgress,
+  emptyQuizProgress,
+  MAX_QUIZ_RUNS,
+  MAX_SESSION_HISTORY,
+  type Progress,
+  type QuizProgress,
+} from './progress.ts';
 
 const STORAGE_KEY = 'morse-training';
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 export interface SaveFile {
   app: 'morse-training';
@@ -37,6 +44,45 @@ export function storageAvailable(): boolean {
   } catch {
     return false;
   }
+}
+
+
+/**
+ * Remet le questionnaire en forme.
+ *
+ * Ce bloc est apparu après coup : une sauvegarde antérieure n'en contient pas,
+ * et une sauvegarde bricolée peut contenir n'importe quoi. On reconstruit donc
+ * champ par champ plutôt que de faire confiance à la structure lue.
+ */
+function normalizeQuiz(input: Partial<QuizProgress> | null | undefined): QuizProgress {
+  const base = emptyQuizProgress();
+  if (!input || typeof input !== 'object') return base;
+
+  const count = (value: unknown): number => Math.max(0, Math.floor(Number(value) || 0));
+
+  for (const [id, raw] of Object.entries(input.questions ?? {})) {
+    if (!raw || typeof raw !== 'object') continue;
+    const asked = count(raw.asked);
+    base.questions[id] = {
+      asked,
+      correct: Math.min(asked, count(raw.correct)),
+      lastAt: count(raw.lastAt),
+      lastOk: Boolean(raw.lastOk),
+    };
+  }
+  for (const [id, raw] of Object.entries(input.topics ?? {})) {
+    if (!raw || typeof raw !== 'object') continue;
+    const asked = count(raw.asked);
+    base.topics[id] = { asked, correct: Math.min(asked, count(raw.correct)), lastAt: count(raw.lastAt) };
+  }
+  base.runs = Array.isArray(input.runs)
+    ? input.runs.filter((run) => run && typeof run === 'object').slice(0, MAX_QUIZ_RUNS)
+    : [];
+  for (const [key, value] of Object.entries(input.best ?? {})) {
+    const ratio = Number(value);
+    if (Number.isFinite(ratio)) base.best[key] = Math.min(1, Math.max(0, ratio));
+  }
+  return base;
 }
 
 function normalizeProgress(input: Partial<Progress> | null | undefined): Progress {
@@ -67,6 +113,7 @@ function normalizeProgress(input: Partial<Progress> | null | undefined): Progres
     streak: { ...base.streak, ...(input.streak ?? {}) },
     achievements: { ...(input.achievements ?? {}) },
     flags: { ...(input.flags ?? {}) },
+    quiz: normalizeQuiz(input.quiz),
   };
 }
 
