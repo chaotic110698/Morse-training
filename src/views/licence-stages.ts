@@ -122,6 +122,22 @@ export function licenceStagesView(_context: ViewContext): View {
         "Ce qui distingue les classes, c’est la tension de repos de l’étage en l’absence de signal, " +
         "comparée à sa plage de fonctionnement linéaire. Plus le repos est bas, meilleur est le " +
         "rendement — et plus grande est la distorsion."),
+      h('p', {},
+        "Ce compromis se chiffre. En ",
+        h('strong', { text: 'classe A' }),
+        ", le transistor conduit en permanence et dissipe autant qu’il transmet : le rendement " +
+        "théorique plafonne à ",
+        h('strong', { text: '50 %' }),
+        ", et tombe bien plus bas en pratique. La ",
+        h('strong', { text: 'classe B' }),
+        " atteint ",
+        h('strong', { text: '78 %' }),
+        " puisque chaque transistor se repose une alternance sur deux, la classe C dépasse 80 %, et " +
+        "la classe D, qui ne fait que commuter, s’en approche encore davantage."),
+      h('p', { class: 'prose__note' },
+        "Un amplificateur de 100 W en classe A consomme donc au moins 200 W et doit évacuer les cent " +
+        "watts restants en chaleur. C’est ce qui explique la taille des radiateurs, et pourquoi les " +
+        "étages de puissance travaillent en classe AB plutôt qu’en classe A."),
     ),
 
     h(

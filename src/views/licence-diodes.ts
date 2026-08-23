@@ -128,6 +128,14 @@ export function licenceDiodesView(_context: ViewContext): View {
         ", ou tension d’avalanche. Sa résistance devient nulle. Ce claquage est destructeur pour une " +
         "diode de redressement, mais parfaitement réversible pour une diode Zener — c’est même son " +
         "principe de fonctionnement."),
+
+      h('p', {},
+        "Cette tenue en inverse décide du choix d’une diode de redressement, et le calcul réserve une " +
+        "surprise. Dans un redresseur simple alternance suivi d’un condensateur, la diode bloquée voit " +
+        "d’un côté la crête négative du transformateur, de l’autre le condensateur resté chargé à la " +
+        "crête positive : les deux tensions s’ajoutent. Elle doit donc supporter ",
+        h('strong', { text: 'le double de la tension de crête' }),
+        ", soit près de 34 volts pour un transformateur de 12 volts efficaces."),
       h('p', { class: 'field__hint' },
         "Une conséquence secondaire de la barrière de potentiel : sa largeur varie avec la tension " +
         "inverse, donc sa capacité aussi. C’est l’effet Varicap, que la diode du même nom exploite. " +
