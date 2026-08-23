@@ -235,6 +235,12 @@ export function licenceEmissionsView(_context: ViewContext): View {
       h('p', {},
         "Une douzaine suffit à couvrir l’essentiel du trafic. Les quatre premières concernent la " +
         "télégraphie, et méritent d’être distinguées les unes des autres."),
+      h('p', { class: 'prose__note' },
+        "Six d’entre elles reviennent souvent aux questions parce qu’elles étaient les seules ouvertes " +
+        "aux opérateurs de l’ancienne classe 3, dite Novice : ",
+        h('strong', { text: NOVICE_EMISSIONS.join(', ') }),
+        ". La télégraphie automatique A1B n’en faisait pas partie, alors que la télégraphie auditive " +
+        "A1A en était."),
     ),
 
     h(
@@ -278,6 +284,19 @@ export function licenceEmissionsView(_context: ViewContext): View {
       h('p', {},
         "Elle doit rester à l’intérieur de la bande attribuée, et ne pas dépasser un plafond qui dépend " +
         "de la fréquence."),
+      h('p', {},
+        "Quand elle est précisée, elle s’écrit devant la classe, sur quatre caractères, et la lettre " +
+        "d’unité y tient lieu de virgule : ",
+        h('strong', { text: 'H' }),
+        " pour les hertz, ",
+        h('strong', { text: 'K' }),
+        " pour les kilohertz, ",
+        h('strong', { text: 'M' }),
+        " pour les mégahertz. Une émission en bande latérale unique large de 2,8 kHz se note ainsi ",
+        h('strong', { text: '2K80J3E' }),
+        ", et une télégraphie de 500 hertz ",
+        h('strong', { text: '500HA1A' }),
+        ". Ce préfixe est facultatif : la classe se lit toujours sur les trois derniers caractères."),
     ),
 
     h(
