@@ -101,7 +101,7 @@ const MILESTONES: Milestone[] = [
       "Le système mondial de détresse et de sécurité en mer, fondé sur le satellite et la radio " +
         "numérique, remplace progressivement la veille en morse. La Marine nationale française cesse ses " +
         "émissions en morse en janvier 1997 par un dernier message reste célèbre. Le 1er février 1999, " +
-        "le morse n’est plus le moyen international de détresse en mer. Un sièclé de service prend fin.",
+        "le morse n’est plus le moyen international de détresse en mer. Un siècle de service prend fin.",
     ],
   },
   {
@@ -124,7 +124,7 @@ const MILESTONES: Milestone[] = [
         "bout de fil suffisent à traverser un océan.",
       "Le code survit aussi ailleurs : les balises de radionavigation aéronautique s’identifient encore " +
         "en morse, et des personnes privées de parole ont pu communiquer en clignant des yeux. Un " +
-        "alphabet conçu pour des fils de cuivre du XIXe sièclé continue de servir, précisément parce " +
+        "alphabet conçu pour des fils de cuivre du XIXe siècle continue de servir, précisément parce " +
         "qu’il ne demande presque rien.",
     ],
   },
@@ -177,9 +177,10 @@ export function historyView(context: ViewContext): View {
     'article',
     { class: 'prose' },
     h('p', { class: 'prose__lead' },
-      "Le morse n’est pas ne comme un jeu d’érudits : c’était l’infrastructure de communication la plus " +
-      "rapide du monde, et elle l’est restée pendant plus d’un sièclé. Voici les jalons qui expliquent " +
+      "Le morse n’est pas né comme un jeu d’érudits : c’était l’infrastructure de communication la plus " +
+      "rapide du monde, et elle l’est restée pendant plus d’un siècle. Voici les jalons qui expliquent " +
       "pourquoi le code que vous apprenez a exactement cette forme."),
+    h('h2', { text: 'Deux siècles en quelques jalons' }),
     timeline,
     endMarker,
   );

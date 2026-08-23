@@ -11,8 +11,7 @@
 import { h } from '../ui/dom.ts';
 import { SYLLABUS } from '../data/licence-syllabus.ts';
 import { ROUTES } from './routes.ts';
-import { EXAM_LABELS, EXAMS, QUESTIONS } from '../data/quiz.ts';
-import { poolStats } from '../core/quiz.ts';
+import { EXAM_LABELS, EXAMS, QUESTION_COUNT } from '../data/quiz.ts';
 import { formatPercent } from '../core/progress.ts';
 import type { View, ViewContext } from '../ui/router.ts';
 
@@ -20,7 +19,6 @@ const routeFor = (path: string) => ROUTES.find((route) => route.path === path);
 
 export function licenceHubView(context: ViewContext): View {
   const { store } = context;
-  const stats = poolStats(QUESTIONS);
   const quiz = store.progress.quiz;
   const runs = quiz?.runs ?? [];
 
@@ -43,7 +41,7 @@ export function licenceHubView(context: ViewContext): View {
         'Émettre demande une autorisation, et cette autorisation s’obtient par un examen. Cette section ' +
         'rassemble le cours complet des deux épreuves, les calculateurs qui vont avec, et un ' +
         'questionnaire de ',
-        h('strong', { text: `${stats.total} questions` }),
+        h('strong', { text: `${QUESTION_COUNT} questions` }),
         ' pour se tester. Le reste du site reste consacré au morse — qui, lui, ne s’examine plus.'),
     ),
 

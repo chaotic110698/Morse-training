@@ -67,7 +67,11 @@ export function settingsView(context: ViewContext): View {
 
   const importInput = h('input', {
     type: 'file',
-    attrs: { accept: 'application/json,.json', hidden: 'true' },
+    attrs: {
+      accept: 'application/json,.json',
+      hidden: 'true',
+      'aria-label': 'Choisir un fichier de sauvegarde à importer',
+    },
     on: {
       change: (event) => {
         const input = event.target as HTMLInputElement;

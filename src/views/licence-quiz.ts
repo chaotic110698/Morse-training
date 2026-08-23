@@ -33,9 +33,10 @@ import {
   EXAMS,
   LEVEL_INFO,
   LEVELS,
-  QUESTIONS,
+  loadQuestions,
   QUIZ_TOPICS,
   topicById,
+  type Question,
   type QuizExam,
   type QuizLevel,
 } from '../data/quiz.ts';
@@ -105,6 +106,16 @@ function clock(ms: number): string {
 export function licenceQuizView(context: ViewContext): View {
   const { store } = context;
 
+  /**
+   * La banque arrive après le premier rendu.
+   *
+   * Les quatre cent quarante-neuf questions forment un module chargé à la
+   * demande : la page s'affiche d'abord, annonce qu'elle charge, puis se
+   * redessine. Sur un chargement déjà en cache, cela dure une frame.
+   */
+  let questions: Question[] = [];
+  let ready = false;
+
   // --- État ---
   let phase: Phase = 'setup';
   let mode: QuizMode = 'examen';
@@ -170,7 +181,7 @@ export function licenceQuizView(context: ViewContext): View {
       if (!parsed || parsed.v !== RUN_FORMAT) return null;
       if (!Array.isArray(parsed.answers)) return null;
       if (parsed.deadline && parsed.deadline <= Date.now()) return null;
-      if (!restoreSession(parsed.session, QUESTIONS)) return null;
+      if (!restoreSession(parsed.session, questions)) return null;
       return parsed;
     } catch {
       return null;
@@ -195,7 +206,7 @@ export function licenceQuizView(context: ViewContext): View {
   /** Nombre de questions demandées : imposé en examen blanc, réglé sinon. */
   const askedCount = (): number => (mode === 'examen' ? rule().questions : count);
 
-  const available = (): number => availableCount(QUESTIONS, currentFilter());
+  const available = (): number => availableCount(questions, currentFilter());
 
   const buildSetup = (): HTMLElement => {
     const availability = h('p', { class: 'field__hint' });
@@ -224,7 +235,7 @@ export function licenceQuizView(context: ViewContext): View {
       // qu'on comprenne pourquoi.
       for (const option of levelSelect.options) {
         const value = option.value as LevelChoice;
-        const count = availableCount(QUESTIONS, { exam, level: value, topics: [...topics] });
+        const count = availableCount(questions, { exam, level: value, topics: [...topics] });
         const label = value === 'all' ? 'Tous les niveaux' : LEVEL_INFO[value].label;
         option.textContent = `${label} (${count})`;
       }
@@ -248,7 +259,7 @@ export function licenceQuizView(context: ViewContext): View {
       const pool = QUIZ_TOPICS.filter((topic) => exam === 'all' || topic.exam === exam);
       // Un thème sans question n'a pas à être proposé : le bouton mènerait à
       // une série vide sans que rien ne l'explique.
-      const usable = pool.filter((topic) => availableCount(QUESTIONS, { exam, level, topics: [topic.id] }) > 0);
+      const usable = pool.filter((topic) => availableCount(questions, { exam, level, topics: [topic.id] }) > 0);
       for (const id of [...topics]) {
         if (!usable.some((topic) => topic.id === id)) topics.delete(id);
       }
@@ -269,7 +280,7 @@ export function licenceQuizView(context: ViewContext): View {
           h('button', {
             class: 'chip',
             type: 'button',
-            text: `${topic.label} (${availableCount(QUESTIONS, { exam, level, topics: [topic.id] })})`,
+            text: `${topic.label} (${availableCount(questions, { exam, level, topics: [topic.id] })})`,
             data: { topic: topic.id },
             on: {
               click: () => {
@@ -503,7 +514,8 @@ export function licenceQuizView(context: ViewContext): View {
   };
 
   const start = (): void => {
-    const built = buildSession(QUESTIONS, {
+    if (!ready) return;
+    const built = buildSession(questions, {
       ...currentFilter(),
       count: askedCount(),
       weight: mode === 'revision'
@@ -532,7 +544,7 @@ export function licenceQuizView(context: ViewContext): View {
   };
 
   const resume = (stored: StoredRun): void => {
-    const restored = restoreSession(stored.session, QUESTIONS);
+    const restored = restoreSession(stored.session, questions);
     if (!restored) {
       forgetRun();
       context.toast('La série sauvegardée n’était plus lisible.', 'error');
@@ -940,7 +952,7 @@ export function licenceQuizView(context: ViewContext): View {
   };
 
   const replayMistakes = (ids: string[]): void => {
-    const built = buildSession(QUESTIONS, { ids, count: ids.length });
+    const built = buildSession(questions, { ids, count: ids.length });
     if (built.items.length === 0) {
       context.toast('Rien à rejouer.', 'error');
       return;
@@ -998,7 +1010,17 @@ export function licenceQuizView(context: ViewContext): View {
   };
 
   document.addEventListener('keydown', onKey);
-  showSetup();
+
+  root.replaceChildren(
+    h('p', { class: 'empty', text: 'Chargement des questions…' }),
+  );
+  void loadQuestions().then((bank) => {
+    questions = bank;
+    ready = true;
+    // La page a pu être quittée entre-temps : le routeur a alors vidé la
+    // racine et posé une autre vue, il ne faut rien y écrire.
+    if (root.isConnected) showSetup();
+  });
 
   return {
     element: root,

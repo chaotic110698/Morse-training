@@ -158,17 +158,6 @@ export function slider(options: SliderOptions): HTMLElement {
   );
 }
 
-/** Étiquette, contrôle et aide : le motif de toutes les lignes de réglage. */
-export function settingRow(label: string, control: Node, hint?: string): HTMLElement {
-  return h(
-    'div',
-    { class: 'field' },
-    h('div', { class: 'field__label', text: label }),
-    h('div', { class: 'field__control' }, control),
-    hint ? h('p', { class: 'field__hint', text: hint }) : null,
-  );
-}
-
 /**
  * Mémorise le contrôle qui a le focus avant un redessin, et le rend après.
  *

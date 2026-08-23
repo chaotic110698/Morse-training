@@ -198,7 +198,7 @@ export function licenceReceiversView(_context: ViewContext): View {
         "."),
       h('p', {},
         "Dans l’exemple du cours, on reçoit 14 MHz avec un oscillateur à 5 MHz, et l’on retient la " +
-        "différence : 14 − 5 = 9 MHz. Mais un signal à 4 MHz mélangé au même oscillateur donne, par la " +
+        "différence : 14 − 5 = 9 MHz. Mais un signal à 4 MHz mélangé au même oscillateur donne, par la ",
         h('em', { text: 'somme' }),
         " cette fois, 4 + 5 = 9 MHz lui aussi."),
       h('p', { class: 'formula', text: 'F image = |2 × FO − HF| = |2 × FI ∓ HF|' }),

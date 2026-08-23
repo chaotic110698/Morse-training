@@ -71,12 +71,6 @@ export function kochCharset(id: KochOrderId, level: number): string[] {
   return order.sequence.slice(0, bounded);
 }
 
-/** Dernier caractère introduit au niveau donne. */
-export function kochNewestChar(id: KochOrderId, level: number): string | null {
-  const charset = kochCharset(id, level);
-  return charset[charset.length - 1] ?? null;
-}
-
 /**
  * Nombre de propositions à partir duquel on accepte de juger un caractère.
  *

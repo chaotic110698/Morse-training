@@ -11,11 +11,6 @@
  * de cours correspondante, de sorte qu'une erreur mène toujours quelque part.
  */
 
-import { FACILE_REGLEMENTATION, FACILE_TECHNIQUE } from './quiz-facile.ts';
-import { MOYEN_REGLEMENTATION, MOYEN_TECHNIQUE } from './quiz-moyen.ts';
-import { DIFFICILE_REGLEMENTATION, DIFFICILE_TECHNIQUE } from './quiz-difficile.ts';
-import { OPERATEUR_REGLEMENTATION, OPERATEUR_TECHNIQUE } from './quiz-operateur.ts';
-
 export type QuizExam = 'reglementation' | 'technique';
 export type QuizLevel = 'facile' | 'moyen' | 'difficile' | 'operateur';
 
@@ -130,10 +125,6 @@ export function topicById(id: string): QuizTopic | undefined {
   return TOPIC_INDEX.get(id);
 }
 
-export function topicsOf(exam: QuizExam): QuizTopic[] {
-  return QUIZ_TOPICS.filter((topic) => topic.exam === exam);
-}
-
 /** Quatre propositions, une seule bonne : le format de l'épreuve réelle. */
 export const CHOICE_COUNT = 4;
 
@@ -176,20 +167,44 @@ export function idNumber(id: string): number | null {
 }
 
 /**
- * Le vivier complet.
+ * Le vivier complet, chargé à la demande.
  *
- * Il est découpé par niveau : chaque lot vit dans son fichier, ce qui garde des
- * fichiers relisibles et fait correspondre l'organisation du code à celle de la
- * rédaction. L'ordre n'a aucune importance — le tirage mélange, et le moteur
- * dédoublonne.
+ * Les quatre lots pèsent près de la moitié du code du site, alors qu'ils ne
+ * servent qu'à une seule page. Les charger au démarrage obligeait le navigateur
+ * à les analyser avant d'afficher quoi que ce soit, y compris quand on vient
+ * simplement s'entraîner au morse. Ils forment désormais un module séparé, que
+ * la page du questionnaire demande en s'ouvrant.
+ *
+ * Le résultat est mémorisé : rouvrir la page ne recharge rien.
  */
-export const QUESTIONS: Question[] = [
-  ...FACILE_REGLEMENTATION,
-  ...FACILE_TECHNIQUE,
-  ...MOYEN_REGLEMENTATION,
-  ...MOYEN_TECHNIQUE,
-  ...DIFFICILE_REGLEMENTATION,
-  ...DIFFICILE_TECHNIQUE,
-  ...OPERATEUR_REGLEMENTATION,
-  ...OPERATEUR_TECHNIQUE,
-];
+let cache: Question[] | null = null;
+
+export async function loadQuestions(): Promise<Question[]> {
+  if (cache) return cache;
+  const [facile, moyen, difficile, operateur] = await Promise.all([
+    import('./quiz-facile.ts'),
+    import('./quiz-moyen.ts'),
+    import('./quiz-difficile.ts'),
+    import('./quiz-operateur.ts'),
+  ]);
+  cache = [
+    ...facile.FACILE_REGLEMENTATION,
+    ...facile.FACILE_TECHNIQUE,
+    ...moyen.MOYEN_REGLEMENTATION,
+    ...moyen.MOYEN_TECHNIQUE,
+    ...difficile.DIFFICILE_REGLEMENTATION,
+    ...difficile.DIFFICILE_TECHNIQUE,
+    ...operateur.OPERATEUR_REGLEMENTATION,
+    ...operateur.OPERATEUR_TECHNIQUE,
+  ];
+  return cache;
+}
+
+/**
+ * Nombre de questions de la banque.
+ *
+ * Le hub l'affiche sans avoir à charger les quatre lots — ce serait rétablir
+ * exactement le coût qu'on vient d'éviter. La suite de tests vérifie que cette
+ * constante suit le vivier réel.
+ */
+export const QUESTION_COUNT = 449;

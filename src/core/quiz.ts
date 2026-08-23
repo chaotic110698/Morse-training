@@ -26,7 +26,6 @@ import {
   LEVELS,
   MAX_MARK,
   PASS_RATIO,
-  QUESTIONS,
   topicById,
   type Question,
   type QuizExam,
@@ -285,7 +284,7 @@ export function serialiseSession(session: QuizSession): SerialisedSession {
  * `null` et l'appelant repart d'un écran de réglage — jamais d'une série
  * incohérente qui planterait à la correction.
  */
-export function restoreSession(data: unknown, pool: readonly Question[] = QUESTIONS): QuizSession | null {
+export function restoreSession(data: unknown, pool: readonly Question[]): QuizSession | null {
   if (!data || typeof data !== 'object') return null;
   const raw = data as Partial<SerialisedSession>;
   if (raw.v !== SESSION_FORMAT) return null;
