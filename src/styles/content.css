@@ -59,6 +59,10 @@
   font-family: var(--font-mono);
   font-size: 0.95rem;
   text-align: center;
+  /* Plusieurs formules séparées par des espaces se colleraient : HTML les
+     fusionne. pre-wrap garde l'écart tout en laissant la ligne se replier. */
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
 }
 
 .demo-row {
@@ -1170,4 +1174,184 @@
 .decoder__unit {
   max-width: 4.5rem;
   text-align: center;
+}
+
+/* --- Montages de transistors --- */
+
+.mountings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: var(--space-3);
+}
+
+.mounting {
+  padding: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.mounting__name {
+  margin: 0 0 var(--space-2);
+  font-size: 1rem;
+  color: var(--accent);
+}
+
+.mounting__use {
+  margin: 0 0 var(--space-3);
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+/* Une liste de définitions plutôt qu'un tableau : sur téléphone, sept colonnes
+   ne tiennent pas, et les paires terme-valeur restent lisibles partout. */
+.mounting__specs {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-3);
+  font-size: 0.84rem;
+}
+
+.mounting__specs dt {
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+.mounting__specs dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* --- Portes logiques --- */
+
+.toggle-bit {
+  padding: var(--space-2) var(--space-4);
+  min-width: 5.5rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.toggle-bit.is-on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+.truth {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: var(--space-2);
+  margin: var(--space-4) 0;
+}
+
+.gate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.gate.is-on {
+  border-color: var(--ok);
+  background: var(--ok-soft);
+}
+
+.gate__name {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+}
+
+.gate__symbol {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.gate__output {
+  font-family: var(--font-mono);
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text-faint);
+}
+
+.gate.is-on .gate__output {
+  color: var(--ok);
+}
+
+/* --- Chaîne d'étages d'un synoptique --- */
+
+.chain {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.chain__stage {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  position: relative;
+}
+
+/* Un trait relie les étages : le synoptique est une chaîne, pas une liste. */
+.chain__stage:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: calc(var(--space-3) + 0.9rem);
+  bottom: calc(-1 * var(--space-2) - 1px);
+  width: 2px;
+  height: var(--space-2);
+  background: var(--border-strong);
+}
+
+.chain__number {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.chain__body {
+  min-width: 0;
+}
+
+.chain__name {
+  margin: 0 0 var(--space-1);
+  font-size: 0.95rem;
+}
+
+.chain__role {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.45;
 }

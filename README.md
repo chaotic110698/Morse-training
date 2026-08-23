@@ -81,6 +81,24 @@ localement.
 - *Filtres et circuits accordés* — fréquence de coupure RC et RL, atténuation
   par octave, loi de Thomson dans ses trois sens, les quatre montages LC,
   facteur Q, bande passante et sélectivité.
+- *Diodes et alimentations* — la jonction PN et le dopage, les six familles de
+  diodes, les trois montages redresseurs avec un calculateur de tension de
+  sortie, stabilisation et régulation.
+- *Transistors* — NPN et PNP, le gain avec un calculateur à trois entrées, le
+  tableau des trois montages fondamentaux, FET et MOS-FET, tubes.
+- *Amplis et mélangeurs* — les cinq classes d'amplification, la résistance de
+  charge, les liaisons entre étages, les oscillateurs et le quartz, les
+  multiplicateurs, et un calculateur de mélange qui fonctionne dans les deux
+  sens.
+- *Ampli op et logique* — contre-réaction et gain, une table de vérité
+  interactive où les cinq portes réagissent ensemble, binaire et hexadécimal,
+  échantillonnage et fréquence de Nyquist.
+- *Récepteurs et émetteurs* — les synoptiques étage par étage, le
+  superhétérodyne, un calculateur de plan de fréquences donnant la FI, le type
+  d'hétérodynage et la fréquence image, l'échelle S et le traitement numérique.
+- *Les modulations* — AM et sa répartition de puissance calculée, BLU, FM et
+  son excursion, modes numériques ; et la CW pour ce qu'elle est, une
+  modulation d'amplitude à deux états dont l'étroitesse fait toute la portée.
 
 Le contenu de cette section est rédigé pour ce site à partir du cours de F6GPX
 publié par le Radio-Club de la Haute Île, crédité et lié depuis la page

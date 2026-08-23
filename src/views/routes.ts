@@ -21,6 +21,12 @@ import { licenceOhmView } from './licence-ohm.ts';
 import { licenceAcView } from './licence-ac.ts';
 import { licenceTransformersView } from './licence-transformers.ts';
 import { licenceCircuitsView } from './licence-circuits.ts';
+import { licenceDiodesView } from './licence-diodes.ts';
+import { licenceTransistorsView } from './licence-transistors.ts';
+import { licenceStagesView } from './licence-stages.ts';
+import { licenceDigitalView } from './licence-digital.ts';
+import { licenceReceiversView } from './licence-receivers.ts';
+import { licenceModulationsView } from './licence-modulations.ts';
 import { listenView } from './train-listen.ts';
 import { sendView } from './train-send.ts';
 import { wordsView } from './train-words.ts';
@@ -231,6 +237,60 @@ export const ROUTES: RouteDefinition[] = [
     icon: '🎛️',
     group: 'licence',
     factory: licenceCircuitsView,
+  },
+  {
+    path: '/licence/diodes',
+    label: 'Diodes et alimentations',
+    title: 'Diodes et alimentations',
+    description: 'La jonction PN, les familles de diodes, redresser et stabiliser.',
+    icon: '▶️',
+    group: 'licence',
+    factory: licenceDiodesView,
+  },
+  {
+    path: '/licence/transistors',
+    label: 'Transistors',
+    title: 'Transistors',
+    description: 'NPN et PNP, le gain, les trois montages, FET et tubes.',
+    icon: '🧩',
+    group: 'licence',
+    factory: licenceTransistorsView,
+  },
+  {
+    path: '/licence/etages',
+    label: 'Amplis et mélangeurs',
+    title: 'Amplificateurs, oscillateurs et mélangeurs',
+    description: 'Classes d’amplification, oscillateurs, quartz, multiplicateurs et mélange.',
+    icon: '📢',
+    group: 'licence',
+    factory: licenceStagesView,
+  },
+  {
+    path: '/licence/numerique',
+    label: 'Ampli op et logique',
+    title: 'Amplificateurs opérationnels et circuits logiques',
+    description: 'Contre-réaction, portes logiques, binaire et numérisation.',
+    icon: '🔣',
+    group: 'licence',
+    factory: licenceDigitalView,
+  },
+  {
+    path: '/licence/recepteurs',
+    label: 'Récepteurs et émetteurs',
+    title: 'Récepteurs et émetteurs',
+    description: 'Synoptiques, superhétérodyne, fréquence image et échelle S.',
+    icon: '📺',
+    group: 'licence',
+    factory: licenceReceiversView,
+  },
+  {
+    path: '/licence/modulations',
+    label: 'Les modulations',
+    title: 'Les modulations',
+    description: 'AM, BLU, FM, modes numériques — et la CW pour ce qu’elle est.',
+    icon: '🌊',
+    group: 'licence',
+    factory: licenceModulationsView,
   },
   {
     path: '/entrainement/ecoute',

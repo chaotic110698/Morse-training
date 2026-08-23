@@ -360,3 +360,168 @@ export function bandwidth(resonanceHz: number, q: number): number {
 export function selectivity(bandwidth3dB: number, bandwidth60dB: number): number {
   return bandwidth60dB > 0 ? (bandwidth3dB * 100) / bandwidth60dB : 0;
 }
+
+// --- Composants actifs ---
+
+/** Chute de tension directe d'une diode, en volts, selon son semi-conducteur. */
+export const DIODE_DROPS = { silicium: 0.7, germanium: 0.3, schottky: 0.25 } as const;
+
+export type RectifierKind = 'mono' | 'centre-tap' | 'bridge';
+
+/** Nombre de diodes traversées par le courant, selon le montage redresseur. */
+export function diodesInPath(kind: RectifierKind): number {
+  return kind === 'bridge' ? 2 : 1;
+}
+
+/**
+ * Tension continue en sortie d'un redressement suivi d'un condensateur.
+ *
+ * Le condensateur maintient la tension à la valeur crête, dont on retranche la
+ * chute des diodes traversées. Le cours signale que les questions d'examen
+ * ignorent souvent cette chute : d'où le paramètre, pour montrer les deux.
+ */
+export function rectifiedVoltage(rmsVolts: number, kind: RectifierKind, dropPerDiode: number = DIODE_DROPS.silicium): number {
+  return Math.max(0, peakFromRms(rmsVolts) - diodesInPath(kind) * dropPerDiode);
+}
+
+/** Courant collecteur d'un transistor bipolaire : Ic = Ib × β. */
+export function collectorCurrent(baseAmps: number, beta: number): number {
+  return baseAmps * beta;
+}
+
+/** Fréquence propre d'une lame de quartz : f(MHz) = 5,7 / (2 × e(mm)). */
+export function quartzFrequency(thicknessMm: number): number {
+  return thicknessMm > 0 ? 5.7 / (2 * thicknessMm) : 0;
+}
+
+/** Épaisseur d'une lame de quartz pour une fréquence donnée, en millimètres. */
+export function quartzThickness(mhz: number): number {
+  return mhz > 0 ? 5.7 / (2 * mhz) : 0;
+}
+
+export interface MixerOutputs {
+  sum: number;
+  difference: number;
+}
+
+/** Fréquences produites par un mélangeur : la somme et la différence. */
+export function mixerOutputs(f1: number, f2: number): MixerOutputs {
+  return { sum: f1 + f2, difference: Math.abs(f1 - f2) };
+}
+
+/**
+ * Fréquences d'entrée d'un mélangeur, à partir de ses deux sorties.
+ *
+ * Le sens inverse est une question d'examen à part entière, et sa formule
+ * n'est pas symétrique : f1 est la demi-différence, f2 le complément.
+ */
+export function mixerInputs(fmax: number, fmin: number): MixerOutputs {
+  const f1 = (fmax - fmin) / 2;
+  return { sum: f1, difference: fmax - f1 };
+}
+
+/** Gain d'un amplificateur opérationnel en montage inverseur : G = −R2 / R1. */
+export function invertingGain(r1: number, r2: number): number {
+  return r1 > 0 ? -(r2 / r1) : 0;
+}
+
+/** Gain d'un amplificateur opérationnel en montage non inverseur : G = R2/R1 + 1. */
+export function nonInvertingGain(r1: number, r2: number): number {
+  return r1 > 0 ? r2 / r1 + 1 : 0;
+}
+
+/** Fréquence de Nyquist : la moitié de la fréquence d'échantillonnage. */
+export function nyquistFrequency(sampleRate: number): number {
+  return sampleRate / 2;
+}
+
+export type LogicGate = 'ET' | 'OU' | 'NON ET' | 'NON OU' | 'OU EXCLUSIF';
+
+/** Sortie d'une porte logique à deux entrées. */
+export function logicOutput(gate: LogicGate, a: boolean, b: boolean): boolean {
+  switch (gate) {
+    case 'ET':
+      return a && b;
+    case 'OU':
+      return a || b;
+    case 'NON ET':
+      return !(a && b);
+    case 'NON OU':
+      return !(a || b);
+    case 'OU EXCLUSIF':
+      return a !== b;
+  }
+}
+
+// --- Récepteurs et modulations ---
+
+export type Heterodyne = 'infradyne' | 'supradyne';
+
+export interface ReceiverPlan {
+  /** Fréquence intermédiaire, en unité d'entrée. */
+  intermediate: number;
+  /** Infradyne si l'oscillateur est sous la fréquence reçue, supradyne sinon. */
+  kind: Heterodyne;
+  /** Fréquence image, celle que le mélange inverse ramène sur la FI. */
+  image: number;
+  /** Vrai si le spectre est retourné dans l'étage FI. */
+  inverted: boolean;
+}
+
+/**
+ * Plan de fréquences d'un récepteur superhétérodyne.
+ *
+ * On retient la différence des fréquences, cas de très loin le plus courant.
+ * La fréquence image est celle qui, mélangée au même oscillateur, tombe elle
+ * aussi sur la FI : c'est elle que le filtre d'entrée doit rejeter.
+ */
+export function receiverPlan(signal: number, oscillator: number): ReceiverPlan {
+  const kind: Heterodyne = oscillator < signal ? 'infradyne' : 'supradyne';
+  return {
+    intermediate: Math.abs(signal - oscillator),
+    kind,
+    image: Math.abs(2 * oscillator - signal),
+    // Retenir la différence retourne le spectre dès que l'oscillateur est au-dessus.
+    inverted: kind === 'supradyne',
+  };
+}
+
+/** Bande occupée par un signal modulé en fréquence : le double de l'excursion. */
+export function fmBandwidth(deviation: number): number {
+  return 2 * deviation;
+}
+
+export interface AmPowerShare {
+  carrier: number;
+  perSideband: number;
+  sidebands: number;
+}
+
+/**
+ * Répartition de la puissance d'une émission en modulation d'amplitude.
+ *
+ * À taux de modulation de 100 %, la porteuse — qui ne transporte rien — emporte
+ * les deux tiers de la puissance, et chaque bande latérale un sixième. C'est
+ * l'argument chiffré en faveur de la BLU.
+ */
+export function amPowerShare(totalWatts: number): AmPowerShare {
+  const carrier = (totalWatts * 2) / 3;
+  const sidebands = totalWatts - carrier;
+  return { carrier, perSideband: sidebands / 2, sidebands };
+}
+
+/** Tension en microvolts sous 50 Ω correspondant à un point S, pour S ≤ 9. */
+export function sMeterMicrovolts(sPoint: number): number {
+  // S9 vaut 50 µV, et chaque point vaut 6 dB, soit un facteur 2 en tension.
+  return 50 * 2 ** (sPoint - 9);
+}
+
+/** Puissance en dBm correspondant à un point S, S9 valant −73 dBm. */
+export function sMeterDbm(sPoint: number): number {
+  return -73 - 6 * (9 - sPoint);
+}
+
+/** Débit binaire : vitesse en bauds multipliée par la valence du signal. */
+export function bitRate(bauds: number, states: number): number {
+  return states > 1 ? bauds * Math.log2(states) : bauds;
+}
