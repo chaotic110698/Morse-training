@@ -10,6 +10,7 @@
 import { h } from './dom.ts';
 import { createSettingsPanel, type SettingsPanel } from './settings-panel.ts';
 import { NAV_GROUPS, ROUTES } from '../views/routes.ts';
+import { LICENCE_HUB, locate } from '../data/licence-syllabus.ts';
 import type { RouteDefinition, ToastKind } from './router.ts';
 import type { AppStore } from '../core/store.ts';
 import type { Theme } from '../core/settings.ts';
@@ -28,6 +29,8 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
   const outlet = h('div', { class: 'outlet' });
   const pageTitle = h('h1', { class: 'page__title' });
   const pageDescription = h('p', { class: 'page__description' });
+  const breadcrumb = h('nav', { class: 'crumbs', attrs: { 'aria-label': 'Fil d’Ariane' } });
+  const chapterNav = h('nav', { class: 'chapter-nav', attrs: { 'aria-label': 'Chapitre précédent et suivant' } });
   const toasts = h('div', { class: 'toasts', attrs: { 'aria-live': 'polite', 'aria-atomic': 'false' } });
   const navLinks = new Map<string, HTMLAnchorElement>();
 
@@ -55,7 +58,7 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
   const nav = h('nav', { class: 'nav', attrs: { 'aria-label': 'Navigation principale' } });
 
   for (const group of NAV_GROUPS) {
-    const routes = ROUTES.filter((route) => route.group === group.id);
+    const routes = ROUTES.filter((route) => route.group === group.id && route.menu !== false);
     if (routes.length === 0) continue;
 
     const list = h(
@@ -210,6 +213,62 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
     pageTitle.textContent = route.title;
     pageDescription.textContent = route.description;
     settingsPanel.setRoute(route.path);
+    drawChapter(route.path);
+  };
+
+  /**
+   * Situe la page dans le parcours de la licence, en tête et en pied.
+   *
+   * Vingt-deux chapitres n'ont pas à porter ce code chacun de leur côté : la
+   * position se déduit du chemin, et l'ossature est le seul endroit qui la
+   * connaisse au moment où la page change.
+   */
+  const drawChapter = (path: string): void => {
+    const position = locate(path);
+    if (!position) {
+      breadcrumb.replaceChildren();
+      chapterNav.replaceChildren();
+      breadcrumb.hidden = true;
+      chapterNav.hidden = true;
+      return;
+    }
+    breadcrumb.hidden = false;
+    chapterNav.hidden = false;
+
+    breadcrumb.replaceChildren(
+      h('a', { class: 'crumbs__link', href: `#${LICENCE_HUB}`, text: 'Licence' }),
+      h('span', { class: 'crumbs__sep', text: '›', attrs: { 'aria-hidden': 'true' } }),
+      h('span', { class: 'crumbs__here', text: position.block.title }),
+      h('span', { class: 'crumbs__rank', text: `${position.rank} sur ${position.block.paths.length}` }),
+    );
+
+    const link = (target: string | null, direction: 'prev' | 'next'): HTMLElement | null => {
+      if (!target) return null;
+      const route = ROUTES.find((candidate) => candidate.path === target);
+      if (!route) return null;
+      return h(
+        'a',
+        { class: `chapter-nav__link chapter-nav__link--${direction}`, href: `#${target}` },
+        h('span', { class: 'chapter-nav__arrow', text: direction === 'prev' ? '←' : '→', attrs: { 'aria-hidden': 'true' } }),
+        h(
+          'span',
+          { class: 'chapter-nav__body' },
+          h('span', { class: 'chapter-nav__kind', text: direction === 'prev' ? 'Chapitre précédent' : 'Chapitre suivant' }),
+          h('span', { class: 'chapter-nav__label', text: route.label }),
+        ),
+      );
+    };
+
+    chapterNav.replaceChildren(
+      link(position.previous, 'prev') ?? h('span', { class: 'chapter-nav__filler' }),
+      h('a', {
+        class: 'chapter-nav__hub',
+        href: `#${LICENCE_HUB}`,
+        text: `${position.overall} / ${position.total}`,
+        attrs: { 'aria-label': `Chapitre ${position.overall} sur ${position.total} — revenir au sommaire` },
+      }),
+      link(position.next, 'next') ?? h('span', { class: 'chapter-nav__filler' }),
+    );
   };
 
   root.append(
@@ -229,8 +288,9 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
       h(
         'main',
         { class: 'page', attrs: { id: 'contenu' } },
-        h('div', { class: 'page__head' }, pageTitle, pageDescription),
+        h('div', { class: 'page__head' }, breadcrumb, pageTitle, pageDescription),
         outlet,
+        chapterNav,
       ),
     ),
     ...settingsPanel.nodes,

@@ -29,6 +29,7 @@ import { licenceReceiversView } from './licence-receivers.ts';
 import { licenceModulationsView } from './licence-modulations.ts';
 import { licenceFormularyView } from './licence-formulary.ts';
 import { licenceQuizView } from './licence-quiz.ts';
+import { licenceHubView } from './licence-hub.ts';
 import { listenView } from './train-listen.ts';
 import { sendView } from './train-send.ts';
 import { wordsView } from './train-words.ts';
@@ -43,7 +44,7 @@ import type { RouteDefinition } from '../ui/router.ts';
 export const NAV_GROUPS: Array<{ id: string; label: string }> = [
   { id: 'accueil', label: 'Accueil' },
   { id: 'apprendre', label: 'Apprendre' },
-  { id: 'licence', label: 'Licence' },
+  { id: 'licence', label: 'Licence radioamateur' },
   { id: 'entrainement', label: 'S’entraîner' },
   { id: 'outils', label: 'Outils' },
   { id: 'progression', label: 'Progression' },
@@ -115,12 +116,22 @@ export const ROUTES: RouteDefinition[] = [
     factory: radioView,
   },
   {
+    path: '/licence',
+    label: 'Licence radioamateur',
+    title: 'Formation à la licence',
+    description: 'Le cours des deux épreuves, ses calculateurs et son questionnaire.',
+    icon: '🎓',
+    group: 'licence',
+    factory: licenceHubView,
+  },
+  {
     path: '/licence/examen',
     label: 'Le certificat d’opérateur',
     title: 'Le certificat d’opérateur',
     description: 'Ce que la licence autorise, et comment se passe l’examen.',
     icon: '🎓',
     group: 'licence',
+    menu: false,
     factory: licenceExamView,
   },
   {
@@ -130,6 +141,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Qui décide quoi, du traité mondial à l’arrêté français.',
     icon: '⚖️',
     group: 'licence',
+    menu: false,
     factory: licenceFrameworkView,
   },
   {
@@ -139,6 +151,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Les trois caractères, et ce que la station doit respecter.',
     icon: '📶',
     group: 'licence',
+    menu: false,
     factory: licenceEmissionsView,
   },
   {
@@ -148,6 +161,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Les vingt-cinq bandes de la région 1, leur statut et leurs limites.',
     icon: '🎚️',
     group: 'licence',
+    menu: false,
     factory: licenceBandsView,
   },
   {
@@ -157,6 +171,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'S’identifier, écouter, ce qu’on peut dire, et le journal de bord.',
     icon: '📋',
     group: 'licence',
+    menu: false,
     factory: licenceTrafficView,
   },
   {
@@ -166,6 +181,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Structure des indicatifs, déclarations, sanctions et trafic à l’étranger.',
     icon: '🪪',
     group: 'licence',
+    menu: false,
     factory: licenceStationView,
   },
   {
@@ -175,6 +191,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Les neuf rapports, les unités de référence, le rendement.',
     icon: '🧮',
     group: 'licence',
+    menu: false,
     factory: licenceDecibelsView,
   },
   {
@@ -184,6 +201,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Dimensionner, calculer une PAR, mesurer des ondes stationnaires.',
     icon: '🗼',
     group: 'licence',
+    menu: false,
     factory: licenceAntennasView,
   },
   {
@@ -193,6 +211,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Compatibilité électromagnétique, protection des personnes, foudre.',
     icon: '⚡',
     group: 'licence',
+    menu: false,
     factory: licenceSafetyView,
   },
   {
@@ -202,6 +221,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Transformer une équation, manier les multiples, préparer son brouillon.',
     icon: '🔢',
     group: 'licence',
+    menu: false,
     factory: licenceMathsView,
   },
   {
@@ -211,6 +231,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Quatre grandeurs, douze équations, le code des couleurs et les groupements.',
     icon: '🔌',
     group: 'licence',
+    menu: false,
     factory: licenceOhmView,
   },
   {
@@ -220,6 +241,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Valeurs efficaces, réactance, capacitance et constante de temps.',
     icon: '〰️',
     group: 'licence',
+    menu: false,
     factory: licenceAcView,
   },
   {
@@ -229,6 +251,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Rapport de spires, piles, galvanomètre et instruments de mesure.',
     icon: '🔋',
     group: 'licence',
+    menu: false,
     factory: licenceTransformersView,
   },
   {
@@ -238,6 +261,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Fréquence de coupure, loi de Thomson, facteur Q et bande passante.',
     icon: '🎛️',
     group: 'licence',
+    menu: false,
     factory: licenceCircuitsView,
   },
   {
@@ -247,6 +271,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'La jonction PN, les familles de diodes, redresser et stabiliser.',
     icon: '▶️',
     group: 'licence',
+    menu: false,
     factory: licenceDiodesView,
   },
   {
@@ -256,6 +281,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'NPN et PNP, le gain, les trois montages, FET et tubes.',
     icon: '🧩',
     group: 'licence',
+    menu: false,
     factory: licenceTransistorsView,
   },
   {
@@ -265,6 +291,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Classes d’amplification, oscillateurs, quartz, multiplicateurs et mélange.',
     icon: '📢',
     group: 'licence',
+    menu: false,
     factory: licenceStagesView,
   },
   {
@@ -274,6 +301,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Contre-réaction, portes logiques, binaire et numérisation.',
     icon: '🔣',
     group: 'licence',
+    menu: false,
     factory: licenceDigitalView,
   },
   {
@@ -283,6 +311,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Synoptiques, superhétérodyne, fréquence image et échelle S.',
     icon: '📺',
     group: 'licence',
+    menu: false,
     factory: licenceReceiversView,
   },
   {
@@ -292,6 +321,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'AM, BLU, FM, modes numériques — et la CW pour ce qu’elle est.',
     icon: '🌊',
     group: 'licence',
+    menu: false,
     factory: licenceModulationsView,
   },
   {
@@ -301,6 +331,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Toutes les formules exigibles, filtrables et imprimables.',
     icon: '📄',
     group: 'licence',
+    menu: false,
     factory: licenceFormularyView,
   },
   {
@@ -310,6 +341,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Examen blanc, séries libres et révision de ses erreurs.',
     icon: '📝',
     group: 'licence',
+    menu: false,
     factory: licenceQuizView,
   },
   {

@@ -33,6 +33,13 @@ export interface RouteDefinition {
   description: string;
   icon: string;
   group: string;
+  /**
+   * Faux pour les pages qui ne figurent pas au menu latéral. La section Licence
+   * compte vingt-trois pages : les lister toutes rendrait le menu illisible,
+   * elles sont donc atteintes depuis leur hub. Elles restent des routes à part
+   * entière, partageables par lien et accessibles au clavier.
+   */
+  menu?: boolean;
   factory: ViewFactory;
 }
 
