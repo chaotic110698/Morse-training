@@ -7,6 +7,7 @@
  */
 
 import { h, field } from '../ui/dom.ts';
+import { keepFocus, slider } from '../ui/controls.ts';
 import { keyLabel, resolveCode } from '../ui/keys.ts';
 import { MorsePlayer } from '../ui/player.ts';
 import { SignalLamp } from '../ui/lamp.ts';
@@ -26,38 +27,6 @@ export function settingsView(context: ViewContext): View {
   const container = h('div', { class: 'stack' });
 
   let capturing: BindingKey | null = null;
-
-  /** Curseur numérique avec sa valeur affichée, motif répété partout ici. */
-  const slider = (
-    options: {
-      min: number;
-      max: number;
-      step?: number;
-      value: number;
-      format: (value: number) => string;
-      onInput: (value: number) => void;
-    },
-  ): HTMLElement => {
-    const output = h('output', { class: 'slider__value', text: options.format(options.value) });
-    const input = h('input', {
-      class: 'slider',
-      type: 'range',
-      attrs: {
-        min: options.min,
-        max: options.max,
-        step: options.step ?? 1,
-        value: options.value,
-      },
-      on: {
-        input: (event) => {
-          const value = Number((event.target as HTMLInputElement).value);
-          output.textContent = options.format(value);
-          options.onInput(value);
-        },
-      },
-    });
-    return h('div', { class: 'slider-row' }, input, output);
-  };
 
   const captureButton = (key: BindingKey, label: string): HTMLElement => {
     const button = h('button', {
@@ -120,7 +89,21 @@ export function settingsView(context: ViewContext): View {
     },
   });
 
+  // Le redessin attend la frame suivante. Deux raisons : quitter un champ
+  // déclenche sa validation, donc une mise à jour, donc ce redessin — remplacer
+  // le contenu au milieu du traitement du « blur » fait échouer le navigateur.
+  // Et pendant qu'on glisse un curseur, les dizaines d'appels se regroupent en
+  // un seul dessin.
+  let pending = 0;
   const render = (): void => {
+    if (pending) return;
+    pending = window.requestAnimationFrame(() => {
+      pending = 0;
+      keepFocus(container, draw);
+    });
+  };
+
+  const draw = (): void => {
     const s = store.settings;
     const timing = store.timing;
     const paddleMode = s.keyerMode !== 'straight';
@@ -137,7 +120,10 @@ export function settingsView(context: ViewContext): View {
             min: 5,
             max: 40,
             value: s.charWpm,
-            format: (value) => `${value} WPM`,
+            format: (value) => String(value),
+            unit: 'WPM',
+            id: 'charWpm',
+            label: 'Vitesse des caractères, en mots par minute',
             onInput: (value) => store.updateSettings({ charWpm: value }),
           }),
           `La vitesse à laquelle chaque caractère est émis. Une unité vaut actuellement ${Math.round(timing.unit * 1000)} ms. ` +
@@ -149,7 +135,10 @@ export function settingsView(context: ViewContext): View {
             min: 5,
             max: 40,
             value: s.effectiveWpm,
-            format: (value) => `${value} WPM`,
+            format: (value) => String(value),
+            unit: 'WPM',
+            id: 'effectiveWpm',
+            label: 'Vitesse globale, en mots par minute',
             onInput: (value) => store.updateSettings({ effectiveWpm: value }),
           }),
           timing.farnsworth
@@ -186,7 +175,10 @@ export function settingsView(context: ViewContext): View {
             max: 1200,
             step: 10,
             value: s.frequency,
-            format: (value) => `${value} Hz`,
+            format: (value) => String(value),
+            unit: 'Hz',
+            id: 'frequency',
+            label: 'Tonalité, en hertz',
             onInput: (value) => store.updateSettings({ frequency: value }),
           }),
           'La plupart des opérateurs se placent entre 550 et 750 Hz. Une tonalité trop aiguë fatigue vite ; une tonalité trop grave se confond avec le bruit de fond.',
@@ -197,7 +189,10 @@ export function settingsView(context: ViewContext): View {
             min: 0,
             max: 100,
             value: Math.round(s.volume * 100),
-            format: (value) => `${value} %`,
+            format: (value) => String(value),
+            unit: '%',
+            id: 'volume',
+            label: 'Volume, en pourcentage',
             onInput: (value) => store.updateSettings({ volume: value / 100 }),
           }),
         ),
@@ -207,7 +202,10 @@ export function settingsView(context: ViewContext): View {
             min: 1,
             max: 20,
             value: s.rampMs,
-            format: (value) => `${value} ms`,
+            format: (value) => String(value),
+            unit: 'ms',
+            id: 'rampMs',
+            label: 'Douceur de l’attaque, en millisecondes',
             onInput: (value) => store.updateSettings({ rampMs: value }),
           }),
           'Durée de la montée et de la descente du son. En dessous de 3 ms apparaissent les « clics de manipulation », désagréables à l’oreille et mal vus en trafic réel.',
@@ -243,7 +241,10 @@ export function settingsView(context: ViewContext): View {
             min: 0,
             max: 10,
             value: s.tailUnits,
-            format: (value) => (value === 0 ? 'aucun' : `${value} unités`),
+            format: (value) => String(value),
+            unit: 'unités',
+            id: 'tailUnits',
+            label: 'Silence de fin, en unités',
             onInput: (value) => store.updateSettings({ tailUnits: value }),
           }),
           `Silence ajouté après le dernier signal, soit ${Math.round(s.tailUnits * timing.unit * 1000)} ms à la vitesse actuelle. Il détache la fin de l’émission de l’extinction de la sortie audio, que beaucoup de casques — surtout en Bluetooth — signalent par un léger craquement qu’on prend alors pour un élément du code.`,
@@ -479,7 +480,10 @@ export function settingsView(context: ViewContext): View {
             max: 100,
             step: 5,
             value: Math.round(s.kochThreshold * 100),
-            format: (value) => `${value} %`,
+            format: (value) => String(value),
+            unit: '%',
+            id: 'kochThreshold',
+            label: 'Précision à atteindre, en pourcentage',
             onInput: (value) => store.updateSettings({ kochThreshold: value / 100 }),
           }),
           'Précision à atteindre sur une série avant d’ajouter le caractère suivant. Le seuil classique est 90 %.',
@@ -491,7 +495,10 @@ export function settingsView(context: ViewContext): View {
             max: 60,
             step: 5,
             value: s.sessionLength,
-            format: (value) => `${value} caractères`,
+            format: (value) => String(value),
+            unit: 'caractères',
+            id: 'sessionLength',
+            label: 'Longueur de série, en caractères',
             onInput: (value) => store.updateSettings({ sessionLength: value }),
           }),
           'Des séries courtes et répétées valent mieux qu’une séance interminable.',
@@ -635,12 +642,13 @@ export function settingsView(context: ViewContext): View {
     );
   };
 
-  render();
+  draw();
   const unsubscribe = store.subscribe(render);
 
   return {
     element: container,
     destroy: () => {
+      if (pending) window.cancelAnimationFrame(pending);
       window.removeEventListener('keydown', onCaptureKey, true);
       unsubscribe();
       player.stop();

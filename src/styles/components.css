@@ -1652,3 +1652,201 @@
 .segmented--wrap {
   flex-wrap: wrap;
 }
+
+/* --- Curseur doublé d'un champ de saisie --- */
+
+.slider__entry {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.slider__field {
+  width: 4.5rem;
+  padding: 0.35rem var(--space-2);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  /* Sur iPhone, un champ sous 16 px déclenche un zoom automatique à la mise au
+     point, qui décale toute la page. On reste donc à cette taille sur les
+     petits écrans, quitte à agrandir un peu le champ. */
+}
+
+.slider__field:focus-visible {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.slider__unit {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  min-width: 2.6rem;
+}
+
+@media (max-width: 900px) {
+  .slider__field {
+    font-size: 16px;
+    width: 5rem;
+  }
+
+  .slider-row {
+    gap: var(--space-3);
+  }
+}
+
+/* --- Panneau de réglages --- */
+
+.panel-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgb(0 0 0 / 0.45);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+
+.panel {
+  position: fixed;
+  z-index: 60;
+  inset: 0 0 0 auto;
+  width: min(30rem, 100vw);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-elevated);
+  border-left: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  transform: translateX(100%);
+  transition: transform var(--transition);
+}
+
+.panel.is-open {
+  transform: translateX(0);
+}
+
+.panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  padding-top: max(var(--space-4), env(safe-area-inset-top));
+  border-bottom: 1px solid var(--border);
+}
+
+.panel__title {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.panel__close {
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.panel__close:hover,
+.panel__close:focus-visible {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.panel__body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-5);
+  padding-bottom: max(var(--space-5), env(safe-area-inset-bottom));
+}
+
+.panel__section {
+  margin: 0 0 var(--space-4);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+}
+
+.panel__quick {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.panel__row {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.panel__label {
+  font-weight: 600;
+  font-size: 0.94rem;
+}
+
+.panel__hint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.panel__inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.panel__full {
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+}
+
+/* Le panneau est étroit : les cartes de la page Réglages y perdent leur cadre,
+   qui ne ferait qu'ajouter une bordure dans une bordure. */
+.panel__full .card {
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+
+.panel__full .stack {
+  gap: var(--space-6);
+}
+
+.panel__full .slider {
+  max-width: none;
+}
+
+@media (max-width: 900px) {
+  .panel {
+    inset: auto 0 0 0;
+    width: 100%;
+    max-height: 88vh;
+    border-left: 0;
+    border-top: 1px solid var(--border);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    transform: translateY(100%);
+  }
+
+  .panel.is-open {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    transition: none;
+  }
+}

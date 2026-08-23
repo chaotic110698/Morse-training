@@ -148,24 +148,82 @@
 /* --- Zone principale --- */
 
 .main {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-width: 0;
 }
 
+/*
+ * Sur ordinateur, ce bandeau ne portait rien : la barre latérale suffisait, et
+ * il restait masqué. L'engrenage lui donne une raison d'exister — mais sans
+ * fond ni bordure, pour qu'il n'ajoute pas une barre de plus au-dessus du
+ * titre. Sur téléphone il reprend son rôle complet.
+ */
 .topbar {
-  display: none;
+  display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
+  background: none;
+  border-bottom: 0;
+  padding: var(--space-3) var(--space-4) 0;
   padding-top: max(var(--space-3), env(safe-area-inset-top));
-  background: color-mix(in srgb, var(--bg-elevated) 85%, transparent);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-  position: sticky;
+  /*
+   * Sur ordinateur, ce bandeau ne porte qu'un bouton : le laisser dans le flux
+   * ajouterait cinquante pixels de hauteur à toutes les pages, et rendrait
+   * défilable ce qui tenait à l'écran. Il se superpose donc au coin, et la
+   * tête de page lui réserve sa place à droite.
+   */
+  position: absolute;
   top: 0;
+  right: 0;
   z-index: 20;
+}
+
+.topbar__spacer {
+  flex: 1;
+}
+
+/* Sur ordinateur, seul l'engrenage subsiste : le reste appartient au tiroir. */
+.topbar > .burger,
+.topbar > .topbar__brand {
+  display: none;
+}
+
+.topbar__gear {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition), transform var(--transition);
+}
+
+.topbar__gear:hover,
+.topbar__gear:focus-visible {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.topbar__gear[aria-expanded='true'] {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.topbar__gear-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+  transition: transform var(--transition);
+}
+
+.topbar__gear:hover .topbar__gear-icon {
+  transform: rotate(30deg);
 }
 
 .topbar__brand {
@@ -218,6 +276,8 @@
 
 .page__head {
   margin-bottom: var(--space-5);
+  /* Place réservée à l'engrenage, qui flotte au-dessus du coin droit. */
+  padding-right: 3.5rem;
 }
 
 .page__title {
@@ -260,7 +320,29 @@
   }
 
   .topbar {
+    position: sticky;
+    right: auto;
+    padding: var(--space-3) var(--space-4);
+    padding-top: max(var(--space-3), env(safe-area-inset-top));
+    background: color-mix(in srgb, var(--bg-elevated) 85%, transparent);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
     display: flex;
+  }
+
+  .page__head {
+    padding-right: 0;
+  }
+
+  /* Le tiroir et la marque reprennent leur place à côté de l'engrenage. */
+  .topbar > .burger,
+  .topbar > .topbar__brand {
+    display: revert;
+  }
+
+  .topbar > .burger {
+    display: grid;
   }
 
   .sidebar {

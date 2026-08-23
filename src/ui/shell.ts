@@ -8,6 +8,7 @@
  */
 
 import { h } from './dom.ts';
+import { createSettingsPanel, type SettingsPanel } from './settings-panel.ts';
 import { NAV_GROUPS, ROUTES } from '../views/routes.ts';
 import type { RouteDefinition, ToastKind } from './router.ts';
 import type { AppStore } from '../core/store.ts';
@@ -19,6 +20,8 @@ export interface Shell {
   outlet: HTMLElement;
   toast: (message: string, kind?: ToastKind) => void;
   setActiveRoute: (route: RouteDefinition) => void;
+  /** Le panneau de réglages, monté par l'ossature et piloté par elle. */
+  settingsPanel: SettingsPanel;
 }
 
 export function createShell(root: HTMLElement, store: AppStore): Shell {
@@ -186,6 +189,17 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
     }
   });
 
+  // Le panneau réutilise la page Réglages, qui attend un contexte de vue. Le
+  // routeur n'existe pas encore ici : naviguer par le fragment revient
+  // exactement au même, puisque c'est ainsi que le routeur lui-même procède.
+  const settingsPanel = createSettingsPanel(store, {
+    store,
+    toast,
+    navigate: (path: string) => {
+      window.location.hash = `#${path}`;
+    },
+  });
+
   const setActiveRoute = (route: RouteDefinition): void => {
     for (const [path, link] of navLinks) {
       const active = path === route.path;
@@ -195,6 +209,7 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
     }
     pageTitle.textContent = route.title;
     pageDescription.textContent = route.description;
+    settingsPanel.setRoute(route.path);
   };
 
   root.append(
@@ -208,6 +223,8 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
         { class: 'topbar' },
         burger,
         h('span', { class: 'topbar__brand', text: 'Morse Training' }),
+        h('span', { class: 'topbar__spacer' }),
+        settingsPanel.button,
       ),
       h(
         'main',
@@ -216,8 +233,9 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
         outlet,
       ),
     ),
+    ...settingsPanel.nodes,
     toasts,
   );
 
-  return { outlet, toast, setActiveRoute };
+  return { outlet, toast, setActiveRoute, settingsPanel };
 }
