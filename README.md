@@ -100,6 +100,13 @@ localement.
   son excursion, modes numériques ; et la CW pour ce qu'elle est, une
   modulation d'amplitude à deux états dont l'étroitesse fait toute la portée.
 
+- *Formulaire* — les quatre-vingts formules exigibles en treize groupes, avec
+  leurs unités et leur variante simplifiée quand elle existe. Filtrable par
+  mot, par unité et par épreuve, et imprimable : une feuille de style dédiée
+  retire le bandeau, force les couleurs claires et déplie les sections
+  repliées, de sorte que la page sorte telle quelle sur papier. En tête, les
+  six blocs à recopier sur le brouillon avant de lancer le chronomètre.
+
 Le contenu de cette section est rédigé pour ce site à partir du cours de F6GPX
 publié par le Radio-Club de la Haute Île, crédité et lié depuis la page
 d'entrée. Voir `docs/formation/LISEZMOI.md`.

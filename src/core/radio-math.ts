@@ -525,3 +525,67 @@ export function sMeterDbm(sPoint: number): number {
 export function bitRate(bauds: number, states: number): number {
   return states > 1 ? bauds * Math.log2(states) : bauds;
 }
+
+// --- Compléments du formulaire ---
+
+/** Courant d'émetteur d'un transistor : Ie = Ib + Ic. */
+export function emitterCurrent(baseAmps: number, collectorAmps: number): number {
+  return baseAmps + collectorAmps;
+}
+
+/** Résistance interne d'une pile : Ri = (E − U) / I. */
+export function internalResistance(emf: number, terminalVolts: number, amps: number): number {
+  return amps > 0 ? (emf - terminalVolts) / amps : 0;
+}
+
+/** Impédance caractéristique d'une ligne : Z = √(L / C), par unité de longueur. */
+export function lineImpedance(henryPerMetre: number, faradPerMetre: number): number {
+  return faradPerMetre > 0 ? Math.sqrt(henryPerMetre / faradPerMetre) : 0;
+}
+
+/** Puissance réfléchie : P réfléchie = P émise × ρ². */
+export function reflectedPower(emittedWatts: number, rho: number): number {
+  return emittedWatts * rho * rho;
+}
+
+/** Coefficient de réflexion depuis les extrêmes d'une onde stationnaire. */
+export function rhoFromExtremes(maximum: number, minimum: number): number {
+  const sum = maximum + minimum;
+  return sum > 0 ? (maximum - minimum) / sum : 0;
+}
+
+/** Taux de modulation d'amplitude, en pourcentage : K = (A − a) / (A + a). */
+export function amModulationRate(maxEnvelope: number, minEnvelope: number): number {
+  const sum = maxEnvelope + minEnvelope;
+  return sum > 0 ? ((maxEnvelope - minEnvelope) / sum) * 100 : 0;
+}
+
+/** Indice de modulation en FM : m = excursion / fréquence audio maximale. */
+export function fmModulationIndex(deviation: number, maxAudio: number): number {
+  return maxAudio > 0 ? deviation / maxAudio : 0;
+}
+
+/**
+ * Règle de Carson : bande occupée réelle d'un signal FM.
+ *
+ * Plus honnête que le simple doublement de l'excursion, qui néglige les
+ * bandes latérales engendrées par la modulation.
+ */
+export function carsonBandwidth(deviation: number, maxAudio: number): number {
+  return 2 * (fmModulationIndex(deviation, maxAudio) + 1) * maxAudio;
+}
+
+/** Taux de distorsion harmonique, en pourcentage. */
+export function harmonicDistortion(parasiteVolts: number, wantedVolts: number): number {
+  return wantedVolts > 0 ? (parasiteVolts / wantedVolts) * 100 : 0;
+}
+
+/** Longueur théorique d'un doublet demi-onde, en mètres : L = 150 / f(MHz). */
+export function halfWaveLength(mhz: number): number {
+  return mhz > 0 ? 150 / mhz : 0;
+}
+
+/** Longueur théorique d'une antenne quart d'onde, en mètres : L = 75 / f(MHz). */
+export function quarterWaveLength(mhz: number): number {
+  return mhz > 0 ? 75 / mhz : 0;
+}

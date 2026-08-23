@@ -27,6 +27,7 @@ import { licenceStagesView } from './licence-stages.ts';
 import { licenceDigitalView } from './licence-digital.ts';
 import { licenceReceiversView } from './licence-receivers.ts';
 import { licenceModulationsView } from './licence-modulations.ts';
+import { licenceFormularyView } from './licence-formulary.ts';
 import { listenView } from './train-listen.ts';
 import { sendView } from './train-send.ts';
 import { wordsView } from './train-words.ts';
@@ -291,6 +292,15 @@ export const ROUTES: RouteDefinition[] = [
     icon: '🌊',
     group: 'licence',
     factory: licenceModulationsView,
+  },
+  {
+    path: '/licence/formulaire',
+    label: 'Formulaire',
+    title: 'Formulaire',
+    description: 'Toutes les formules exigibles, filtrables et imprimables.',
+    icon: '📄',
+    group: 'licence',
+    factory: licenceFormularyView,
   },
   {
     path: '/entrainement/ecoute',

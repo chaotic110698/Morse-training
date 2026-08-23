@@ -1355,3 +1355,200 @@
   font-size: 0.88rem;
   line-height: 1.45;
 }
+
+/* --- Formulaire --- */
+
+.formulary {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+  gap: var(--space-2);
+}
+
+.formulary__entry {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.formulary__purpose {
+  margin: 0;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-faint);
+  line-height: 1.3;
+}
+
+/* La formule est l'objet de la fiche : elle prime visuellement, et défile
+   plutôt que de se couper si elle dépasse. */
+.formulary__expression {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: var(--accent);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.formulary__expression::-webkit-scrollbar {
+  display: none;
+}
+
+.formulary__simplified {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.formulary__simplified::-webkit-scrollbar {
+  display: none;
+}
+
+.formulary__tag {
+  flex: none;
+  padding: 0.02rem 0.35rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-faint);
+}
+
+.formulary__variables {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.formulary__note {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-faint);
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* --- Feuille de brouillon --- */
+
+.scratchpad {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.scratch {
+  padding: var(--space-3);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.scratch__title {
+  margin: 0 0 var(--space-2);
+  font-size: 0.9rem;
+}
+
+.scratch__content {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 0.86rem;
+  color: var(--accent);
+  white-space: pre-wrap;
+  line-height: 1.5;
+  overflow-wrap: break-word;
+}
+
+.scratch__detail {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+/* --- Impression --- */
+
+@media print {
+  /* Un formulaire sert à être emporté sur papier : on retire tout ce qui ne
+     s'imprime pas utilement et on force les couleurs claires. */
+  .sidebar,
+  .app__header,
+  .topbar,
+  .overlay,
+  .toast-stack,
+  .prose--noprint,
+  .lamp {
+    display: none !important;
+  }
+
+  :root {
+    --bg: #fff;
+    --bg-elevated: #fff;
+    --surface: #fff;
+    --surface-2: #fff;
+    --surface-3: #fff;
+    --border: #bbb;
+    --border-strong: #888;
+    --text: #000;
+    --text-muted: #333;
+    --text-faint: #555;
+    --accent: #000;
+    --accent-soft: transparent;
+    --shadow: none;
+    --shadow-sm: none;
+  }
+
+  body,
+  .app,
+  .app__main,
+  main {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  /* Les sections repliées doivent s'imprimer : sur papier, rien ne se déplie. */
+  details {
+    break-inside: avoid;
+  }
+
+  details > *:not(summary) {
+    display: revert !important;
+  }
+
+  .formulary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .formulary__entry,
+  .scratch,
+  .card {
+    break-inside: avoid;
+    box-shadow: none !important;
+  }
+
+  a[href^='#'] {
+    text-decoration: none;
+    color: inherit;
+  }
+}

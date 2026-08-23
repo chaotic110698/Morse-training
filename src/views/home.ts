@@ -99,6 +99,12 @@ const SHORTCUTS: Shortcut[] = [
     text: 'Les vingt-cinq bandes de la région 1, leur statut réglementaire, et de quoi situer une fréquence.',
   },
   {
+    path: '/licence/formulaire',
+    icon: '📄',
+    title: 'Formulaire de l’examen',
+    text: 'Toutes les formules exigibles, avec leurs unités. Filtrable, et imprimable pour réviser hors écran.',
+  },
+  {
     path: '/progression/statistiques',
     icon: '📊',
     title: 'Statistiques',
