@@ -64,6 +64,23 @@ localement.
 - *Brouillage et sécurité* — compatibilité électromagnétique, immunité et
   susceptibilité, intermodulation et transmodulation, puis les seuils de
   tension, le code des couleurs, les protections et la foudre.
+- *Calculer sans se tromper* — transformer une équation, l'ordre des
+  opérations, le produit en croix, les puissances de dix et les multiples, avec
+  un convertisseur qui montre le déplacement de la virgule, et la liste de ce
+  qu'il faut noter sur le brouillon avant l'épreuve.
+- *Lois d'Ohm et de Joule* — les quatre grandeurs, les douze équations avec un
+  solveur qui en déduit deux à partir de deux, les quatre triangles, le coulomb
+  et le joule, la résistivité et l'effet de peau, un décodeur de code des
+  couleurs, et les groupements série et parallèle.
+- *Courant alternatif* — période, fréquence et pulsation, les quatre façons de
+  mesurer un signal, bobines et condensateurs comparés terme à terme, réactance
+  et capacitance, groupements, et constante de temps. Trois calculateurs.
+- *Transformateurs et mesures* — rapport de spires, tensions, intensités et le
+  carré des impédances, pertes par courants de Foucault, piles et
+  accumulateurs, galvanomètre et instruments dérivés, qualité d'un voltmètre.
+- *Filtres et circuits accordés* — fréquence de coupure RC et RL, atténuation
+  par octave, loi de Thomson dans ses trois sens, les quatre montages LC,
+  facteur Q, bande passante et sélectivité.
 
 Le contenu de cette section est rédigé pour ce site à partir du cours de F6GPX
 publié par le Radio-Club de la Haute Île, crédité et lié depuis la page

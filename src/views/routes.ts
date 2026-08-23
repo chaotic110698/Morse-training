@@ -16,6 +16,11 @@ import { licenceStationView } from './licence-station.ts';
 import { licenceDecibelsView } from './licence-decibels.ts';
 import { licenceAntennasView } from './licence-antennas.ts';
 import { licenceSafetyView } from './licence-safety.ts';
+import { licenceMathsView } from './licence-maths.ts';
+import { licenceOhmView } from './licence-ohm.ts';
+import { licenceAcView } from './licence-ac.ts';
+import { licenceTransformersView } from './licence-transformers.ts';
+import { licenceCircuitsView } from './licence-circuits.ts';
 import { listenView } from './train-listen.ts';
 import { sendView } from './train-send.ts';
 import { wordsView } from './train-words.ts';
@@ -181,6 +186,51 @@ export const ROUTES: RouteDefinition[] = [
     icon: '⚡',
     group: 'licence',
     factory: licenceSafetyView,
+  },
+  {
+    path: '/licence/calcul',
+    label: 'Calculer sans se tromper',
+    title: 'Calculer sans se tromper',
+    description: 'Transformer une équation, manier les multiples, préparer son brouillon.',
+    icon: '🔢',
+    group: 'licence',
+    factory: licenceMathsView,
+  },
+  {
+    path: '/licence/ohm',
+    label: 'Lois d’Ohm et de Joule',
+    title: 'Lois d’Ohm et de Joule',
+    description: 'Quatre grandeurs, douze équations, le code des couleurs et les groupements.',
+    icon: '🔌',
+    group: 'licence',
+    factory: licenceOhmView,
+  },
+  {
+    path: '/licence/alternatif',
+    label: 'Courant alternatif',
+    title: 'Courant alternatif, bobines et condensateurs',
+    description: 'Valeurs efficaces, réactance, capacitance et constante de temps.',
+    icon: '〰️',
+    group: 'licence',
+    factory: licenceAcView,
+  },
+  {
+    path: '/licence/transformateurs',
+    label: 'Transformateurs et mesures',
+    title: 'Transformateurs, piles et mesures',
+    description: 'Rapport de spires, piles, galvanomètre et instruments de mesure.',
+    icon: '🔋',
+    group: 'licence',
+    factory: licenceTransformersView,
+  },
+  {
+    path: '/licence/circuits',
+    label: 'Filtres et circuits accordés',
+    title: 'Filtres et circuits accordés',
+    description: 'Fréquence de coupure, loi de Thomson, facteur Q et bande passante.',
+    icon: '🎛️',
+    group: 'licence',
+    factory: licenceCircuitsView,
   },
   {
     path: '/entrainement/ecoute',

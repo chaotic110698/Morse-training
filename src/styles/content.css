@@ -989,3 +989,185 @@
 .is-warn {
   color: var(--error);
 }
+
+/* --- Solveur à quatre grandeurs --- */
+
+.ohm-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.ohm-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.ohm-field span {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+}
+
+.ohm-field input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* --- Triangles de la loi d'Ohm --- */
+
+.triangles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: var(--space-3);
+}
+
+/* Le triangle est dessiné par une bordure, pas par une image : il reste net à
+   toute taille et suit la couleur du thème. */
+.triangle {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-3) var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  min-height: 7rem;
+  font-family: var(--font-mono);
+}
+
+/* clip-path découpe aussi la bordure : un contour disparaîtrait sur trois de
+   ses quatre côtés. On remplit donc la forme au lieu de la cerner. */
+.triangle::before {
+  content: '';
+  position: absolute;
+  inset: var(--space-2);
+  background: var(--accent-soft);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  pointer-events: none;
+}
+
+.triangle__top,
+.triangle__bottom {
+  position: relative;
+}
+
+.triangle__top {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.triangle__bottom {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.triangle__times {
+  color: var(--text-faint);
+  font-size: 0.85rem;
+}
+
+/* --- Résistance et code des couleurs --- */
+
+.resistor {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
+}
+
+.resistor__body {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 9rem;
+  height: 3rem;
+  padding: 0 var(--space-4);
+  background: linear-gradient(180deg, #ddd0b4, #c4b291);
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+}
+
+.resistor__band {
+  width: 0.7rem;
+  height: 3rem;
+  border-radius: 2px;
+}
+
+.resistor__value {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.resistor__value strong {
+  font-size: 1.5rem;
+  font-family: var(--font-mono);
+}
+
+.resistor__detail {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.swatch {
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.9rem;
+  margin-right: var(--space-2);
+  border-radius: 3px;
+  border: 1px solid var(--border-strong);
+  vertical-align: -0.1rem;
+}
+
+/* --- Comparaison bobine / condensateur --- */
+
+.compare {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--space-3);
+}
+
+.compare__side {
+  padding: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.compare__title {
+  margin: 0 0 var(--space-3);
+  font-size: 1rem;
+  color: var(--accent);
+}
+
+.compare__list {
+  margin: 0;
+  padding-left: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.compare__list strong {
+  color: var(--text);
+}
+
+.decoder__unit {
+  max-width: 4.5rem;
+  text-align: center;
+}
