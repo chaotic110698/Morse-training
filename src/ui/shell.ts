@@ -11,6 +11,7 @@ import { h } from './dom.ts';
 import { createSettingsPanel, type SettingsPanel } from './settings-panel.ts';
 import { createGlossaryPanel, type GlossaryPanel } from './glossary-panel.ts';
 import { createGlossaryMarker } from './glossary-mark.ts';
+import { createSearchPanel, type SearchPanel } from './search-panel.ts';
 import { NAV_GROUPS, ROUTES } from '../views/routes.ts';
 import { LICENCE_HUB, locate } from '../data/licence-syllabus.ts';
 import type { RouteDefinition, ToastKind } from './router.ts';
@@ -27,6 +28,8 @@ export interface Shell {
   settingsPanel: SettingsPanel;
   /** Le lexique, disponible depuis n'importe quelle page. */
   glossaryPanel: GlossaryPanel;
+  /** La recherche globale, ouverte par la loupe ou par Ctrl+K. */
+  searchPanel: SearchPanel;
 }
 
 export function createShell(root: HTMLElement, store: AppStore): Shell {
@@ -214,6 +217,13 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
   });
   const marker = createGlossaryMarker(outlet, (key) => glossaryPanel.openAt(key));
 
+  const searchPanel = createSearchPanel({
+    navigate: (path: string) => {
+      window.location.hash = `#${path}`;
+    },
+    openGlossary: (term: string) => glossaryPanel.openAt(term),
+  });
+
   const setActiveRoute = (route: RouteDefinition): void => {
     for (const [path, link] of navLinks) {
       const active = path === route.path;
@@ -295,6 +305,7 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
         burger,
         h('span', { class: 'topbar__brand', text: 'Morse Training' }),
         h('span', { class: 'topbar__spacer' }),
+        searchPanel.button,
         glossaryPanel.button,
         settingsPanel.button,
       ),
@@ -308,8 +319,9 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
     ),
     ...settingsPanel.nodes,
     ...glossaryPanel.nodes,
+    ...searchPanel.nodes,
     toasts,
   );
 
-  return { outlet, toast, setActiveRoute, settingsPanel, glossaryPanel };
+  return { outlet, toast, setActiveRoute, settingsPanel, glossaryPanel, searchPanel };
 }

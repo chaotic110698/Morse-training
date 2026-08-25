@@ -16,7 +16,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": false,
-    "types": ["vite/client", "vite-plugin-pwa/client"]
+    "types": ["node", "vite/client", "vite-plugin-pwa/client"]
   },
-  "include": ["src", "vite.config.ts"]
+  "include": ["src", "build", "vite.config.ts"]
 }

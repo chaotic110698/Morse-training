@@ -149,6 +149,18 @@ Statistiques par caractère sous forme de carte de chaleur, points faibles du
 moment, historique des séries, séries de jours consécutifs, et vingt-huit succès.
 Le tout s'exporte et se réimporte en JSON.
 
+**La recherche**
+
+La loupe du bandeau — ou `Ctrl+K`, `⌘K` sur Mac — ouvre une palette qui fouille
+tout le site d'un seul champ : les quarante pages et leurs sections, les
+quatre-vingt-dix-sept définitions du lexique, les codes Q, abréviations et
+signaux de procédure, les quatre-vingts formules du formulaire et les quatre
+cent quarante-neuf énoncés du questionnaire. Les accents et la casse sont
+ignorés, l'élision aussi (« loi d'Ohm » cherche *loi* et *ohm*), et un début de
+mot suffit. Les flèches déplacent la sélection, Entrée ouvre, Échap efface puis
+referme. Choisir une section ouvre son chapitre à la bonne hauteur ; choisir un
+terme ouvre le lexique sur sa définition.
+
 **Le lexique**
 
 Quatre-vingt-dix-sept définitions — du point et du trait à la PIRE, en passant
@@ -266,6 +278,11 @@ vide, et toute comparaison échoue en silence. `resolveCode()` reconstruit alors
 le code depuis `key`, qu'iPadOS fournit systématiquement, de sorte que la barre
 d'espace fonctionne sur tous les appareils.
 
+Les raccourcis généraux sont volontairement rares : `Ctrl+K` — `⌘K` sur Mac —
+ouvre la recherche, `Échap` referme le panneau ouvert. Dans la recherche, les
+flèches déplacent la sélection sans que le focus quitte le champ de saisie, ce
+qui permet de taper et de choisir sans changer de main.
+
 ## Développement
 
 ```bash
@@ -297,21 +314,31 @@ racine du domaine.
 
 ```
 src/
-  core/      logique pure : tables morse, calcul des durées, moteur audio,
+  build/     outillage de compilation : extraction de l'index de recherche
+  src/
+    core/    logique pure : tables morse, calcul des durées, moteur audio,
              manipulateur, méthode Koch, tirage des séries, moteur de
-             questionnaire, lexique, progression, succès, stockage
-  ui/        briques d'interface : fabrique DOM, routeur, ossature, panneaux
+             questionnaire, lexique, recherche, progression, succès, stockage
+    ui/      briques d'interface : fabrique DOM, routeur, ossature, panneaux
              en superposition, curseurs, diode, manipulateur à l'écran,
              lecteur, suivi de session, repérage des termes du lexique
-  views/     une page par fichier, plus la table des routes
-  data/      vocabulaire d'entraînement, banque de questions, formulaire,
+    views/   une page par fichier, plus la table des routes
+    data/    vocabulaire d'entraînement, banque de questions, formulaire,
              parcours de la licence, lexique
-  styles/    jetons de design, base, mise en page, composants, contenu
+    styles/  jetons de design, base, mise en page, composants, contenu
 ```
 
-Deux jeux de données pèsent trop pour la première page et ne sont donc chargés
-qu'à la demande : les quatre cent quarante-neuf questions de la licence et les
-définitions du lexique, chacune dans son propre module.
+Trois jeux de données pèsent trop pour la première page et ne sont donc chargés
+qu'à la demande : les quatre cent quarante-neuf questions de la licence, les
+définitions du lexique, et l'index de recherche.
+
+Ce dernier est fabriqué **à la compilation** par `build/search-index.ts`, un
+greffon Vite qui lit les sources des pages et n'en garde que les titres de
+section et un sac de mots. Le contenu des chapitres vit à l'intérieur de
+fonctions qui fabriquent du DOM : l'indexer à l'exécution obligerait à rendre
+les quarante pages, donc à instancier des lecteurs audio et des minuteurs, pour
+seulement savoir qu'un mot s'y trouve. Le module n'existe nulle part sur le
+disque — Vite le produit à la demande — ce qui le met à l'abri d'être périmé.
 
 Aucun framework : le rendu est fait avec une petite fabrique DOM, ce qui évite
 qu'un cycle de rendu ne vienne s'intercaler entre l'horloge audio et

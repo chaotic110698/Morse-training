@@ -10,10 +10,23 @@
 
 import { h } from './dom.ts';
 
+/**
+ * Les panneaux ouverts, pour n'en laisser qu'un. Deux dialogues modaux
+ * superposés, c'est un piège à focus dans un piège à focus : Échap n'en ferme
+ * qu'un, et le lecteur d'écran ne sait plus lequel il annonce.
+ */
+const opened = new Set<{ close: () => void }>();
+
 export interface OverlayOptions {
   id: string;
   /** Titre du panneau, lu par les technologies d'assistance. */
   title: string;
+  /**
+   * `sheet` : une feuille ancrée au bord, pour ce qu'on garde ouvert en
+   * travaillant. `palette` : une boîte centrée, pour ce qu'on ouvre, utilise et
+   * referme dans la seconde.
+   */
+  variant?: 'sheet' | 'palette';
   /** Appelé juste avant l'ouverture, pour préparer le contenu. */
   onOpen?: () => void;
   onClose?: () => void;
@@ -54,7 +67,7 @@ export function createOverlay(options: OverlayOptions): Overlay {
   const panel = h(
     'aside',
     {
-      class: 'panel',
+      class: options.variant === 'palette' ? 'panel panel--palette' : 'panel',
       id: options.id,
       attrs: {
         role: 'dialog',
@@ -98,7 +111,9 @@ export function createOverlay(options: OverlayOptions): Overlay {
 
   const doOpen = (): void => {
     if (open) return;
+    for (const other of [...opened]) other.close();
     open = true;
+    opened.add(self);
     lastFocus = document.activeElement as HTMLElement | null;
     options.onOpen?.();
     panel.hidden = false;
@@ -117,6 +132,7 @@ export function createOverlay(options: OverlayOptions): Overlay {
   const close = (): void => {
     if (!open) return;
     open = false;
+    opened.delete(self);
     panel.classList.remove('is-open');
     document.body.classList.remove('panel-open');
     veil.hidden = true;
@@ -132,7 +148,7 @@ export function createOverlay(options: OverlayOptions): Overlay {
   veil.addEventListener('click', close);
   document.addEventListener('keydown', onKeydown);
 
-  return {
+  const self: Overlay = {
     nodes: [veil, panel],
     body,
     head,
@@ -140,6 +156,10 @@ export function createOverlay(options: OverlayOptions): Overlay {
     open: doOpen,
     close,
     toggle: () => (open ? close() : doOpen()),
-    destroy: () => document.removeEventListener('keydown', onKeydown),
+    destroy: () => {
+      opened.delete(self);
+      document.removeEventListener('keydown', onKeydown);
+    },
   };
+  return self;
 }

@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import { searchIndexPlugin } from './build/search-index.ts';
 
 // Le site est publie sur GitHub Pages a l'adresse
 // https://<user>.github.io/Morse-training/ : la base doit donc inclure le
@@ -18,6 +19,7 @@ export default defineConfig({
     sourcemap: true,
   },
   plugins: [
+    searchIndexPlugin(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icons/icon.svg', 'icons/favicon.svg'],
