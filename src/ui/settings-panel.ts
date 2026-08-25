@@ -13,6 +13,7 @@
  */
 
 import { h } from './dom.ts';
+import { createOverlay } from './overlay.ts';
 import { keepFocus, slider } from './controls.ts';
 import { bandNoiseSupported, presetForDb, SNR_PRESETS } from '../core/noise.ts';
 import { settingsView } from '../views/settings.ts';
@@ -55,43 +56,34 @@ const CONTEXT_TITLES: Record<ContextKind, string> = {
 
 export function createSettingsPanel(store: AppStore, context: ViewContext): SettingsPanel {
   let route = '/';
-  let open = false;
   let full: View | null = null;
-  let lastFocus: HTMLElement | null = null;
 
   const quick = h('div', { class: 'panel__quick' });
   const fullHost = h('div', { class: 'panel__full' });
-  const title = h('h2', { class: 'panel__title', text: 'Réglages' });
 
-  const closeButton = h('button', {
-    class: 'panel__close',
-    type: 'button',
-    text: '✕',
-    attrs: { 'aria-label': 'Fermer les réglages' },
-    on: { click: () => close() },
-  });
-
-  const veil = h('div', { class: 'panel-veil', attrs: { hidden: 'true' } });
-
-  const panel = h(
-    'aside',
-    {
-      class: 'panel',
-      id: 'panneau-reglages',
-      attrs: {
-        role: 'dialog',
-        'aria-modal': 'true',
-        'aria-labelledby': 'panneau-reglages-titre',
-        hidden: 'true',
-      },
+  const overlay = createOverlay({
+    id: 'panneau-reglages',
+    title: 'Réglages',
+    onOpen: () => {
+      drawQuick();
+      // La page complète des réglages n'est construite qu'à la première
+      // ouverture : elle instancie un lecteur audio et une diode témoin, qu'il
+      // serait absurde de tenir prêts en permanence.
+      if (!full) {
+        full = settingsView(context);
+        fullHost.replaceChildren(
+          h('h3', { class: 'panel__section', text: 'Tous les réglages' }),
+          full.element,
+        );
+      }
+      button.setAttribute('aria-expanded', 'true');
     },
-    h('header', { class: 'panel__head' }, title, closeButton),
-    h('div', { class: 'panel__body' }, quick, fullHost),
-  );
-  title.id = 'panneau-reglages-titre';
+    onClose: () => button.setAttribute('aria-expanded', 'false'),
+  });
+  overlay.body.append(quick, fullHost);
 
   const button = h('button', {
-    class: 'topbar__gear',
+    class: 'topbar__action topbar__gear',
     type: 'button',
     attrs: {
       'aria-label': 'Réglages',
@@ -99,7 +91,12 @@ export function createSettingsPanel(store: AppStore, context: ViewContext): Sett
       'aria-expanded': 'false',
       title: 'Réglages',
     },
-    on: { click: () => toggle() },
+    on: {
+      click: () => {
+        overlay.toggle();
+        button.setAttribute('aria-expanded', String(overlay.isOpen()));
+      },
+    },
   }) as HTMLButtonElement;
   button.append(h('span', { class: 'topbar__gear-icon', text: '⚙', attrs: { 'aria-hidden': 'true' } }));
 
@@ -285,103 +282,27 @@ export function createSettingsPanel(store: AppStore, context: ViewContext): Sett
   // Même différé que la page Réglages, et pour les mêmes raisons.
   let pending = 0;
   const scheduleQuick = (): void => {
-    if (pending || !open) return;
+    if (pending || !overlay.isOpen()) return;
     pending = window.requestAnimationFrame(() => {
       pending = 0;
-      if (open) keepFocus(quick, drawQuick);
+      if (overlay.isOpen()) keepFocus(quick, drawQuick);
     });
   };
   const unsubscribe = store.subscribe(scheduleQuick);
 
-  // --- Ouverture et fermeture ---
-
-  const focusable = (): HTMLElement[] =>
-    [...panel.querySelectorAll<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-    )].filter((element) => !element.hasAttribute('disabled') && element.offsetParent !== null);
-
-  const onKeydown = (event: KeyboardEvent): void => {
-    if (!open) return;
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      close();
-      return;
-    }
-    if (event.key !== 'Tab') return;
-    // Le focus reste dans le panneau tant qu'il est ouvert : c'est ce qui
-    // distingue un dialogue d'un simple bloc posé par-dessus.
-    const items = focusable();
-    if (items.length === 0) return;
-    const first = items[0] as HTMLElement;
-    const last = items[items.length - 1] as HTMLElement;
-    const active = document.activeElement;
-    if (event.shiftKey && (active === first || !panel.contains(active))) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && active === last) {
-      event.preventDefault();
-      first.focus();
-    }
-  };
-
-  const doOpen = (): void => {
-    if (open) return;
-    open = true;
-    lastFocus = document.activeElement as HTMLElement | null;
-    panel.hidden = false;
-    veil.hidden = false;
-    button.setAttribute('aria-expanded', 'true');
-    document.body.classList.add('panel-open');
-    drawQuick();
-    // La page complète des réglages n'est construite qu'à la première
-    // ouverture : elle instancie un lecteur audio et une diode témoin, qu'il
-    // serait absurde de tenir prêts en permanence.
-    if (!full) {
-      full = settingsView(context);
-      fullHost.replaceChildren(
-        h('h3', { class: 'panel__section', text: 'Tous les réglages' }),
-        full.element,
-      );
-    }
-    window.requestAnimationFrame(() => {
-      panel.classList.add('is-open');
-      focusable()[0]?.focus();
-    });
-  };
-
-  const close = (): void => {
-    if (!open) return;
-    open = false;
-    panel.classList.remove('is-open');
-    button.setAttribute('aria-expanded', 'false');
-    document.body.classList.remove('panel-open');
-    veil.hidden = true;
-    // On laisse l'animation se terminer avant de retirer le panneau du flux.
-    window.setTimeout(() => {
-      if (!open) panel.hidden = true;
-    }, 220);
-    lastFocus?.focus();
-    lastFocus = null;
-  };
-
-  const toggle = (): void => (open ? close() : doOpen());
-
-  veil.addEventListener('click', close);
-  document.addEventListener('keydown', onKeydown);
-
   return {
-    nodes: [veil, panel],
+    nodes: overlay.nodes,
     button,
-    open: doOpen,
-    close,
-    toggle,
+    open: overlay.open,
+    close: overlay.close,
+    toggle: overlay.toggle,
     setRoute: (path: string) => {
       route = path;
-      if (open) drawQuick();
+      if (overlay.isOpen()) drawQuick();
     },
     destroy: () => {
       if (pending) window.cancelAnimationFrame(pending);
-      document.removeEventListener('keydown', onKeydown);
+      overlay.destroy();
       unsubscribe();
       full?.destroy?.();
       full = null;

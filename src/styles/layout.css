@@ -190,7 +190,7 @@
   display: none;
 }
 
-.topbar__gear {
+.topbar__action {
   display: grid;
   place-items: center;
   width: 2.5rem;
@@ -204,13 +204,13 @@
   transition: color var(--transition), border-color var(--transition), transform var(--transition);
 }
 
-.topbar__gear:hover,
-.topbar__gear:focus-visible {
+.topbar__action:hover,
+.topbar__action:focus-visible {
   color: var(--accent);
   border-color: var(--accent);
 }
 
-.topbar__gear[aria-expanded='true'] {
+.topbar__action[aria-expanded='true'] {
   color: var(--accent);
   border-color: var(--accent);
   background: var(--accent-soft);

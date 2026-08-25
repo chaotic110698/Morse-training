@@ -149,6 +149,21 @@ Statistiques par caractère sous forme de carte de chaleur, points faibles du
 moment, historique des séries, séries de jours consécutifs, et vingt-huit succès.
 Le tout s'exporte et se réimporte en JSON.
 
+**Le lexique**
+
+Quatre-vingt-dix-sept définitions — du point et du trait à la PIRE, en passant
+par la bande latérale unique et le facteur de qualité — consultables depuis
+n'importe quelle page, sans la quitter. Deux chemins y mènent :
+
+- le bouton en forme de livre, en haut à droite, ouvre la liste complète par
+  ordre alphabétique, avec une recherche et une frise de vingt-six lettres ;
+  chaque définition se déplie pour elle seule et renvoie aux termes voisins
+  qu'elle emploie, ainsi qu'au chapitre du cours qui traite le sujet ;
+- dans les textes, les mots définis sont soulignés en pointillé et ouvrent le
+  lexique directement sur leur définition. Un terme n'est signalé qu'une fois
+  par page, et jamais dans une formule, un tableau de valeurs, un titre ou un
+  bouton, pour que la lecture reste une lecture.
+
 ## Sorties son, lumière et vibration
 
 Les trois sorties sont construites à partir de la même séquence temporelle,
@@ -283,13 +298,20 @@ racine du domaine.
 ```
 src/
   core/      logique pure : tables morse, calcul des durées, moteur audio,
-             manipulateur, méthode Koch, progression, succès, stockage
-  ui/        briques d'interface : fabrique DOM, routeur, ossature, diode,
-             manipulateur à l'écran, lecteur, suivi de session
+             manipulateur, méthode Koch, tirage des séries, moteur de
+             questionnaire, lexique, progression, succès, stockage
+  ui/        briques d'interface : fabrique DOM, routeur, ossature, panneaux
+             en superposition, curseurs, diode, manipulateur à l'écran,
+             lecteur, suivi de session, repérage des termes du lexique
   views/     une page par fichier, plus la table des routes
-  data/      vocabulaire d'entraînement
+  data/      vocabulaire d'entraînement, banque de questions, formulaire,
+             parcours de la licence, lexique
   styles/    jetons de design, base, mise en page, composants, contenu
 ```
+
+Deux jeux de données pèsent trop pour la première page et ne sont donc chargés
+qu'à la demande : les quatre cent quarante-neuf questions de la licence et les
+définitions du lexique, chacune dans son propre module.
 
 Aucun framework : le rendu est fait avec une petite fabrique DOM, ce qui évite
 qu'un cycle de rendu ne vienne s'intercaler entre l'horloge audio et

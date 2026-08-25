@@ -1729,6 +1729,13 @@
   transform: translateX(0);
 }
 
+/* Sans cette règle, `display: flex` l'emporterait sur l'attribut `hidden` : le
+   panneau resterait posé hors de l'écran, invisible mais toujours atteignable
+   à la tabulation depuis n'importe quelle page. */
+.panel[hidden] {
+  display: none;
+}
+
 .panel__head {
   display: flex;
   align-items: center;
@@ -1848,5 +1855,229 @@
 @media (prefers-reduced-motion: reduce) {
   .panel {
     transition: none;
+  }
+}
+
+/* --- Lexique --- */
+
+.topbar__book svg {
+  display: block;
+}
+
+.glossaire__tools {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+}
+
+.glossaire__query {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.glossaire__search {
+  flex: 1;
+  min-width: 0;
+  /* Seize pixels : en dessous, Safari sur iPhone zoome à la mise au point et
+     le panneau déborde de l'écran. */
+  font-size: 16px;
+}
+
+.glossaire__count {
+  margin: 0;
+  flex: none;
+  color: var(--text-faint);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Deux rangées de treize plutôt qu'un pavé irrégulier : l'œil retrouve une
+   lettre par sa position, pas en la lisant. */
+.glossaire__alpha {
+  display: grid;
+  grid-template-columns: repeat(13, 1fr);
+  gap: 2px;
+}
+
+/* `display: flex` l'emporterait sur la feuille du navigateur : la frise
+   resterait visible pendant une recherche, où elle n'a plus de sens. */
+.glossaire__alpha[hidden] {
+  display: none;
+}
+
+.glossaire__jump {
+  padding: 0.2rem 0;
+  background: none;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: color var(--transition), background var(--transition);
+}
+
+.glossaire__jump:hover:not(:disabled),
+.glossaire__jump:focus-visible:not(:disabled) {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.glossaire__jump:disabled {
+  color: var(--border-strong);
+  cursor: default;
+}
+
+.glossaire__list {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.glossaire__group {
+  display: grid;
+  gap: 2px;
+}
+
+.glossaire__letter {
+  position: sticky;
+  top: calc(-1 * var(--space-5));
+  z-index: 1;
+  margin: 0 0 var(--space-1);
+  padding: var(--space-1) 0;
+  background: var(--bg-elevated);
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.glossaire__entry {
+  border-top: 1px solid var(--border);
+}
+
+.glossaire__entry:last-child {
+  border-bottom: 1px solid var(--border);
+}
+
+.glossaire__term {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-2);
+  cursor: pointer;
+  list-style: none;
+}
+
+.glossaire__term::-webkit-details-marker {
+  display: none;
+}
+
+.glossaire__term::before {
+  content: '+';
+  flex: none;
+  width: 1rem;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.glossaire__entry[open] > .glossaire__term::before {
+  content: '−';
+  color: var(--accent);
+}
+
+.glossaire__term:hover,
+.glossaire__term:focus-visible {
+  color: var(--accent);
+}
+
+.glossaire__word {
+  font-weight: 600;
+}
+
+.glossaire__aliases {
+  color: var(--text-faint);
+  font-size: 0.78rem;
+}
+
+.glossaire__def {
+  padding: 0 var(--space-2) var(--space-4) calc(var(--space-2) + 1rem + var(--space-2));
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.glossaire__def > p {
+  margin: 0 0 var(--space-3);
+}
+
+.glossaire__def > p:last-child {
+  margin-bottom: 0;
+}
+
+.glossaire__see {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: 0.84rem;
+}
+
+.glossaire__see-label {
+  color: var(--text-faint);
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+}
+
+.glossaire__see-sep {
+  color: var(--border-strong);
+}
+
+.glossaire__link {
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--accent);
+  font: inherit;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+}
+
+.glossaire__link:hover,
+.glossaire__link:focus-visible {
+  text-decoration-style: solid;
+}
+
+.glossaire__chapter {
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.glossaire__chapter:hover,
+.glossaire__chapter:focus-visible {
+  color: var(--accent);
+}
+
+@media (max-width: 900px) {
+  .glossaire__tools {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .glossaire__jump {
+    min-width: 1.6rem;
+    padding: 0.3rem 0;
   }
 }

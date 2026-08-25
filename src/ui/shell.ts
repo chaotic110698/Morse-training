@@ -9,6 +9,8 @@
 
 import { h } from './dom.ts';
 import { createSettingsPanel, type SettingsPanel } from './settings-panel.ts';
+import { createGlossaryPanel, type GlossaryPanel } from './glossary-panel.ts';
+import { createGlossaryMarker } from './glossary-mark.ts';
 import { NAV_GROUPS, ROUTES } from '../views/routes.ts';
 import { LICENCE_HUB, locate } from '../data/licence-syllabus.ts';
 import type { RouteDefinition, ToastKind } from './router.ts';
@@ -23,6 +25,8 @@ export interface Shell {
   setActiveRoute: (route: RouteDefinition) => void;
   /** Le panneau de réglages, monté par l'ossature et piloté par elle. */
   settingsPanel: SettingsPanel;
+  /** Le lexique, disponible depuis n'importe quelle page. */
+  glossaryPanel: GlossaryPanel;
 }
 
 export function createShell(root: HTMLElement, store: AppStore): Shell {
@@ -203,6 +207,13 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
     },
   });
 
+  // Le lexique s'ouvre par le bandeau ou par un mot repéré dans un texte ; le
+  // repérage, lui, ne s'occupe que du contenu des pages, jamais de l'ossature.
+  const glossaryPanel = createGlossaryPanel((path: string) => {
+    window.location.hash = `#${path}`;
+  });
+  const marker = createGlossaryMarker(outlet, (key) => glossaryPanel.openAt(key));
+
   const setActiveRoute = (route: RouteDefinition): void => {
     for (const [path, link] of navLinks) {
       const active = path === route.path;
@@ -214,6 +225,7 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
     pageDescription.textContent = route.description;
     settingsPanel.setRoute(route.path);
     drawChapter(route.path);
+    marker.refresh();
   };
 
   /**
@@ -283,6 +295,7 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
         burger,
         h('span', { class: 'topbar__brand', text: 'Morse Training' }),
         h('span', { class: 'topbar__spacer' }),
+        glossaryPanel.button,
         settingsPanel.button,
       ),
       h(
@@ -294,8 +307,9 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
       ),
     ),
     ...settingsPanel.nodes,
+    ...glossaryPanel.nodes,
     toasts,
   );
 
-  return { outlet, toast, setActiveRoute, settingsPanel };
+  return { outlet, toast, setActiveRoute, settingsPanel, glossaryPanel };
 }

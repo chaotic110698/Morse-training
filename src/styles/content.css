@@ -2389,3 +2389,34 @@
   min-width: 0;
   width: auto;
 }
+
+/* --- Mots du lexique repérés dans les textes ---
+   Le soulignement pointillé signale un mot cliquable sans le faire passer pour
+   un lien : la définition s'ouvre par-dessus, la page reste où elle est. */
+
+.terme {
+  padding: 0;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  cursor: help;
+}
+
+.terme:hover,
+.terme:focus-visible {
+  color: var(--accent);
+  text-decoration-style: solid;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .terme {
+    transition: color var(--transition);
+  }
+}
