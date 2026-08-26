@@ -100,7 +100,7 @@ const MILESTONES: Milestone[] = [
     body: [
       "Le système mondial de détresse et de sécurité en mer, fondé sur le satellite et la radio " +
         "numérique, remplace progressivement la veille en morse. La Marine nationale française cesse ses " +
-        "émissions en morse en janvier 1997 par un dernier message reste célèbre. Le 1er février 1999, " +
+        "émissions en morse en janvier 1997 par un dernier message resté célèbre. Le 1er février 1999, " +
         "le morse n’est plus le moyen international de détresse en mer. Un siècle de service prend fin.",
     ],
   },
