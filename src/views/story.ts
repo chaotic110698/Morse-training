@@ -91,11 +91,13 @@ export function storyView(context: ViewContext): View {
         const { total } = episodeProgress(episode, 0);
         const done = record?.completed === true;
         const started = (record?.beat ?? 0) > 0 && !done;
+        const action = done ? 'Rejouer' : started ? 'Reprendre' : 'Commencer';
         return h(
           'button',
           {
             class: `recit-carte${done ? ' is-done' : ''}${episode.optional ? ' recit-carte--lore' : ''}`,
             type: 'button',
+            attrs: { 'aria-label': `${action} : ${episode.title}, ${episode.year}` },
             on: { click: () => openEpisode(episode) },
           },
           h(
@@ -110,10 +112,15 @@ export function storyView(context: ViewContext): View {
           ),
           h('span', { class: 'recit-carte__titre', text: episode.title }),
           h('span', { class: 'recit-carte__resume', text: episode.summary }),
-          h('span', {
-            class: 'recit-carte__mesure',
-            text: episode.optional ? 'Entre les ondes' : `${total} passage${total > 1 ? 's' : ''} en morse`,
-          }),
+          h(
+            'span',
+            { class: 'recit-carte__pied' },
+            h('span', {
+              class: 'recit-carte__mesure',
+              text: episode.optional ? 'Entre les ondes' : `${total} passage${total > 1 ? 's' : ''} en morse`,
+            }),
+            h('span', { class: 'recit-carte__action', text: `${action} →` }),
+          ),
         );
       });
 
@@ -159,10 +166,15 @@ export function storyView(context: ViewContext): View {
 
   // --- Lecteur d'épisode ---
 
-  const openEpisode = (episode: Episode): void => {
+  /**
+   * Ouvre un épisode. On reprend là où l'on s'est arrêté — sauf s'il est
+   * terminé, auquel cas il n'y a plus rien à reprendre : on le rejoue.
+   */
+  const openEpisode = (episode: Episode, fromStart = false): void => {
     const ctx = storyContext(episode);
     const record = store.progress.story.episodes[episode.id];
-    let index = Math.min(record?.beat ?? 0, episode.beats.length - 1);
+    const resume = record && !record.completed ? record.beat : 0;
+    let index = fromStart ? 0 : Math.min(resume, episode.beats.length - 1);
     let errors = 0;
     let bestCopy = record?.bestCopy ?? 0;
 
@@ -441,11 +453,26 @@ export function storyView(context: ViewContext): View {
       );
     };
 
+    const restart = (): void => {
+      stop();
+      index = 0;
+      persist();
+      drawBeat();
+      root.scrollIntoView({ block: 'start' });
+    };
+
     setChildren(root, [
       h(
         'div',
         { class: 'recit-entete' },
         h('button', { class: 'btn btn--ghost', type: 'button', text: '← Sommaire', on: { click: back } }),
+        h('button', {
+          class: 'btn btn--ghost',
+          type: 'button',
+          text: 'Depuis le début',
+          attrs: { title: 'Reprendre l’épisode à son premier temps' },
+          on: { click: restart },
+        }),
         h('span', { class: 'recit-entete__annee', text: String(episode.year) }),
         h('span', {
           class: 'recit-entete__qui',

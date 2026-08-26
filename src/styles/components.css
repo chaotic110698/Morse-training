@@ -2408,10 +2408,32 @@
   line-height: 1.5;
 }
 
-.recit-carte__mesure {
+.recit-carte__pied {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
   margin-top: var(--space-1);
+}
+
+.recit-carte__mesure {
   color: var(--text-faint);
   font-size: 0.76rem;
+}
+
+/* Ce qu'un clic va faire : commencer, reprendre, ou rejouer. Sans cette
+   ligne, une carte terminée ne dit pas qu'elle est encore ouverte. */
+.recit-carte__action {
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 650;
+}
+
+.recit-carte:hover .recit-carte__action,
+.recit-carte:focus-visible .recit-carte__action {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 }
 
 /* --- Lecteur d'épisode --- */

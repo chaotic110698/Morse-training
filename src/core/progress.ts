@@ -90,7 +90,10 @@ export interface QuizProgress {
  * l'avait laissé.
  */
 export interface StoryEpisodeRecord {
-  /** Temps atteint, pour reprendre là où l'on s'est arrêté. */
+  /**
+   * Marque-page, et non plus haut fait : c'est là qu'on reprendra. Il peut
+   * donc reculer, quand on décide de rejouer un épisode depuis le début.
+   */
   beat: number;
   completed: boolean;
   /** Erreurs de manipulation cumulées sur l'épisode. */
@@ -116,7 +119,11 @@ export function emptyEpisodeRecord(): StoryEpisodeRecord {
   return { beat: 0, completed: false, errors: 0, bestCopy: 0, withoutTable: true, updatedAt: 0 };
 }
 
-/** Enregistre l'avancement d'un épisode sans jamais faire reculer un acquis. */
+/**
+ * Enregistre l'avancement d'un épisode. Ce qui est acquis ne se perd pas —
+ * l'achèvement, la meilleure copie, la table consultée — mais la position, elle,
+ * suit le joueur, y compris quand il revient en arrière.
+ */
 export function recordEpisode(
   progress: Progress,
   id: string,
@@ -125,7 +132,7 @@ export function recordEpisode(
 ): void {
   const previous = progress.story.episodes[id] ?? emptyEpisodeRecord();
   progress.story.episodes[id] = {
-    beat: Math.max(previous.beat, update.beat ?? previous.beat),
+    beat: update.beat ?? previous.beat,
     completed: previous.completed || (update.completed ?? false),
     errors: previous.errors + (update.errors ?? 0),
     bestCopy: Math.max(previous.bestCopy, update.bestCopy ?? 0),
