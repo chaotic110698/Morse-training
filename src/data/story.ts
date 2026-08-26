@@ -176,9 +176,10 @@ const CE_QUE_DIEU_A_FAIT: Episode = {
       wpm: 5,
       note:
         'La bande ne porte que le signal — c’est à vous d’y mettre les lettres. ' +
-        'Ouvrez la table de déchiffrage, avancez d’un caractère à la fois, et ' +
-        'écrivez ce que vous trouvez. Personne ne vous chronomètre : en 1844, ' +
-        'personne ne sait faire vite.',
+        'Cochez « lettre par lettre » pour avancer d’un caractère à la fois, ' +
+        'ouvrez la table de déchiffrage, et écrivez ce que vous trouvez. ' +
+        'AGN redit le dernier caractère quand vous hésitez. Personne ne vous ' +
+        'chronomètre : en 1844, personne ne sait faire vite.',
     },
     {
       kind: 'recit',

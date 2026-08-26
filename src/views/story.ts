@@ -179,6 +179,14 @@ export function storyView(context: ViewContext): View {
     let bestCopy = record?.bestCopy ?? 0;
 
     table = createMorseTable({ onPick: (_, code) => playCode(code, SEND_WPM) });
+    // La table se règle une fois pour l'épisode : toutes les lettres, plus les
+    // chiffres et la ponctuation seulement s'il en emploie.
+    table.limit(
+      episode.beats
+        .filter((beat) => beat.kind === 'receive' || beat.kind === 'send')
+        .map((beat) => (beat as { text: string }).text)
+        .join(''),
+    );
     const stage = h('div', { class: 'recit-scene' });
     const trail = h('div', { class: 'recit-fil' });
     const meter = h('p', { class: 'recit-mesure' });
@@ -325,33 +333,109 @@ export function storyView(context: ViewContext): View {
         );
       };
 
+      /**
+       * Deux façons d'écouter, et un seul bouton pour les deux.
+       *
+       * Au fil, le message passe d'un trait et `AGN` le redemande en entier.
+       * Pas à pas, le même bouton avance d'un caractère et `AGN` redit le
+       * dernier — c'est ce qu'on veut quand on hésite entre deux lettres, et
+       * réentendre la phrase complète pour cela n'aurait aucun sens.
+       */
+      let stepMode = false;
+      /** Dernier caractère réellement sonné, pour le rejouer seul. */
+      let lastChar = '';
+
       const listen = async (): Promise<void> => {
         player.stop();
         step = 0;
         showTape(0);
-        await playAt(text, wpm, (position) => {
+        lastChar = '';
+        const complete = await playAt(text, wpm, (position) => {
           step = position + 1;
           showTape(step);
         });
+        // Le dernier appel de position arrive au début du dernier caractère :
+        // sans ce rattrapage, la bande s'arrête un signe avant la fin. Mais
+        // seulement si le message est allé au bout — une écoute interrompue
+        // doit laisser la bande là où l'oreille s'est arrêtée.
+        if (complete) {
+          step = text.length;
+          showTape(step);
+        }
+        refresh();
       };
 
       const oneMore = async (): Promise<void> => {
-        // Arrivé au bout, on s'y arrête : repartir de zéro effacerait tout ce
-        // que le joueur vient de relever. Pour réentendre, il y a AGN.
         if (step >= text.length) return;
+        player.stop();
+        // On saute les espaces plutôt que de les compter comme un pas : un
+        // clic qui ne produit aucun son passe pour un bouton cassé.
+        while (step < text.length && text[step] === ' ') step += 1;
+        if (step >= text.length) { showTape(step); refresh(); return; }
         const char = text[step] as string;
         step += 1;
+        lastChar = char;
         showTape(step);
-        if (char !== ' ') await playAt(char, wpm);
+        refresh();
+        await playAt(char, wpm);
+      };
+
+      const again = async (): Promise<void> => {
+        if (!stepMode) return listen();
+        player.stop();
+        if (lastChar !== '') await playAt(lastChar, wpm);
       };
 
       const wpmLabel = h('output', { class: 'recit-tempo__valeur', text: `${wpm} WPM` });
 
+      const mainButton = h('button', {
+        class: 'btn btn--primary',
+        type: 'button',
+        text: 'Écouter',
+        on: { click: () => void (stepMode ? oneMore() : listen()) },
+      }) as HTMLButtonElement;
+
+      const againButton = h('button', {
+        class: 'btn btn--code',
+        type: 'button',
+        text: 'AGN',
+        on: { click: () => void again() },
+      }) as HTMLButtonElement;
+
+      /** Remet les commandes en accord avec le mode et l'avancement. */
+      const refresh = (): void => {
+        const done = step >= text.length;
+        mainButton.textContent = stepMode ? (done ? 'Message terminé' : 'Lettre suivante') : 'Écouter';
+        mainButton.disabled = stepMode && done;
+        againButton.title = stepMode ? 'Répétez le dernier caractère' : 'Répétez le message';
+        againButton.disabled = stepMode && lastChar === '';
+      };
+
+      const stepToggle = h(
+        'label',
+        { class: 'switch' },
+        h('input', {
+          type: 'checkbox',
+          on: {
+            change: (event) => {
+              stepMode = (event.target as HTMLInputElement).checked;
+              // Changer de mode remet la bande à zéro : reprendre au milieu
+              // d'un relevé fait dans l'autre mode n'aurait pas de sens.
+              player.stop();
+              step = 0;
+              lastChar = '';
+              showTape(0);
+              refresh();
+            },
+          },
+        }),
+        h('span', { text: 'Lettre par lettre' }),
+      );
+
       const controls = h(
         'div',
         { class: 'recit-controles' },
-        h('button', { class: 'btn btn--primary', type: 'button', text: 'Écouter', on: { click: () => void listen() } }),
-        h('button', { class: 'btn', type: 'button', text: 'Lettre suivante', on: { click: () => void oneMore() } }),
+        mainButton,
         h('button', {
           class: 'btn btn--code',
           type: 'button',
@@ -364,15 +448,12 @@ export function storyView(context: ViewContext): View {
             },
           },
         }),
-        h('button', {
-          class: 'btn btn--code',
-          type: 'button',
-          title: 'Répétez',
-          text: 'AGN',
-          on: { click: () => void listen() },
-        }),
+        againButton,
         wpmLabel,
+        stepToggle,
       );
+
+      refresh();
 
       const check = (): void => {
         const result = compareCopy(notes.value, text);

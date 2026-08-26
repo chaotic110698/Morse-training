@@ -21,7 +21,10 @@ export interface MorseTable {
   element: HTMLElement;
   /** Allume un caractère, ou éteint tout avec `null`. */
   highlight: (char: string | null) => void;
-  /** Restreint la table aux caractères employés par le message. */
+  /**
+   * Restreint la table aux familles employées par l'épisode. Jamais aux
+   * caractères d'un message : ce serait désigner la réponse.
+   */
   limit: (chars: string) => void;
   /** Vrai si le joueur l'a dépliée au moins une fois. */
   consulted: () => boolean;
@@ -64,7 +67,18 @@ export function createMorseTable(options: MorseTableOptions = {}): MorseTable {
     },
     limit: (chars) => {
       const used = new Set([...chars.toUpperCase()].filter((char) => char !== ' '));
-      for (const [key, cell] of cells) cell.classList.toggle('is-off', used.size > 0 && !used.has(key));
+      if (used.size === 0) {
+        for (const cell of cells.values()) cell.classList.remove('is-off');
+        return;
+      }
+      // Les lettres restent toutes visibles : c'est parmi elles qu'on cherche.
+      // Les chiffres et la ponctuation ne s'allument que si l'épisode en
+      // emploie, ce qui évite quinze cases de bruit dans une scène de 1844.
+      const digits = [...used].some((char) => /[0-9]/.test(char));
+      for (const [key, cell] of cells) {
+        const keep = /[A-Z]/.test(key) || (/[0-9]/.test(key) ? digits : used.has(key));
+        cell.classList.toggle('is-off', !keep);
+      }
     },
     consulted: () => opened,
   };
