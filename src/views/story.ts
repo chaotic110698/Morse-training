@@ -14,7 +14,7 @@ import { createKeyerBoard } from '../ui/keyer-board.ts';
 import { createMorseTable } from '../ui/morse-table.ts';
 import { MorsePlayer } from '../ui/player.ts';
 import { buildSequence, elementsForCode, resolveTiming } from '../core/timing.ts';
-import { encodeChar } from '../core/morse.ts';
+import { compactCode, encodeChar } from '../core/morse.ts';
 import { recordEpisode } from '../core/progress.ts';
 import {
   beatText,
@@ -166,7 +166,7 @@ export function storyView(context: ViewContext): View {
     let errors = 0;
     let bestCopy = record?.bestCopy ?? 0;
 
-    table = createMorseTable();
+    table = createMorseTable({ onPick: (_, code) => playCode(code, SEND_WPM) });
     const stage = h('div', { class: 'recit-scene' });
     const trail = h('div', { class: 'recit-fil' });
     const meter = h('p', { class: 'recit-mesure' });
@@ -274,9 +274,11 @@ export function storyView(context: ViewContext): View {
     const renderReceive = (beat: Extract<Beat, { kind: 'receive' }>, text: string): HTMLElement => {
       let wpm = beat.wpm ?? 12;
       let step = 0;
-      table.limit(text);
 
-      const tape = h('p', { class: 'recit-bande', attrs: { 'aria-live': 'polite' } });
+      const tape = h('p', {
+        class: 'recit-bande',
+        attrs: { 'aria-label': 'Signal reçu, en points et traits' },
+      });
       const notes = h('textarea', {
         class: 'input recit-notes',
         attrs: { placeholder: 'Écrivez ici ce que vous copiez…', spellcheck: 'false', rows: '3' },
@@ -290,14 +292,23 @@ export function storyView(context: ViewContext): View {
         on: { click: advance },
       }) as HTMLButtonElement;
 
+      /**
+       * La bande porte le signal, jamais la lettre : c'est au joueur de
+       * déchiffrer. Afficher le texte reviendrait à donner la réponse de
+       * l'exercice au moment de le poser.
+       */
       const showTape = (upTo: number): void => {
         setChildren(
           tape,
           [...text].slice(0, upTo).map((char, position) =>
-            h('span', {
-              class: `recit-bande__char${position === upTo - 1 ? ' is-now' : ''}`,
-              text: char === ' ' ? ' ' : char,
-            }),
+            char === ' '
+              ? h('span', { class: 'recit-bande__mot' })
+              : h('span', {
+                  class: `recit-bande__signe${position === upTo - 1 ? ' is-now' : ''}`,
+                  // Serré, pas espacé : c'est l'écart entre deux caractères qui
+                  // doit se voir, pas celui entre deux signes du même.
+                  text: compactCode(encodeChar(char) ?? ''),
+                }),
           ),
         );
       };
@@ -306,22 +317,20 @@ export function storyView(context: ViewContext): View {
         player.stop();
         step = 0;
         showTape(0);
-        await playAt(text, wpm, (position, char) => {
+        await playAt(text, wpm, (position) => {
           step = position + 1;
           showTape(step);
-          table.highlight(char && char !== ' ' ? char.toUpperCase() : null);
         });
-        table.highlight(null);
       };
 
       const oneMore = async (): Promise<void> => {
-        if (step >= text.length) { step = 0; showTape(0); return; }
+        // Arrivé au bout, on s'y arrête : repartir de zéro effacerait tout ce
+        // que le joueur vient de relever. Pour réentendre, il y a AGN.
+        if (step >= text.length) return;
         const char = text[step] as string;
         step += 1;
         showTape(step);
-        table.highlight(char === ' ' ? null : char.toUpperCase());
         if (char !== ' ') await playAt(char, wpm);
-        table.highlight(null);
       };
 
       const wpmLabel = h('output', { class: 'recit-tempo__valeur', text: `${wpm} WPM` });
@@ -372,7 +381,9 @@ export function storyView(context: ViewContext): View {
       return h(
         'div',
         { class: 'recit-bloc recit-recevoir' },
-        h('p', { class: 'recit-source', text: beat.from ? `Vous recevez de ${beat.from}` : 'Vous recevez' }),
+        h('p', { class: 'recit-source' },
+          h('span', { class: 'recit-source__quoi', text: 'À déchiffrer' }),
+          beat.from ? h('span', { class: 'recit-source__qui', text: beat.from }) : null),
         tape,
         controls,
         table.element,
@@ -420,7 +431,9 @@ export function storyView(context: ViewContext): View {
       return h(
         'div',
         { class: 'recit-bloc recit-emettre' },
-        h('p', { class: 'recit-source', text: beat.to ? `Vous transmettez à ${beat.to}` : 'Vous transmettez' }),
+        h('p', { class: 'recit-source' },
+          h('span', { class: 'recit-source__quoi', text: 'À transmettre' }),
+          beat.to ? h('span', { class: 'recit-source__qui', text: beat.to }) : null),
         beat.hint ? h('p', { class: 'card__hint', text: beat.hint }) : null,
         board.element,
         h('div', { class: 'recit-manips' }, ...eras),

@@ -2520,10 +2520,25 @@
 
 .recit-source {
   margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
   font-size: 0.74rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--text-faint);
+}
+
+.recit-source__quoi {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Le nom du correspondant garde sa casse : « Cape Race » n'est pas un sigle. */
+.recit-source__qui {
+  text-transform: none;
+  letter-spacing: 0.02em;
 }
 
 .recit-controles {
@@ -2550,12 +2565,25 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   font-family: var(--font-mono);
-  font-size: 1.3rem;
-  letter-spacing: 0.16em;
+  font-size: 1.25rem;
+  line-height: 1.9;
   word-break: break-word;
 }
 
-.recit-bande__char.is-now { color: var(--accent); }
+/* Le signal se lit par groupes : un écart entre deux caractères, un plus large
+   entre deux mots. Sans eux, la bande n'est qu'une file de points. */
+.recit-bande__signe {
+  display: inline-block;
+  margin-right: 1.15rem;
+  letter-spacing: 0.14em;
+}
+
+.recit-bande__signe.is-now { color: var(--accent); }
+
+.recit-bande__mot {
+  display: inline-block;
+  width: 1.6rem;
+}
 
 .recit-notes__label {
   font-size: 0.74rem;
@@ -2771,10 +2799,19 @@
 .table-morse__case {
   display: grid;
   gap: 1px;
-  padding: 0.25rem 0.15rem;
+  padding: 0.3rem 0.15rem;
+  border: 1px solid transparent;
   border-radius: var(--radius-sm);
   text-align: center;
   background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.table-morse__case:hover,
+.table-morse__case:focus-visible {
+  border-color: var(--accent);
 }
 
 .table-morse__case.is-off { opacity: 0.25; }

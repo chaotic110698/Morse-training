@@ -2,13 +2,20 @@
  * Table de déchiffrage.
  *
  * Une antisèche assumée : on ne demande pas au joueur de connaître l'alphabet
- * pour suivre une histoire. Les caractères qui ne servent pas à l'époque
- * restent éteints, et celui qu'on est en train d'entendre s'allume — c'est ce
- * qui fait passer la table du statut de tableau à celui d'instrument.
+ * pour suivre une histoire. Chaque case s'écoute d'une touche, ce qui fait
+ * passer la table du statut de tableau à celui d'instrument.
+ *
+ * Elle n'indique jamais la lettre en cours de réception : ce serait donner la
+ * réponse à l'exercice qu'elle est censée servir. On y cherche, on n'y lit pas.
  */
 
 import { h } from './dom.ts';
 import { DIGITS, LETTERS, PUNCTUATION, prettyCode } from '../core/morse.ts';
+
+export interface MorseTableOptions {
+  /** Appelé quand on touche une case : la table devient un instrument. */
+  onPick?: (char: string, code: string) => void;
+}
 
 export interface MorseTable {
   element: HTMLElement;
@@ -20,7 +27,7 @@ export interface MorseTable {
   consulted: () => boolean;
 }
 
-export function createMorseTable(): MorseTable {
+export function createMorseTable(options: MorseTableOptions = {}): MorseTable {
   const cells = new Map<string, HTMLElement>();
   let opened = false;
 
@@ -28,8 +35,14 @@ export function createMorseTable(): MorseTable {
   for (const source of [LETTERS, DIGITS, PUNCTUATION]) {
     for (const [char, code] of Object.entries(source)) {
       const cell = h(
-        'div',
-        { class: 'table-morse__case', data: { char } },
+        'button',
+        {
+          class: 'table-morse__case',
+          type: 'button',
+          data: { char },
+          attrs: { 'aria-label': `Écouter ${char}` },
+          on: { click: () => options.onPick?.(char, code) },
+        },
         h('span', { class: 'table-morse__lettre', text: char }),
         h('span', { class: 'table-morse__code', text: prettyCode(code) }),
       );

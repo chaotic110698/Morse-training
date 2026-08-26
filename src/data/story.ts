@@ -161,16 +161,24 @@ const CE_QUE_DIEU_A_FAIT: Episode = {
           'comprenez la différence, et elle vous coupe le souffle : ce tableau-là est ' +
           'imprimé dans un journal. N’importe qui peut le lire.',
         'Pour la première fois de votre vie, la clef n’est pas au-dessus de vous.',
+        'Il n’y a évidemment aucun appareil dans cette cuisine, et pas un pouce de fil ' +
+          'à cent lieues. Alors vous faites ce que ferait n’importe qui devant une ' +
+          'écriture qu’il ne sait pas encore lire : vous la sonnez. Le bout du ' +
+          'porte-plume sur le bois, un coup sec pour le point, un coup tenu pour le ' +
+          'trait. Le journal n’a imprimé que des signes ; c’est vous qui leur donnez ' +
+          'une durée.',
       ],
     },
     {
       kind: 'receive',
       text: 'WHAT',
-      from: 'le journal',
+      from: 'le tableau du journal',
       wpm: 5,
       note:
-        'Prenez la table de déchiffrage, et allez une lettre à la fois. Personne ' +
-        'ne vous chronomètre : en 1844, personne ne sait faire vite.',
+        'La bande ne porte que le signal — c’est à vous d’y mettre les lettres. ' +
+        'Ouvrez la table de déchiffrage, avancez d’un caractère à la fois, et ' +
+        'écrivez ce que vous trouvez. Personne ne vous chronomètre : en 1844, ' +
+        'personne ne sait faire vite.',
     },
     {
       kind: 'recit',
@@ -185,7 +193,7 @@ const CE_QUE_DIEU_A_FAIT: Episode = {
     {
       kind: 'receive',
       text: 'WHAT HATH GOD WROUGHT',
-      from: 'le journal',
+      from: 'le tableau du journal',
       wpm: 6,
       note: 'La phrase entière, celle du 24 mai. Vingt et un caractères.',
     },
@@ -217,11 +225,15 @@ const CE_QUE_DIEU_A_FAIT: Episode = {
     {
       kind: 'recit',
       text: [
-        'Vous restez à la table avec la plume et le tableau du journal.',
+        'Vous restez à la table avec le porte-plume et le tableau du journal.',
         'La première chose qu’on écrit dans un alphabet neuf, ce n’est jamais une ' +
           'phrase. C’est son nom. Deux lettres suffisent : celle de votre prénom, ' +
           'celle de votre père. Sur les lignes, on appelle ça une signature, et un ' +
           'homme n’en a qu’une dans sa vie.',
+        'Il n’y a personne au bout, aucun fil, et pas même un appareil pour ' +
+          'transformer vos coups en quoi que ce soit. Juste une table de cuisine, ' +
+          'un porte-plume, et un homme de vingt-trois ans qui frappe son nom dans ' +
+          'un alphabet que la France interdit encore.',
       ],
     },
     {
@@ -229,8 +241,9 @@ const CE_QUE_DIEU_A_FAIT: Episode = {
       text: '{sine}',
       to: 'personne',
       hint:
-        'Deux lettres, sur une table de cuisine, sans fil au bout. C’est la ' +
-        'première chose que vous transmettez de votre plein gré.',
+        'Frappez-les sur le bois : un coup sec pour le point, un coup tenu pour ' +
+        'le trait. Rien ne part nulle part. C’est la première chose que vous ' +
+        'transmettez de votre plein gré.',
     },
     {
       kind: 'epilogue',
