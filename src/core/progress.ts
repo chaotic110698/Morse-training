@@ -82,6 +82,63 @@ export interface QuizProgress {
   best: Record<string, number>;
 }
 
+/**
+ * Mode histoire.
+ *
+ * Suivi séparé du reste : on n'y mesure pas une vitesse mais un avancement
+ * dans un récit, et l'on doit pouvoir reprendre un épisode au temps où on
+ * l'avait laissé.
+ */
+export interface StoryEpisodeRecord {
+  /** Temps atteint, pour reprendre là où l'on s'est arrêté. */
+  beat: number;
+  completed: boolean;
+  /** Erreurs de manipulation cumulées sur l'épisode. */
+  errors: number;
+  /** Part des caractères correctement copiés, du meilleur passage. */
+  bestCopy: number;
+  /** Vrai si l'épisode a été mené sans ouvrir la table de déchiffrage. */
+  withoutTable: boolean;
+  updatedAt: number;
+}
+
+export interface StoryProgress {
+  episodes: Record<string, StoryEpisodeRecord>;
+  /** Niveau de lecture : le récit d'abord, ou les conditions réelles. */
+  mode: 'recit' | 'operateur';
+}
+
+export function emptyStoryProgress(): StoryProgress {
+  return { episodes: {}, mode: 'recit' };
+}
+
+export function emptyEpisodeRecord(): StoryEpisodeRecord {
+  return { beat: 0, completed: false, errors: 0, bestCopy: 0, withoutTable: true, updatedAt: 0 };
+}
+
+/** Enregistre l'avancement d'un épisode sans jamais faire reculer un acquis. */
+export function recordEpisode(
+  progress: Progress,
+  id: string,
+  update: Partial<StoryEpisodeRecord>,
+  now = Date.now(),
+): void {
+  const previous = progress.story.episodes[id] ?? emptyEpisodeRecord();
+  progress.story.episodes[id] = {
+    beat: Math.max(previous.beat, update.beat ?? previous.beat),
+    completed: previous.completed || (update.completed ?? false),
+    errors: previous.errors + (update.errors ?? 0),
+    bestCopy: Math.max(previous.bestCopy, update.bestCopy ?? 0),
+    withoutTable: previous.withoutTable && (update.withoutTable ?? true),
+    updatedAt: now,
+  };
+}
+
+/** Nombre d'épisodes menés à leur terme. */
+export function storyCompleted(progress: Progress): number {
+  return Object.values(progress.story.episodes).filter((record) => record.completed).length;
+}
+
 export interface Progress {
   kochLevel: number;
   chars: Record<string, CharStat>;
@@ -98,6 +155,8 @@ export interface Progress {
   flags: Record<string, number>;
   /** Questionnaire de la licence : suivi séparé, unités et enjeux différents. */
   quiz: QuizProgress;
+  /** Mode histoire : avancement dans le récit, épisode par épisode. */
+  story: StoryProgress;
 }
 
 export const MAX_SESSION_HISTORY = 250;
@@ -117,6 +176,7 @@ export function emptyProgress(): Progress {
     achievements: {},
     flags: {},
     quiz: emptyQuizProgress(),
+    story: emptyStoryProgress(),
   };
 }
 

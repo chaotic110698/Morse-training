@@ -11,14 +11,16 @@ import { DEFAULT_SETTINGS, normalizeSettings, type Settings } from './settings.t
 import {
   emptyProgress,
   emptyQuizProgress,
+  emptyStoryProgress,
   MAX_QUIZ_RUNS,
   MAX_SESSION_HISTORY,
   type Progress,
   type QuizProgress,
+  type StoryProgress,
 } from './progress.ts';
 
 const STORAGE_KEY = 'morse-training';
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 export interface SaveFile {
   app: 'morse-training';
@@ -85,6 +87,31 @@ function normalizeQuiz(input: Partial<QuizProgress> | null | undefined): QuizPro
   return base;
 }
 
+/**
+ * Remet le mode histoire en forme. Même prudence que pour le questionnaire :
+ * une sauvegarde antérieure n'a pas ce bloc, et le récit doit repartir de zéro
+ * plutôt que de faire confiance à ce qu'on lit.
+ */
+function normalizeStory(input: Partial<StoryProgress> | null | undefined): StoryProgress {
+  const base = emptyStoryProgress();
+  if (!input || typeof input !== 'object') return base;
+
+  const count = (value: unknown): number => Math.max(0, Math.floor(Number(value) || 0));
+  for (const [id, raw] of Object.entries(input.episodes ?? {})) {
+    if (!raw || typeof raw !== 'object') continue;
+    base.episodes[id] = {
+      beat: count(raw.beat),
+      completed: Boolean(raw.completed),
+      errors: count(raw.errors),
+      bestCopy: Math.min(1, Math.max(0, Number(raw.bestCopy) || 0)),
+      withoutTable: raw.withoutTable !== false,
+      updatedAt: count(raw.updatedAt),
+    };
+  }
+  base.mode = input.mode === 'operateur' ? 'operateur' : 'recit';
+  return base;
+}
+
 function normalizeProgress(input: Partial<Progress> | null | undefined): Progress {
   const base = emptyProgress();
   if (!input || typeof input !== 'object') return base;
@@ -114,6 +141,7 @@ function normalizeProgress(input: Partial<Progress> | null | undefined): Progres
     achievements: { ...(input.achievements ?? {}) },
     flags: { ...(input.flags ?? {}) },
     quiz: normalizeQuiz(input.quiz),
+    story: normalizeStory(input.story),
   };
 }
 
