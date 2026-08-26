@@ -2302,3 +2302,532 @@
     transition: none;
   }
 }
+
+/* --- Mode histoire --- */
+
+.recit-gen {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.recit-gen__tete {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.recit-gen__rang {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  min-width: 2.2rem;
+}
+
+.recit-gen__qui {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-3);
+}
+
+.recit-gen__nom { font-weight: 650; }
+
+.recit-gen__detail {
+  color: var(--text-faint);
+  font-size: 0.8rem;
+}
+
+.recit-gen__liste {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: var(--space-3);
+}
+
+.recit-carte {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--transition), transform var(--transition);
+}
+
+.recit-carte:hover,
+.recit-carte:focus-visible {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.recit-carte--lore {
+  background: none;
+  border-style: dashed;
+}
+
+.recit-carte.is-done {
+  border-color: color-mix(in srgb, var(--ok) 45%, var(--border));
+}
+
+.recit-carte__tete {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.recit-carte__annee {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.recit-carte__etat {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+}
+
+.recit-carte__titre {
+  font-size: 1.05rem;
+  font-weight: 650;
+}
+
+.recit-carte__resume {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.recit-carte__mesure {
+  margin-top: var(--space-1);
+  color: var(--text-faint);
+  font-size: 0.76rem;
+}
+
+/* --- Lecteur d'épisode --- */
+
+.recit-entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.recit-entete__annee {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.recit-entete__qui {
+  color: var(--text-faint);
+  font-size: 0.84rem;
+}
+
+.recit-titre {
+  margin: 0;
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+}
+
+.recit-mesure {
+  margin: 0;
+  color: var(--text-faint);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+
+/* Ce qui précède reste lisible : un récit ne doit pas s'effacer derrière soi. */
+.recit-fil {
+  display: grid;
+  gap: var(--space-2);
+  padding-left: var(--space-4);
+  border-left: 2px solid var(--border);
+  color: var(--text-faint);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.recit-fil:empty { display: none; }
+
+.recit-fil__ligne { margin: 0; }
+
+.recit-fil__morse {
+  margin: 0;
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+}
+
+.recit-fil__sens {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--accent);
+}
+
+.recit-bloc {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+/* Les éléments d'une grille prennent leur largeur maximale par défaut : sans
+   cette borne, le clavier imposait sa largeur idéale — plus d'un mètre de
+   pixels — à un téléphone de trois cent quatre-vingt-dix. */
+.recit-bloc > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Seuls les boutons ne s'étirent pas : un « Continuer » large comme la carte
+   ne ressemblerait plus à un bouton. */
+.recit-bloc > .btn {
+  justify-self: start;
+}
+
+.recit-bloc--epilogue {
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+}
+
+.recit-texte {
+  margin: 0;
+  max-width: 42em;
+  font-size: 1.02rem;
+  line-height: 1.75;
+}
+
+.recit-silence__note {
+  margin: 0;
+  color: var(--text-faint);
+  font-size: 0.84rem;
+  font-style: italic;
+}
+
+.recit-source {
+  margin: 0;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+}
+
+.recit-controles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.recit-tempo__valeur {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+}
+
+.recit-bande {
+  margin: 0;
+  width: 100%;
+  min-height: 3.2rem;
+  padding: var(--space-3) var(--space-4);
+  box-sizing: border-box;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  letter-spacing: 0.16em;
+  word-break: break-word;
+}
+
+.recit-bande__char.is-now { color: var(--accent); }
+
+.recit-notes__label {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+}
+
+.recit-notes {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  line-height: 1.7;
+  resize: vertical;
+}
+
+.recit-verdict {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  word-break: break-word;
+}
+
+.recit-verdict .is-ok { color: var(--ok); }
+.recit-verdict .is-ko { color: var(--error); }
+.recit-verdict .is-manque {
+  color: var(--error);
+  opacity: 0.55;
+  text-decoration: underline;
+}
+.recit-verdict .is-trop {
+  color: var(--text-faint);
+  text-decoration: line-through;
+}
+
+.recit-verdict__espace {
+  display: inline-block;
+  width: 0.7em;
+}
+
+.recit-verdict__compte {
+  letter-spacing: normal;
+  color: var(--text-faint);
+  font-size: 0.82rem;
+}
+
+.recit-manips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.recit-manip {
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-size: 0.76rem;
+}
+
+.recit-manip.is-off {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
+/* --- Manipulateur à clavier --- */
+
+.manip {
+  display: grid;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+/* Même précaution qu'un cran plus haut : sans elle, chaque niveau de grille
+   réclame la largeur idéale de son contenu au lieu de celle de l'écran. */
+.manip > *,
+.manip__rangee {
+  min-width: 0;
+}
+
+.manip__message {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.1rem 0.25rem;
+  padding: var(--space-4);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: clamp(1.2rem, 3.5vw, 1.7rem);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.manip__space { width: 1.1rem; }
+
+.manip__char {
+  padding: 0 0.12rem;
+  border-radius: 3px;
+  color: var(--text-faint);
+  transition: color var(--transition), background var(--transition);
+}
+
+.manip__char.is-done {
+  color: var(--ok);
+  background: var(--ok-soft);
+}
+
+.manip__char.is-wrong {
+  color: var(--error);
+  background: var(--error-soft);
+}
+
+.manip__char.is-next {
+  color: var(--text);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.manip__clavier {
+  display: grid;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.manip__rangee {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.manip__rangee--actions { margin-top: var(--space-2); }
+
+.manip__touche {
+  flex: 1 1 2rem;
+  /* Un élément flexible refuse par défaut de descendre sous la largeur de son
+     contenu : dix touches portant leur code tiendraient sur un mètre. */
+  min-width: 0;
+  max-width: 3.4rem;
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-content: center;
+  gap: 2px;
+  padding: 0;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 90ms, background var(--transition), border-color var(--transition);
+}
+
+.manip__touche:hover { border-color: var(--border-strong); }
+
+.manip__touche:active,
+.manip__touche.is-down {
+  transform: translateY(1px);
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.manip__lettre { font-size: 0.95rem; }
+
+.manip__code {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+}
+
+.manip__touche--large {
+  flex: 0 0 auto;
+  aspect-ratio: auto;
+  max-width: none;
+  padding: var(--space-2) var(--space-4);
+}
+
+.manip__touche--effacer {
+  color: var(--error);
+  border-color: color-mix(in srgb, var(--error) 35%, var(--border));
+}
+
+/* --- Table de déchiffrage --- */
+
+.table-morse {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-2);
+}
+
+.table-morse__titre {
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: var(--text-muted);
+}
+
+.table-morse__grille {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(3.6rem, 1fr));
+  gap: 2px;
+  margin-top: var(--space-3);
+}
+
+.table-morse__case {
+  display: grid;
+  gap: 1px;
+  padding: 0.25rem 0.15rem;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  background: var(--surface);
+}
+
+.table-morse__case.is-off { opacity: 0.25; }
+
+.table-morse__case.is-lit {
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.table-morse__lettre { font-weight: 700; font-size: 0.86rem; }
+
+.table-morse__code {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+/* --- Sauvegarde --- */
+
+.sauvegarde {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.sauvegarde__etat {
+  margin: 0;
+  font-weight: 600;
+}
+
+.sauvegarde__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.topbar__save svg { display: block; }
+
+@media (max-width: 620px) {
+  .manip__touche {
+    max-width: none;
+    aspect-ratio: 1 / 1.15;
+  }
+
+  .manip__rangee { gap: 3px; }
+
+  /* Le code sous la lettre devient illisible avant d'être utile : sur un
+     téléphone, la touche ne porte plus que sa lettre. */
+  .manip__code { display: none; }
+
+  .manip__touche--large .manip__code {
+    display: block;
+    font-size: 0.5rem;
+  }
+}

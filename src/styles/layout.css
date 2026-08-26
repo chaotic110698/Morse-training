@@ -204,6 +204,13 @@
   transition: color var(--transition), border-color var(--transition), transform var(--transition);
 }
 
+/* `display: grid` l'emporterait sur l'attribut « hidden » : le bouton resterait
+   là, cliquable, sur toutes les pages. Le piège s'est déjà refermé sur le
+   panneau de réglages et sur la frise du lexique. */
+.topbar__action[hidden] {
+  display: none;
+}
+
 .topbar__action:hover,
 .topbar__action:focus-visible {
   color: var(--accent);
@@ -341,6 +348,12 @@
     display: revert;
   }
 
+  /* Le nom ne se coupe pas en deux : il rétrécit le ressort plutôt que de
+     faire grandir le bandeau. */
+  .topbar__brand {
+    white-space: nowrap;
+  }
+
   .topbar > .burger {
     display: grid;
   }
@@ -377,5 +390,14 @@
 
   .page__head {
     margin-bottom: var(--space-4);
+  }
+}
+
+/* Sur les écrans les plus étroits, quatre boutons et la marque ne tiennent plus
+   sur une ligne. La marque cède : le bandeau latéral et le titre de page la
+   redisent tous les deux, un rang plus bas. */
+@media (max-width: 430px) {
+  .topbar__brand {
+    display: none;
   }
 }

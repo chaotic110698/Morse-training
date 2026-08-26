@@ -215,10 +215,30 @@ Les transcriptions du trafic du Titanic sont, elles, largement documentées.
 - Une progression et une sauvegarde propres au mode.
 - Le moteur audio, le tirage et le bruit de fond existent déjà.
 
+### Décidé le 26 août
+
+- **Nom** : Duguet. **Prénoms** : Modéré (I), Claude (II), puis l'usage du
+  prénom du grand-père — Modéré, Claude, Modéré. Deux sines seulement sur cinq
+  générations : `MD` et `CD`.
+- **Volume des épreuves** : cent caractères au maximum, pour une ou deux
+  épreuves par épisode ; tout le reste en brèves. Le clavier rend la frappe
+  confortable, les palettes la rendent exigeante — le joueur choisit son
+  effort, ce qui autorise une épreuve longue de temps en temps.
+- **« Entre les ondes »** : au moins un par génération à partir de la deuxième.
+- **Sauvegarde** : bouton dans le bandeau, visible seulement dans le mode
+  histoire.
+- **La maquette est abandonnée** : on construit et on débogue directement sur
+  le site.
+
 ### Ce qui reste ouvert
 
-1. Le nom et les prénoms — voir `noms.md`.
-2. Combien d'épisodes « Entre les ondes », et où ils se placent.
+1. Le prénom de la première génération est noté « Modéré ». Si le mot devait
+   être « Modeste » — il figure dans `noms.md`, pas l'autre —, c'est un mot à
+   changer et le sine ne bouge pas.
+2. La cinquième génération porte « Modéré » par l'usage du grand-père. C'était
+   aussi celle qui pouvait enfin porter un prénom breton, l'état civil les
+   ayant refusés jusqu'en 1966. Rompre la chaîne y ferait une scène ; la
+   respecter en fait une autre. À trancher.
 3. Le volume d'écriture : quatorze épisodes de cette densité représentent
    plusieurs dizaines de milliers de mots. **La méthode qui a marché pour le
    questionnaire s'applique** : le moteur d'abord avec un épisode complet de

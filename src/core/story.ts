@@ -12,7 +12,17 @@
  */
 
 import { CHAR_TO_MORSE } from './morse.ts';
-import { EPISODES, KEYER_ERAS, type Beat, type Episode, type KeyerKind, type Lineage } from '../data/story.ts';
+import {
+  EPISODES,
+  KEYER_ERAS,
+  MAX_LONG_PER_EPISODE,
+  MAX_MESSAGE,
+  SHORT_MESSAGE,
+  type Beat,
+  type Episode,
+  type KeyerKind,
+  type Lineage,
+} from '../data/story.ts';
 
 // --- Interpolation ---
 
@@ -173,6 +183,7 @@ export type CopyMark =
   | { kind: 'wrong'; char: string; typed: string }
   | { kind: 'missing'; char: string }
   | { kind: 'extra'; typed: string }
+  /** Séparateur de mots, réinséré pour l'affichage : il ne compte pas. */
   | { kind: 'space' };
 
 export interface CopyResult {
@@ -244,8 +255,29 @@ export function compareCopy(typed: string, target: string): CopyResult {
   }
   path.reverse();
 
+  // Les espaces ne comptent pas dans la note, mais une copie rendue d'un seul
+  // bloc est illisible : on les replace là où le message les avait.
+  const spaced: CopyMark[] = [];
+  let letter = 0;
+  const spacesBefore = new Map<number, number>();
+  {
+    let count = 0;
+    for (const char of normalise(target)) {
+      if (char === ' ') spacesBefore.set(count, (spacesBefore.get(count) ?? 0) + 1);
+      else count += 1;
+    }
+  }
+  for (const mark of path) {
+    if (mark.kind !== 'extra') {
+      for (let i = 0; i < (spacesBefore.get(letter) ?? 0); i += 1) spaced.push({ kind: 'space' });
+      letter += 1;
+    }
+    spaced.push(mark);
+  }
+  for (let i = 0; i < (spacesBefore.get(letter) ?? 0); i += 1) spaced.push({ kind: 'space' });
+
   return {
-    marks: path,
+    marks: spaced,
     correct,
     total: want.length,
     ratio: want.length === 0 ? 1 : correct / want.length,
@@ -315,6 +347,7 @@ export function validateStory(episodes: Episode[] = EPISODES, lineage?: Lineage)
       problems.push(`Aucun temps interactif : ${episode.id}`);
     }
 
+    let longMessages = 0;
     for (const beat of episode.beats) {
       const texts =
         beat.kind === 'recit' || beat.kind === 'epilogue'
@@ -341,10 +374,20 @@ export function validateStory(episodes: Episode[] = EPISODES, lineage?: Lineage)
         if (unknown.length > 0) {
           problems.push(`Caractères non manipulables dans ${episode.id} : ${unknown.join(' ')}`);
         }
-        if (resolved.replace(/\s+/g, '').length > 60) {
-          problems.push(`Message trop long pour être copié dans ${episode.id} : ${resolved.length} caractères`);
+        const size = resolved.trim().length;
+        if (size > MAX_MESSAGE) {
+          problems.push(`Message trop long dans ${episode.id} : ${size} caractères`);
+        } else if (size > SHORT_MESSAGE) {
+          longMessages += 1;
         }
       }
+    }
+
+    if (longMessages > MAX_LONG_PER_EPISODE) {
+      problems.push(
+        `Trop d’épreuves longues dans ${episode.id} : ${longMessages}. ` +
+          'Le reste doit tenir en brèves.',
+      );
     }
 
     // Le manipulateur à clavier n'existe pas avant 1960 ; l'épisode ne doit pas

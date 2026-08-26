@@ -30,6 +30,7 @@ import { licenceModulationsView } from './licence-modulations.ts';
 import { licenceFormularyView } from './licence-formulary.ts';
 import { licenceQuizView } from './licence-quiz.ts';
 import { licenceHubView } from './licence-hub.ts';
+import { storyView } from './story.ts';
 import { freeView } from './train-free.ts';
 import { listenView } from './train-listen.ts';
 import { sendView } from './train-send.ts';
@@ -46,6 +47,7 @@ export const NAV_GROUPS: Array<{ id: string; label: string }> = [
   { id: 'accueil', label: 'Accueil' },
   { id: 'apprendre', label: 'Apprendre' },
   { id: 'licence', label: 'Licence radioamateur' },
+  { id: 'histoire', label: 'Mode histoire' },
   { id: 'entrainement', label: 'S’entraîner' },
   { id: 'outils', label: 'Outils' },
   { id: 'progression', label: 'Progression' },
@@ -344,6 +346,15 @@ export const ROUTES: RouteDefinition[] = [
     group: 'licence',
     menu: false,
     factory: licenceQuizView,
+  },
+  {
+    path: '/histoire',
+    label: 'Mode histoire',
+    title: 'Mode histoire',
+    description: 'Cinq générations de télégraphistes, de 1844 à 1999.',
+    icon: '📻',
+    group: 'histoire',
+    factory: storyView,
   },
   {
     path: '/entrainement/ecoute',

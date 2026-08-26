@@ -12,6 +12,7 @@ import { createSettingsPanel, type SettingsPanel } from './settings-panel.ts';
 import { createGlossaryPanel, type GlossaryPanel } from './glossary-panel.ts';
 import { createGlossaryMarker } from './glossary-mark.ts';
 import { createSearchPanel, type SearchPanel } from './search-panel.ts';
+import { createSavePanel, type SavePanel } from './save-panel.ts';
 import { NAV_GROUPS, ROUTES } from '../views/routes.ts';
 import { LICENCE_HUB, locate } from '../data/licence-syllabus.ts';
 import type { RouteDefinition, ToastKind } from './router.ts';
@@ -30,6 +31,8 @@ export interface Shell {
   glossaryPanel: GlossaryPanel;
   /** La recherche globale, ouverte par la loupe ou par Ctrl+K. */
   searchPanel: SearchPanel;
+  /** La sauvegarde du récit, montrée seulement dans le mode histoire. */
+  savePanel: SavePanel;
 }
 
 export function createShell(root: HTMLElement, store: AppStore): Shell {
@@ -217,6 +220,8 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
   });
   const marker = createGlossaryMarker(outlet, (key) => glossaryPanel.openAt(key));
 
+  const savePanel = createSavePanel(store, toast);
+
   const searchPanel = createSearchPanel({
     navigate: (path: string) => {
       window.location.hash = `#${path}`;
@@ -234,6 +239,7 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
     pageTitle.textContent = route.title;
     pageDescription.textContent = route.description;
     settingsPanel.setRoute(route.path);
+    savePanel.setVisible(route.path.startsWith('/histoire'));
     drawChapter(route.path);
     marker.refresh();
   };
@@ -305,6 +311,7 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
         burger,
         h('span', { class: 'topbar__brand', text: 'Morse Training' }),
         h('span', { class: 'topbar__spacer' }),
+        savePanel.button,
         searchPanel.button,
         glossaryPanel.button,
         settingsPanel.button,
@@ -320,8 +327,9 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
     ...settingsPanel.nodes,
     ...glossaryPanel.nodes,
     ...searchPanel.nodes,
+    ...savePanel.nodes,
     toasts,
   );
 
-  return { outlet, toast, setActiveRoute, settingsPanel, glossaryPanel, searchPanel };
+  return { outlet, toast, setActiveRoute, settingsPanel, glossaryPanel, searchPanel, savePanel };
 }

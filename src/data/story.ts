@@ -81,13 +81,25 @@ export const LINEAGE: Lineage = {
   surname: 'Duguet',
   letter: 'D',
   generations: [
-    { rank: 1, given: 'Prosper', born: 1821 },
-    { rank: 2, given: 'Étienne', born: 1848 },
-    { rank: 3, given: 'Prosper', born: 1878 },
-    { rank: 4, given: 'Étienne', born: 1911 },
-    { rank: 5, given: 'Yann', born: 1943 },
+    { rank: 1, given: 'Modéré', born: 1821 },
+    { rank: 2, given: 'Claude', born: 1848 },
+    { rank: 3, given: 'Modéré', born: 1878 },
+    { rank: 4, given: 'Claude', born: 1911 },
+    { rank: 5, given: 'Modéré', born: 1943 },
   ],
 };
+
+/**
+ * Ce qu'un épisode peut demander de manipuler.
+ *
+ * Le clavier rend la frappe confortable, les palettes la rendent exigeante :
+ * le joueur choisit. On peut donc se permettre une ou deux épreuves longues
+ * par épisode, à condition que tout le reste soit fait de brèves — un échange
+ * de service, un accusé de réception, une phrase de conversation.
+ */
+export const MAX_MESSAGE = 100;
+export const SHORT_MESSAGE = 30;
+export const MAX_LONG_PER_EPISODE = 2;
 
 /** Le manipulateur, et l'année à partir de laquelle il existe. */
 export const KEYER_ERAS: { kind: KeyerKind; from: number; label: string }[] = [
