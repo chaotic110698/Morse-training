@@ -38,187 +38,190 @@ est vrai et ce qui est inventé. Le site est un site d'apprentissage ; laisser
 le lecteur confondre les deux serait une faute, et l'écart entre la fiction et
 le fait documenté est justement ce qui rend l'épisode intéressant.
 
-### La famille et son fil
+### La famille
 
-Le fil narratif est **la signature transmise de père en fils**.
+**Parisienne, montée en Bretagne pour la ligne Paris — Brest.** Le premier est
+un responsable de télégraphe qui fait de ce moyen de communication la
+spécialité de sa maison. La famille reste ; le nom, lui, reste parisien —
+cinq générations d'un patronyme qui sonne étranger dans le pays où ils vivent.
 
-Un détail historique le sert parfaitement : les télégraphistes des lignes
-terrestres signaient leurs messages d'un **« sine » personnel de deux lettres**,
-bien avant que les indicatifs radio n'existent. Ces deux lettres peuvent
-traverser tout le siècle et demi : sine de bureau, puis indicatif de bord, puis
-indicatif militaire, puis indicatif radioamateur — la famille change de métier
-et de support, les deux lettres restent.
+Les noms sont dans `noms.md` : prénoms par génération de naissance, noms de
+famille candidats, et l'usage qui donne le fil — l'aîné portait le prénom du
+grand-père, donc la première lettre du sine alterne au lieu de dériver.
 
-**Proposition : les Kermarec, de Bretagne, sine `KR`.**
+**Le sine sort des initiales du premier personnage**, la lettre du prénom
+variant selon les membres. Il n'est *pas* choisi pour tomber tôt dans l'ordre
+Koch : ce mode a sa propre progression, et le récit passe avant la commodité.
 
-- Breton, donc placé là où toute l'histoire du télégraphe français se passe :
-  la ligne Chappe Paris — Brest, le câble transatlantique français au départ de
-  Brest, les stations côtières, la marine marchande.
-- `K` est la **première** lettre de l'ordre Koch utilisé par le site (LCWO),
-  `R` la **quatrième**. Dès le quatrième palier, le joueur sait manipuler la
-  signature de sa propre famille. C'est le premier mot qu'on apprend à envoyer,
-  et c'est son nom.
+**Un point de date à régler.** La ligne Chappe Paris — Brest existe depuis 1798 ;
+elle a donc quarante-six ans en 1844. La montée en Bretagne se comprend mieux
+pour l'arrivée du **télégraphe électrique** en Bretagne, au début des années
+1850 : l'homme est employé du réseau Chappe à Paris, on l'envoie surveiller la
+construction de la ligne électrique, il s'installe. Son métier meurt et il
+devient celui qui installe son remplaçant — ce qui est exactement l'arc de la
+première génération. *Dates à recouper.*
 
-À voir : proposer au joueur d'adopter ce sine comme indicatif d'essai dans les
-autres modes — le réglage existe déjà.
+### Le principe d'écriture, décidé
+
+**Un épisode n'est pas une transcription.** C'est une scène longue, à
+rebondissements, qui contient :
+
+- des **essais de ligne** et des conversations de service ;
+- des **passages explicatifs** sur ce que ce moyen de communication change pour
+  ceux qui l'emploient — c'est là que le joueur apprend l'Histoire ;
+- **quelques mots de vie personnelle**, glissés entre deux messages de service,
+  parce que ces gens trouvent extraordinaire de pouvoir faire passer un
+  caractère de plus. Ce sont des passionnés, et ça doit s'entendre ;
+- la **qualité du signal** comme personnage à part entière.
+
+**La distinction qui rend tout cela jouable** : le texte *lu* et le texte
+*copié* ne coûtent pas la même chose.
+
+| | Coût pour le joueur | Volume possible |
+| --- | --- | --- |
+| Narration, décor, explications, dialogue affiché | Lecture | Illimité |
+| Message réellement émis ou copié en morse | Plusieurs minutes | Très court |
+
+Copier deux cents caractères à 10 mots/minute prend plus de deux minutes
+d'attention tendue. Un épisode « consistant » est donc **beaucoup de texte lu
+autour de quelques échanges en morse très courts** — c'est ainsi qu'on obtient
+énormément d'histoire sans rendre le mode épuisant.
 
 ### Le déroulé
 
-Cinq générations, une douzaine d'épisodes. Les dates et les messages sont
-réels ; les Kermarec sont inventés.
+Cinq générations. Les dates et les messages sont réels ; la famille est
+inventée. Chaque épisode se termine sur un épilogue qui sépare les deux.
 
 **Génération I — le stationnaire (1844-1856)**
 
 | Épisode | Ancrage réel | Ce qu'on y fait |
 | --- | --- | --- |
-| *Ce que Dieu a fait* — 1844 | Vail transmet `WHAT HATH GOD WROUGHT` de Washington à Baltimore, le 24 mai | Tutoriel de réception. Lettre par lettre, table sous les yeux, aussi lent qu'on veut. Le père tient une tour Chappe et lit la nouvelle venue d'Amérique. |
-| *La dernière tour* — 1855 | Le réseau Chappe est abandonné ; la France passe du Foy-Breguet à l'appareil Morse | Premier envoi. Manipulateur droit, message très court. Le métier du père meurt, il apprend l'autre. |
-
-Une subtilité qui fait le sujet du premier épisode plutôt qu'elle ne le gêne :
-la France n'utilise pas le morse en 1844. Elle a le télégraphe Chappe, puis à
-partir de 1845 le Foy-Breguet, qui affiche des signaux imitant ceux des tours.
-Le morse n'arrive vraiment qu'au milieu des années 1850. La génération I vit
-donc exactement la bascule.
+| *Ce que Dieu a fait* — 1844 | Vail transmet `WHAT HATH GOD WROUGHT` de Washington à Baltimore, le 24 mai | Tutoriel de réception, lettre par lettre, table sous les yeux. La nouvelle d'Amérique parvient à un homme dont le métier est de faire des signes avec des bras de bois. |
+| *La ligne* — vers 1852 | Le télégraphe électrique gagne l'ouest ; essais de ligne, réglage, premiers services | Essais et conversations de service. Le père apprend l'appareil qui va le remplacer. |
+| *La dernière tour* — 1855 | Le réseau Chappe est abandonné | Premier envoi au manipulateur droit. Très court, très lent, très lourd. |
 
 **Génération II — le câble et le siège (1866-1871)**
 
 | Épisode | Ancrage réel | Ce qu'on y fait |
 | --- | --- | --- |
-| *Le fil sous l'Atlantique* — 1866 | Le câble transatlantique tient enfin ; le câble français Brest — Saint-Pierre suit en 1869 | Réception longue distance, signal faible, atténuation. Premiers vrais mots. |
-| *Paris coupé* — 1870-71 | Siège de Paris : lignes coupées, ballons montés, pigeons microfilmés | Le message s'interrompt en cours de route et doit être repris. Brouillage, coupures. |
+| *Le fil sous l'Atlantique* — 1866 | Le câble transatlantique tient enfin ; le câble français Brest — Saint-Pierre suit | Réception longue distance, signal faible. Le monde vient de rétrécir et personne ne sait encore ce que ça veut dire. |
+| *Paris coupé* — 1870-71 | Siège de Paris : lignes coupées, ballons montés, pigeons microfilmés | Le message s'interrompt et doit être repris. La situation historique est expliquée avant, pendant et après : c'est elle qui doit impliquer le joueur. |
 
-**Génération III — la TSF et la Grande Guerre (1901-1918)**
+**Génération III — la TSF, le naufrage, la guerre (1901-1918)**
 
 | Épisode | Ancrage réel | Ce qu'on y fait |
 | --- | --- | --- |
-| *Trois points* — 12 décembre 1901 | Marconi annonce avoir reçu la lettre `S` de Poldhu à Terre-Neuve | Copier **une seule lettre** dans un bruit atroce, plusieurs fois. Était-elle là ? C'est exactement la controverse historique, transformée en jeu. |
-| *MGY* — 15 avril 1912 | Le Titanic émet `CQD` puis `SOS` ; le Carpathia répond ; le Californian a coupé sa veille | Trafic dense, rapide, qui se chevauche. Le sommet émotionnel du mode. |
-| *La tour qui écoute* — 1914-1918 | La tour Eiffel, station militaire, intercepte le trafic allemand | Copie d'un message chiffré : on transcrit sans comprendre. |
+| *Trois points* — 12 décembre 1901 | Marconi annonce avoir reçu la lettre `S` de Poldhu à Terre-Neuve | Copier **une seule lettre** dans un bruit atroce, plusieurs fois. Était-elle là ? La controverse historique devenue mécanique. |
+| *MGY* — 15 avril 1912 | Le Titanic émet `CQD` puis `SOS` ; le Carpathia répond ; le Californian a coupé sa veille | **La scène pivot.** On termine un trafic de routine ; l'Histoire s'affiche ; puis, quelques instants plus tard, sur la bande grésillante, un `SOS` monte dans les écouteurs. Le joueur comprend en lisant, et doit répondre. |
+| *La tour qui écoute* — 1917 | La tour Eiffel, station militaire, intercepte le trafic allemand | Copier un message chiffré : transcrire sans comprendre. |
 
 **Génération IV — le pianiste (1940-1945)**
 
 | Épisode | Ancrage réel | Ce qu'on y fait |
 | --- | --- | --- |
-| *Cinq minutes* — 1943 | Les opérateurs clandestins étaient surnommés « pianistes » ; la goniométrie allemande les localisait en quelques minutes d'émission | **Un chronomètre.** Émettre le message avant que la camionnette n'arrive. La contrainte historique devient la mécanique de jeu — c'est la meilleure idée du lot. |
-| *Les messages personnels* — juin 1944 | La BBC diffuse les vers de Verlaine annonçant le débarquement | Attention : ces messages-là passaient **à la voix**, pas en morse. À traiter comme décor, le morse restant le trafic de l'opérateur. |
+| *Cinq minutes* — 1943 | Les opérateurs clandestins étaient surnommés « pianistes » ; la goniométrie les localisait en quelques minutes d'émission | **Un chronomètre.** Émettre avant l'arrivée de la camionnette. La contrainte historique devient la mécanique. |
+| *Les messages personnels* — juin 1944 | La BBC diffuse les vers de Verlaine | Décor seulement : ces messages passaient **à la voix**. Le morse reste le trafic de l'opérateur. |
 
-**Génération V — la fin (années 1960-1999)**
+**Génération V — la fin (1965-1999)**
 
 | Épisode | Ancrage réel | Ce qu'on y fait |
 | --- | --- | --- |
-| *Le quart* — années 1960 | Officier radio sur un cargo. Veille sur 500 kHz | Trafic de routine : météo, position, service. On apprend la procédure. |
-| *Les trois minutes* — années 1970 | Deux fois par heure, à h+15 et h+45, tout le monde se taisait trois minutes et écoutait. Les pendules des cabines radio portaient ces plages en rouge | On **arrête d'émettre et on écoute**. Du bruit… ou un appel de détresse. Tension pure, historiquement exacte. |
+| *Le quart* — années 1960 | Officier radio sur un cargo, veille sur 500 kHz | Trafic de service, procédure, routine. On installe le calme avant de le briser. |
+| *Les trois minutes* — années 1970 | Deux fois par heure, à h+15 et h+45, tout le monde se taisait trois minutes et écoutait ; les pendules des cabines portaient ces plages en rouge | Même ressort qu'au Titanic, et c'est voulu : on arrête d'émettre, on écoute, il n'y a que du bruit — puis il y a autre chose. |
 | *Notre dernier cri* — 31 janvier 1997 | Dernière émission en morse de la Marine nationale | Le dernier message de la lignée. |
-| *SK* — 1999 | Le morse cesse d'être le moyen international de détresse en mer le 1er février 1999 | **Pas de score, pas de chronomètre.** Le joueur envoie lui-même, à son rythme, les mots de 1844 — puis `SK`. La boucle se ferme sur la phrase du premier épisode. |
+| *SK* — 1999 | Le morse cesse d'être le moyen international de détresse en mer le 1<sup>er</sup> février | Ni score ni chronomètre. Le joueur envoie lui-même, à son rythme, les mots de 1844. Puis `SK`. |
 
-Cette dernière idée n'est pas une trouvaille d'auteur : la dernière transmission
-commerciale en morse aux États-Unis se serait terminée sur le message d'origine
-de Morse. **À vérifier avant de s'en servir** — mais si c'est exact, la
-structure du mode est écrite d'avance.
+**« Entre les ondes » — épisodes optionnels.** Courts, sans enjeu, pure
+matière familiale : une lettre, une dispute, un mariage, un deuil, un métier
+qu'on refuse de reprendre. Ils n'apportent aucune progression et se sautent
+sans conséquence. C'est ce qui fait exister la famille entre deux dates.
 
 ### La saisie
 
 On garde les manipulateurs du mode d'entraînement — droit, palettes un élément
-par appui, palettes iambiques A et B, au doigt comme au clavier — et on en
-ajoute un :
+par appui, palettes iambiques A et B, au doigt comme au clavier — et on ajoute
+le **manipulateur à clavier** : on appuie sur une lettre, la machine émet la
+lettre entière, parfaitement calibrée. Le texte à transmettre est **au-dessus**
+du clavier, avec l'indicatif de la famille dedans.
 
-**Le manipulateur à clavier.** Un clavier à l'écran : on appuie sur une lettre,
-la machine émet la lettre entière, parfaitement calibrée. On compose un message
-sans savoir manipuler.
+**Le retour visuel, quel que soit le manipulateur :**
 
-- **Disposition** : le texte à transmettre est **au-dessus** du clavier, avec
-  l'indicatif de la famille dedans.
-- Historiquement juste pour la fin du parcours : les manipulateurs à clavier
-  arrivent à bord dans les années 1960-70. Le manipulateur droit est le seul de
-  1844, le « bug » mécanique date de 1904, le manipulateur électronique des
-  années 1940.
-- **Idée** : l'époque *propose* le manipulateur d'époque, mais le joueur peut
-  toujours en changer. Évocateur sans être punitif.
-- À assumer : ce clavier n'apprend pas à manipuler, il apprend à reconnaître.
-  C'est le bon compromis pour un mode où l'enjeu est le récit.
+- le texte à transmettre reste **lisible en clair** en permanence ;
+- chaque lettre correctement émise **s'allume en vert** ;
+- une erreur s'inscrit **en rouge** ;
+- un bouton efface, en émettant le signal **`HH`** — huit points, le signal
+  d'erreur réel. La correction fait partie du métier, pas de l'interface.
+
+Cela règle du même coup la règle « l'échec ne bloque jamais » : on se corrige
+toujours, à l'intérieur de la fiction.
+
+Idée : l'époque *propose* le manipulateur d'époque — droit seul en 1844, le
+« bug » à partir de 1904, l'électronique après 1940, le clavier après 1960 —
+mais le joueur peut toujours en changer.
 
 ### La réception
 
-- **La table du morse affichée sur la page**, comme une antisèche assumée.
-- **Le tempo réglable**, jusqu'à très lent.
-- **La lecture lettre par lettre** : on avance d'un caractère à la fois, on
-  réécoute autant qu'on veut.
-- **Une zone de notes en dessous** où l'on écrit le message soi-même.
+Table du morse affichée, tempo réglable, lecture lettre par lettre, zone de
+notes en dessous pour écrire le message soi-même. **Validé tel quel.**
 
-Ajouts proposés :
-
-- **Correction indulgente** : casse et espaces ignorés, et on montre ce qui est
-  juste plutôt que ce qui est faux — le texte réel sous le vôtre, différences
-  soulignées.
-- **L'aide dans la fiction plutôt qu'à côté** : au lieu d'un bouton « ralentir »,
-  un bouton `QRS` (« transmettez plus lentement ») et `AGN` (« répétez »). C'est
-  la vraie procédure, ça réutilise les codes Q du site, et demander de l'aide
-  devient un geste d'opérateur au lieu d'un aveu.
-- **La table s'éteint progressivement** : les lettres non utilisées à l'époque
-  sont grisées. Les premiers épisodes en montrent peu.
-- **Une marque discrète « copié sans la table »** — une distinction, jamais une
-  pénalité.
+Ajouts : correction indulgente qui montre ce qui est juste plutôt que ce qui est
+faux ; l'aide passe par `QRS` et `AGN` plutôt que par des boutons hors fiction ;
+les lettres hors époque restent grisées sur la table.
 
 ### Entre deux générations
 
-- La transmission du sine : le dernier message du père, le premier du fils. Une
-  scène courte, peu ou pas de jeu.
-- Un **épilogue factuel** à chaque épisode : ce qui s'est réellement passé, et
-  la part inventée.
-- **Un arbre généalogique qui se remplit** : cinq générations, le sine qui
-  descend, les épisodes en jalons. C'est le sommaire du mode.
+La transmission du sine : le dernier message du père, le premier du fils. Un
+épilogue factuel à chaque épisode. Un arbre généalogique qui se remplit et sert
+de sommaire.
 
-### Autres idées
+### Les autres décisions
 
-- **Le son de chaque époque.** Le bruit de bande existe déjà. Le télégraphe
-  filaire, c'est le claquement des relais dans le silence ; 1901-1912, c'est
-  l'éclateur — un souffle râpeux, pas une note pure ; la guerre, c'est le
-  brouillage ; les années 1970, le calme. Un timbre « étincelle » pour les
-  épisodes Marconi et Titanic coûterait peu et changerait tout.
-- **Deux niveaux de lecture** : *Récit* (aide généreuse, l'histoire prime) et
-  *Opérateur* (vitesses réelles, pas de table, pas de répétition). De quoi
-  refaire le mode une seconde fois.
-- **L'échec ne bloque pas** : le correspondant répète, ralentit, finit par
-  passer. Mais « copié du premier coup » se retient.
-- **Durée visée** : douze à quinze épisodes de trois à six minutes.
+- **Le son de chaque époque** : retenu. Relais et silence pour le filaire,
+  éclateur râpeux pour 1901-1912, brouillage pour la guerre, calme pour 1970.
+- **Deux niveaux** : *Récit* et *Opérateur*. Ce sont les deux difficultés du
+  mode.
+- **L'échec ne bloque jamais** ; on doit toujours pouvoir se corriger.
+- **Progression propre au mode**, indépendante des paliers Koch : un
+  apprentissage rude, mais par le jeu plutôt que par la série mécanique.
+- **On joue épisode par épisode**, quand on veut, sans être bloqué dans
+  l'ordre du récit.
+- **Sauvegarde JSON** accessible depuis le bandeau, sous un petit logo
+  d'émission radio. À noter : le bandeau porte déjà trois boutons et en
+  supporterait mal un quatrième sur téléphone — le bouton n'apparaîtrait donc
+  que dans le mode histoire. La progression du site s'exporte déjà en JSON
+  depuis les réglages ; celle-ci serait la sauvegarde du récit, séparée.
 
 ### À vérifier avant d'écrire
 
-Les faits suivants sont donnés de mémoire et doivent être recoupés sur source
-avant de figurer sur le site :
-
 - le texte exact du dernier message de la Marine nationale, 31 janvier 1997 ;
-- le fait que la dernière transmission commerciale américaine, en 1999, se soit
-  achevée sur `WHAT HATH GOD WROUGHT` ;
-- la date de l'abandon du Foy-Breguet au profit de l'appareil Morse en France ;
+- la fin de la dernière transmission commerciale américaine de 1999 sur
+  `WHAT HATH GOD WROUGHT` ;
+- la date d'arrivée du télégraphe électrique en Bretagne, et celle de l'abandon
+  du Foy-Breguet au profit de l'appareil Morse ;
 - l'année du câble français Brest — Saint-Pierre ;
-- la durée d'émission au-delà de laquelle la goniométrie allemande localisait un
-  poste clandestin — le chiffre de cinq minutes est souvent cité, rarement
-  sourcé.
+- la durée d'émission au-delà de laquelle la goniométrie localisait un poste
+  clandestin — cinq minutes est souvent cité, rarement sourcé ;
+- la légalisation des prénoms bretons en 1966.
 
 Les transcriptions du trafic du Titanic sont, elles, largement documentées.
 
-### Ce qui reste à trancher
-
-1. Le nom de la famille et son sine — `KR` / Kermarec n'est qu'une proposition,
-   choisie pour la Bretagne et pour la place de `K` et `R` dans l'ordre Koch.
-2. La progression Koch s'applique-t-elle au mode histoire, ou le mode a-t-il sa
-   propre courbe ? La seconde option semble plus jouable : les textes
-   historiques ne se plient pas à un alphabet partiel.
-3. Combien d'épisodes par génération — le déroulé ci-dessus en propose douze,
-   inégalement répartis.
-4. Le mode se joue-t-il d'une traite ou épisode par épisode, avec reprise ?
-
 ### Ce que ça toucherait dans le code
 
-- Une nouvelle section au menu, ou une entrée dans la partie *S'entraîner*.
-- Des données d'épisodes en `src/data/` — décor, messages, vitesse, bruit,
-  dénouement, épilogue factuel.
-- La progression à étendre : épisode atteint, épisodes terminés, copiés sans
-  aide. Donc une version de plus dans le schéma de stockage.
-- Le manipulateur à clavier et la table de déchiffrage sont les deux seules
-  vraies pièces neuves d'interface.
-- Le moteur audio, le tirage et le bruit de fond existent : le mode les
-  orchestre, il ne réinvente rien de ce côté.
+- Une section au menu et un sommaire en arbre généalogique.
+- Des données d'épisodes en `src/data/` : décor, dialogues, messages, vitesse,
+  bruit, dénouement, épilogue factuel.
+- Deux pièces neuves d'interface : le **manipulateur à clavier** avec son texte
+  au-dessus, et la **table de déchiffrage** avec sa zone de notes.
+- Une progression et une sauvegarde propres au mode.
+- Le moteur audio, le tirage et le bruit de fond existent déjà.
 
-**Rien n'est commencé.**
+### Ce qui reste ouvert
+
+1. Le nom et les prénoms — voir `noms.md`.
+2. Combien d'épisodes « Entre les ondes », et où ils se placent.
+3. Le volume d'écriture : quatorze épisodes de cette densité représentent
+   plusieurs dizaines de milliers de mots. **La méthode qui a marché pour le
+   questionnaire s'applique** : le moteur d'abord avec un épisode complet de
+   bout en bout, puis les autres génération par génération.
+
+**Rien n'est commencé.** Une maquette d'écran existe, elle n'est reliée à rien.
