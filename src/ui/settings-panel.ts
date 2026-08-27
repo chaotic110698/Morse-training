@@ -13,13 +13,13 @@
  */
 
 import { h } from './dom.ts';
+import { createThemePicker } from './theme-picker.ts';
 import { createOverlay } from './overlay.ts';
 import { keepFocus, slider } from './controls.ts';
 import { bandNoiseSupported, presetForDb, SNR_PRESETS } from '../core/noise.ts';
 import { settingsView } from '../views/settings.ts';
 import type { AppStore } from '../core/store.ts';
 import type { View, ViewContext } from './router.ts';
-import type { Theme } from '../core/settings.ts';
 
 export interface SettingsPanel {
   /** Les éléments à insérer dans la page : le voile puis le panneau. */
@@ -249,26 +249,8 @@ export function createSettingsPanel(store: AppStore, context: ViewContext): Sett
     // L'apparence est utile partout, mais elle passe en premier sur les pages
     // qui se lisent, où c'est le seul réglage qui change quelque chose.
     const themeControl = row(
-      'Thème',
-      h(
-        'div',
-        { class: 'segmented' },
-        ...(
-          [
-            ['auto', 'Automatique'],
-            ['dark', 'Sombre'],
-            ['light', 'Clair'],
-          ] as Array<[Theme, string]>
-        ).map(([value, label]) =>
-          h('button', {
-            class: `segmented__item${s.theme === value ? ' is-active' : ''}`,
-            type: 'button',
-            text: label,
-            attrs: { 'data-focus-key': `quick-theme-${value}` },
-            on: { click: () => store.updateSettings({ theme: value }) },
-          }),
-        ),
-      ),
+      'Habit',
+      createThemePicker({ store, compact: true, focusPrefix: 'quick-theme' }),
     );
     if (kind === 'reading') blocks.push(themeControl, ...soundRows());
     else blocks.push(themeControl);

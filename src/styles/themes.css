@@ -1,0 +1,306 @@
+/*
+ * Les habits.
+ *
+ * Un thème est un bloc de jetons, et rien d'autre. Pour en ajouter un : une
+ * entrée dans `src/data/themes.ts`, un bloc ici, et c'est tout — aucun
+ * composant n'a besoin d'être averti.
+ *
+ * Trois attributs sont posés sur la racine par la coquille, à partir des
+ * traits déclarés dans le registre. Ils permettent d'écrire des règles qui
+ * valent pour une famille d'habits plutôt que pour un habit nommé :
+ *
+ *   data-theme    l'identifiant, pour la palette elle-même
+ *   data-font     « periode » quand l'habit veut des empattements et que le
+ *                 joueur l'accepte
+ *   data-lumiere  la source de lumière, pour l'ambiance (voir ambiance.css)
+ *
+ * Les couleurs du juste et du faux ne se négocient pas : dans chaque habit
+ * elles restent un vert et un rouge lisibles, même quand l'accent en est
+ * proche. C'est la seule contrainte à respecter en ajoutant une palette.
+ */
+
+/* --- Sombre : la référence -------------------------------------------------
+ *
+ * C'est celle qui convient à une séance d'écoute au casque, souvent le soir.
+ * Elle reste le repli de tout ce qui ne se reconnaît pas.
+ */
+
+:root,
+:root[data-theme='dark'] {
+  --bg: #0b1015;
+  --bg-elevated: #131a22;
+  --surface: #161e27;
+  --surface-2: #1d2733;
+  --surface-3: #253140;
+  --border: #26313d;
+  --border-strong: #35455673;
+
+  --text: #e7eef5;
+  --text-muted: #93a3b3;
+  --text-faint: #8e9aa8;
+
+  --accent: #ffb545;
+  --accent-soft: #ffb5451f;
+  --accent-text: #1a1206;
+
+  --ok: #4ade80;
+  --ok-soft: #4ade801f;
+  --error: #fb7185;
+  --error-soft: #fb71851f;
+
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px rgb(0 0 0 / 0.28);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.35);
+  --lamp-glow: 0 0 8px 2px var(--accent), 0 0 26px 6px #ffb5454d;
+}
+
+/* --- Clair ---------------------------------------------------------------- */
+
+:root[data-theme='light'] {
+  --bg: #f2f5f8;
+  --bg-elevated: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #eef2f6;
+  --surface-3: #e2e9f0;
+  --border: #d7dfe7;
+  --border-strong: #b9c6d3;
+
+  --text: #101a24;
+  --text-muted: #526376;
+  --text-faint: #5a6978;
+
+  --accent: #a35400;
+  --accent-soft: #a3540014;
+  --accent-text: #fff8ee;
+
+  --ok: #15803d;
+  --ok-soft: #15803d14;
+  --error: #be123c;
+  --error-soft: #be123c14;
+
+  --shadow: 0 1px 2px rgb(15 30 45 / 0.06), 0 8px 24px rgb(15 30 45 / 0.08);
+  --shadow-sm: 0 1px 2px rgb(15 30 45 / 0.08);
+  --lamp-glow: 0 0 8px 2px var(--accent), 0 0 22px 5px #a3540033;
+}
+
+/* --- Papier et encre — jusqu'en 1875 ---------------------------------------
+ *
+ * Le registre de 1844. L'accent n'est pas une couleur chaude mais le bleu-noir
+ * de l'encre ferro-gallique : sur du papier, ce qui est actif n'est pas
+ * éclairé, il est écrit. Le voyant devient une marque d'encre, et le rouge de
+ * la faute celui du crayon de correction.
+ */
+
+:root[data-theme='papier'] {
+  --bg: #e6e2d6;
+  --bg-elevated: #f2efe6;
+  --surface: #f2efe6;
+  --surface-2: #e3ded0;
+  --surface-3: #d8d2c1;
+  --border: #c6bda6;
+  --border-strong: #a89c80;
+
+  --text: #241f19;
+  --text-muted: #5c5347;
+  --text-faint: #6b6153;
+
+  --accent: #2f4b6e;
+  --accent-soft: #2f4b6e14;
+  --accent-text: #f2efe6;
+
+  --ok: #3f6b4a;
+  --ok-soft: #3f6b4a14;
+  --error: #9e2a2b;
+  --error-soft: #9e2a2b14;
+
+  --shadow: 0 1px 2px rgb(60 48 30 / 0.10), 0 8px 24px rgb(60 48 30 / 0.10);
+  --shadow-sm: 0 1px 2px rgb(60 48 30 / 0.14);
+  --lamp-glow: 0 0 0 2px #2f4b6e2e, 0 0 12px 3px #2f4b6e24;
+
+  --radius-sm: 2px;
+  --radius: 3px;
+  --radius-lg: 4px;
+}
+
+/* --- Cabine de nuit — 1876 à 1905 ------------------------------------------
+ *
+ * Le bureau après la fermeture : noyer, laiton, une lampe à huile. Le fond
+ * froid de la référence se réchauffe en brun — c'est ce basculement de
+ * température qui se lit avant même la couleur d'accent.
+ */
+
+:root[data-theme='cabine'] {
+  --bg: #13100b;
+  --bg-elevated: #1b1611;
+  --surface: #201a13;
+  --surface-2: #2a231a;
+  --surface-3: #362d21;
+  --border: #392f23;
+  --border-strong: #4b3f2f;
+
+  --text: #f0e5d1;
+  --text-muted: #b6a488;
+  --text-faint: #a09079;
+
+  --accent: #d8a83c;
+  --accent-soft: #d8a83c1f;
+  --accent-text: #171105;
+
+  --ok: #7fb069;
+  --ok-soft: #7fb0691f;
+  --error: #d9695e;
+  --error-soft: #d9695e1f;
+
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 10px 28px rgb(0 0 0 / 0.35);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.45);
+  --lamp-glow: 0 0 8px 2px var(--accent), 0 0 28px 8px #d8a83c4d;
+
+  --radius-sm: 2px;
+  --radius: 3px;
+  --radius-lg: 4px;
+}
+
+/* --- TSF 1930 — 1906 à 1938 ------------------------------------------------
+ *
+ * Le poste à lampes dans son ébénisterie. L'accent est le vert de l'œil
+ * magique, ce tube cathodique en éventail qui se referme quand la station est
+ * accordée : c'est lui le voyant de l'époque, et il ne ressemble à rien
+ * d'autre. Le juste garde donc un vert nettement plus sourd et plus jaune, et
+ * le faux un rouge franc, pour qu'aucune verdure ne se confonde.
+ */
+
+:root[data-theme='tsf'] {
+  --bg: #17120e;
+  --bg-elevated: #1f1813;
+  --surface: #241c16;
+  --surface-2: #2f251c;
+  --surface-3: #3b2f23;
+  --border: #3d3125;
+  --border-strong: #52422f;
+
+  --text: #ecdfc9;
+  --text-muted: #b3a082;
+  --text-faint: #9d8b70;
+
+  --accent: #7ad18f;
+  --accent-soft: #7ad18f1a;
+  --accent-text: #0d1a10;
+
+  --ok: #9caf45;
+  --ok-soft: #9caf451f;
+  --error: #dd6a4e;
+  --error-soft: #dd6a4e1f;
+
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 10px 28px rgb(0 0 0 / 0.35);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.45);
+  --lamp-glow: 0 0 8px 2px var(--accent), 0 0 30px 9px #7ad18f4d;
+
+  --radius-sm: 2px;
+  --radius: 3px;
+  --radius-lg: 4px;
+}
+
+/* --- Poste de campagne — 1939 à 1949 ---------------------------------------
+ *
+ * La station sous sa toile. Kaki, bakélite, et le jaune pâle d'un cadran qu'on
+ * lit à la lampe de secours. Le juste passe au vert franc pour ne pas se
+ * confondre avec ce jaune-vert.
+ */
+
+:root[data-theme='campagne'] {
+  --bg: #131610;
+  --bg-elevated: #1a1e15;
+  --surface: #1f2419;
+  --surface-2: #29301f;
+  --surface-3: #343d28;
+  --border: #38412a;
+  --border-strong: #4a5439;
+
+  --text: #e2e6d5;
+  --text-muted: #a5ad91;
+  --text-faint: #929b7f;
+
+  --accent: #dbc862;
+  --accent-soft: #dbc8621f;
+  --accent-text: #14170f;
+
+  --ok: #64ab72;
+  --ok-soft: #64ab721f;
+  --error: #d9614a;
+  --error-soft: #d9614a1f;
+
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 10px 28px rgb(0 0 0 / 0.35);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.45);
+  --lamp-glow: 0 0 8px 2px var(--accent), 0 0 26px 7px #dbc8624d;
+
+  --radius-sm: 2px;
+  --radius: 3px;
+  --radius-lg: 4px;
+}
+
+/* --- Bande perforée — à partir de 1950 -------------------------------------
+ *
+ * Le bureau des téléscripteurs. L'accent est l'encre elle-même : sur une
+ * bande de papier, le signal n'est pas une lueur, c'est un trou percé. Le
+ * voyant devient donc une pastille noire cerclée, et le rouge du ruban sert
+ * à la faute, comme il servait à la correction.
+ */
+
+:root[data-theme='bande'] {
+  --bg: #eceae3;
+  --bg-elevated: #f8f7f3;
+  --surface: #f8f7f3;
+  --surface-2: #e5e3db;
+  --surface-3: #d9d7cd;
+  --border: #c9c7bd;
+  --border-strong: #a8a69c;
+
+  --text: #17171a;
+  --text-muted: #55555c;
+  --text-faint: #63636a;
+
+  --accent: #24242a;
+  --accent-soft: #24242a12;
+  --accent-text: #f8f7f3;
+
+  --ok: #2f6b46;
+  --ok-soft: #2f6b4614;
+  --error: #b4362b;
+  --error-soft: #b4362b14;
+
+  --shadow: 0 1px 2px rgb(25 25 30 / 0.07), 0 8px 24px rgb(25 25 30 / 0.09);
+  --shadow-sm: 0 1px 2px rgb(25 25 30 / 0.10);
+  --lamp-glow: 0 0 0 2px #17171a, 0 0 0 5px #17171a1a;
+
+  --radius-sm: 0;
+  --radius: 0;
+  --radius-lg: 0;
+}
+
+/* --- Traits partagés -------------------------------------------------------
+ *
+ * Ces règles s'accrochent aux attributs de trait, pas aux noms d'habits : elles
+ * vaudront donc pour tout thème ajouté plus tard qui porte le même trait.
+ */
+
+/*
+ * Les empattements. Le joueur peut les refuser dans les réglages, auquel cas
+ * l'attribut n'est pas posé et le site garde sa police de caractères.
+ *
+ * L'empilement est volontairement celui du système : il ne coûte pas un octet
+ * et reste lisible hors ligne. Une vraie fonte d'époque serait plus juste, au
+ * prix d'une centaine de kilo-octets à précacher.
+ */
+:root[data-font='periode'] {
+  --font-sans: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+  --font-mono: 'Courier New', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+/*
+ * Les émojis de la navigation viennent des données, pas du style : ils
+ * resteraient lustrés et modernes sous un habit d'époque. On ne peut pas les
+ * redessiner d'une règle CSS, mais on peut au moins leur retirer leur éclat
+ * pour qu'ils cessent de jurer.
+ */
+:root[data-font='periode'] .nav__icon {
+  filter: grayscale(1) sepia(0.4) contrast(0.9) opacity(0.8);
+}

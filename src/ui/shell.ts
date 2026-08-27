@@ -17,6 +17,7 @@ import { NAV_GROUPS, ROUTES } from '../views/routes.ts';
 import { LICENCE_HUB, locate } from '../data/licence-syllabus.ts';
 import type { RouteDefinition, ToastKind } from './router.ts';
 import type { AppStore } from '../core/store.ts';
+import { resolveThemeId, themeById } from '../data/themes.ts';
 import type { Theme } from '../core/settings.ts';
 
 const COLLAPSED_KEY = 'morse-training/nav-collapsed';
@@ -173,13 +174,33 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
   // --- Thème ---
 
   const media = window.matchMedia('(prefers-color-scheme: light)');
+
+  /**
+   * Traduit l'habit choisi en attributs sur la racine.
+   *
+   * Rien ici ne connaît un thème par son nom : on lit ses traits dans le
+   * registre et on les estampille. Le style s'accroche ensuite aux traits, si
+   * bien qu'un habit ajouté demain hérite de tout ce qui a été écrit pour sa
+   * lumière ou pour ses empattements.
+   */
   const applyTheme = (): void => {
-    const theme: Theme = store.settings.theme;
-    const resolved = theme === 'auto' ? (media.matches ? 'light' : 'dark') : theme;
-    document.documentElement.dataset['theme'] = resolved;
-    document
-      .querySelector('meta[name="theme-color"]')
-      ?.setAttribute('content', resolved === 'light' ? '#f4f6f8' : '#0b1015');
+    const chosen: Theme = store.settings.theme;
+    const theme = themeById(
+      resolveThemeId(chosen, store.settings.themeFollowsSystem, media.matches),
+    );
+    const root = document.documentElement;
+    root.dataset['theme'] = theme.id;
+
+    // Les empattements et le traitement des émojis vont ensemble : ils disent
+    // la même chose, qu'on regarde une page d'une autre époque.
+    const period = theme.period && store.settings.periodFont;
+    if (period) root.dataset['font'] = 'periode';
+    else delete root.dataset['font'];
+
+    if (theme.light === 'aucune') delete root.dataset['lumiere'];
+    else root.dataset['lumiere'] = theme.light;
+
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme.bar);
   };
   media.addEventListener('change', applyTheme);
   store.subscribe(applyTheme);

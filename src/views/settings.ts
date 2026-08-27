@@ -7,6 +7,7 @@
  */
 
 import { h, field } from '../ui/dom.ts';
+import { createThemeOptions, createThemePicker } from '../ui/theme-picker.ts';
 import { keepFocus, slider } from '../ui/controls.ts';
 import { keyLabel, resolveCode } from '../ui/keys.ts';
 import { MorsePlayer } from '../ui/player.ts';
@@ -548,26 +549,11 @@ export function settingsView(context: ViewContext): View {
         { class: 'card' },
         h('h2', { class: 'card__title', text: 'Apparence' }),
         field(
-          'Thème',
-          h(
-            'div',
-            { class: 'segmented', attrs: { role: 'group', 'aria-label': 'Thème' } },
-            ...(
-              [
-                ['auto', 'Système'],
-                ['dark', 'Sombre'],
-                ['light', 'Clair'],
-              ] as const
-            ).map(([value, label]) =>
-              h('button', {
-                class: `segmented__item${s.theme === value ? ' is-active' : ''}`,
-                type: 'button',
-                text: label,
-                on: { click: () => store.updateSettings({ theme: value }) },
-              }),
-            ),
-          ),
+          'Habit',
+          createThemePicker({ store }),
+          'Chaque habit est une palette complète : couleurs, ombres, angles et police. Les cinq derniers suivent le siècle et demi du télégraphe, et le mode histoire s’en sert pour ouvrir chaque épisode dans l’habit de son époque.',
         ),
+        ...createThemeOptions(store),
       ),
 
       // --- Données ---

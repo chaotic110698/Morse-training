@@ -1,10 +1,13 @@
 /*
- * Jetons de design.
+ * Jetons de design : ce qui ne dépend pas de l'habit.
  *
- * La palette sombre est la référence : c'est celle qui convient à une séance
- * d'écoute au casque, souvent le soir. L'accent ambre évoque le voyant d'un
- * poste radio et sert exclusivement à signaler l'état actif ou le signal en
- * cours ; le vert et le rouge restent réservés au juste et au faux.
+ * Les palettes vivent dans `themes.css`, une par habit. Les valeurs posées ici
+ * sont celles que la plupart des thèmes gardent — polices et rayons d'angle en
+ * particulier, qu'un habit d'époque redéfinit s'il le souhaite.
+ *
+ * L'accent, quel que soit l'habit, sert exclusivement à signaler l'état actif
+ * ou le signal en cours ; le vert et le rouge restent réservés au juste et au
+ * faux.
  */
 
 :root {
@@ -27,59 +30,4 @@
   --content-width: 62rem;
 
   --transition: 160ms cubic-bezier(0.2, 0, 0.2, 1);
-}
-
-:root,
-:root[data-theme='dark'] {
-  --bg: #0b1015;
-  --bg-elevated: #131a22;
-  --surface: #161e27;
-  --surface-2: #1d2733;
-  --surface-3: #253140;
-  --border: #26313d;
-  --border-strong: #35455673;
-
-  --text: #e7eef5;
-  --text-muted: #93a3b3;
-  --text-faint: #8e9aa8;
-
-  --accent: #ffb545;
-  --accent-soft: #ffb5451f;
-  --accent-text: #1a1206;
-
-  --ok: #4ade80;
-  --ok-soft: #4ade801f;
-  --error: #fb7185;
-  --error-soft: #fb71851f;
-
-  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px rgb(0 0 0 / 0.28);
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.35);
-  --lamp-glow: 0 0 8px 2px var(--accent), 0 0 26px 6px #ffb5454d;
-}
-
-:root[data-theme='light'] {
-  --bg: #f2f5f8;
-  --bg-elevated: #ffffff;
-  --surface: #ffffff;
-  --surface-2: #eef2f6;
-  --surface-3: #e2e9f0;
-  --border: #d7dfe7;
-  --border-strong: #b9c6d3;
-
-  --text: #101a24;
-  --text-muted: #526376;
-  --text-faint: #5a6978;
-
-  --accent: #a35400;
-  --accent-soft: #a3540014;
-  --accent-text: #fff8ee;
-
-  --ok: #15803d;
-  --ok-soft: #15803d14;
-  --error: #be123c;
-  --error-soft: #be123c14;
-
-  --shadow: 0 1px 2px rgb(15 30 45 / 0.06), 0 8px 24px rgb(15 30 45 / 0.08);
-  --shadow-sm: 0 1px 2px rgb(15 30 45 / 0.08);
-  --lamp-glow: 0 0 8px 2px var(--accent), 0 0 22px 5px #a3540033;
 }

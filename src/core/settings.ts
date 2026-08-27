@@ -1,7 +1,14 @@
 /** Réglages de l'application, persistés tels quels. */
 
+import { isKnownTheme } from '../data/themes.ts';
+
 export type Waveform = 'sine' | 'square' | 'triangle' | 'sawtooth';
-export type Theme = 'auto' | 'dark' | 'light';
+/**
+ * L'habit du site : « auto » suit la lumière du système, tout autre valeur est
+ * un identifiant du registre des thèmes. Le type reste ouvert exprès — ajouter
+ * un habit ne doit demander aucune retouche ici.
+ */
+export type Theme = 'auto' | string;
 export type KochOrderId = 'lcwo' | 'classic' | 'alphabetical';
 
 export interface Settings {
@@ -53,6 +60,18 @@ export interface Settings {
 
   theme: Theme;
   /**
+   * Suivre la lumière du système en basculant vers l'habit jumeau : « Papier
+   * et encre » le jour, « Cabine de nuit » le soir. Sans effet sur un habit
+   * qui n'a pas de jumeau.
+   *
+   * Au repos par défaut : sans cela, choisir un habit sombre sur un appareil
+   * réglé en clair en applique aussitôt un autre, et le choix qu'on vient de
+   * faire semble ignoré.
+   */
+  themeFollowsSystem: boolean;
+  /** Employer les empattements des habits d'époque. */
+  periodFont: boolean;
+  /**
    * Indicatif fictif adopté par l'opérateur. Sert d'exemple d'entraînement, il
    * n'a aucune valeur officielle et ne doit pas être émis sur l'air.
    */
@@ -95,6 +114,8 @@ export const DEFAULT_SETTINGS: Settings = {
   tailUnits: 3,
 
   theme: 'auto',
+  themeFollowsSystem: false,
+  periodFont: true,
   callsign: '',
   kochOrder: 'lcwo',
   kochThreshold: 0.9,
@@ -103,7 +124,6 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 const WAVEFORMS: Waveform[] = ['sine', 'square', 'triangle', 'sawtooth'];
-const THEMES: Theme[] = ['auto', 'dark', 'light'];
 const ORDERS: KochOrderId[] = ['lcwo', 'classic', 'alphabetical'];
 
 const clamp = (value: number, min: number, max: number): number =>
@@ -128,7 +148,9 @@ export function normalizeSettings(input: Partial<Settings> | null | undefined): 
     keyerMode: (['straight', 'paddle-single', 'iambic-a', 'iambic-b'] as const).includes(raw.keyerMode)
       ? raw.keyerMode
       : 'straight',
-    theme: THEMES.includes(raw.theme) ? raw.theme : 'auto',
+    // Un habit inconnu — supprimé depuis, ou jamais existé — retombe sur le
+    // suivi du système plutôt que de laisser la racine sans palette.
+    theme: raw.theme === 'auto' || isKnownTheme(raw.theme) ? raw.theme : 'auto',
     kochOrder: ORDERS.includes(raw.kochOrder) ? raw.kochOrder : 'lcwo',
     kochThreshold: clamp(raw.kochThreshold, 0.6, 1),
     sessionLength: Math.round(clamp(raw.sessionLength, 5, 100)),
