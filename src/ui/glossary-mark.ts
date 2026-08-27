@@ -63,6 +63,23 @@ export function createGlossaryMarker(root: HTMLElement, openAt: (key: string) =>
     }
   };
 
+  /**
+   * Vrai si l'élément dispose ses enfants en flex ou en grille.
+   *
+   * C'est la seule question que le marquage doit poser à la mise en page, et
+   * elle est mesurée une fois par parent : `getComputedStyle` sur chaque nœud
+   * de texte d'une longue page coûterait cher pour rien.
+   */
+  const arranged = new WeakMap<Element, boolean>();
+  const arrangesChildren = (element: Element): boolean => {
+    const known = arranged.get(element);
+    if (known !== undefined) return known;
+    const display = getComputedStyle(element).display;
+    const value = display.endsWith('flex') || display.endsWith('grid');
+    arranged.set(element, value);
+    return value;
+  };
+
   const decorate = (text: Text, seen: SeenTerms, loaded: GlossaryIndex): void => {
     const matches = loaded.match(text.data, seen);
     if (matches.length === 0) return;
@@ -83,6 +100,17 @@ export function createGlossaryMarker(root: HTMLElement, openAt: (key: string) =>
       cursor = match.end;
     }
     if (cursor < source.length) fragment.append(source.slice(cursor));
+
+    // Dans un conteneur flex ou en grille, le nœud de texte formait un seul
+    // élément ; le découper en trois en ferait trois, et la mise en page
+    // jetterait les espaces qui les séparent — « 20 WPM caractères » devenant
+    // « 20WPMcaractères ». On lui rend donc un unique élément, à l'intérieur
+    // duquel le texte se compose normalement.
+    const parent = text.parentElement;
+    if (parent && arrangesChildren(parent)) {
+      text.replaceWith(h('span', { class: 'terme-suite' }, fragment));
+      return;
+    }
     text.replaceWith(fragment);
   };
 

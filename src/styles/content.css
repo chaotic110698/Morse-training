@@ -2394,6 +2394,14 @@
    Le soulignement pointillé signale un mot cliquable sans le faire passer pour
    un lien : la définition s'ouvre par-dessus, la page reste où elle est. */
 
+/* Le fourreau posé autour d'un texte marqué qui se trouvait dans un conteneur
+   flex ou en grille : il rend au texte l'élément unique qu'il formait, sans
+   quoi les espaces autour du mot repéré disparaîtraient. */
+.terme-suite {
+  display: inline;
+  min-width: 0;
+}
+
 .terme {
   padding: 0;
   background: none;
