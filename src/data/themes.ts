@@ -134,7 +134,21 @@ export const THEMES: ThemeDef[] = [
     light: 'tube',
     swatch: ['#eceae3', '#e5e3db', '#24242a', '#17171a'],
     period: true,
-    years: [1950, 2100],
+    // Sans années : aucun épisode ne se passe dans un bureau de téléscripteurs,
+    // et l'habit du grand large lui a pris l'intervalle.
+  },
+  {
+    id: 'cabine-radio',
+    name: 'Cabine radio',
+    blurb: 'Quatre mètres carrés d’acier sous la passerelle, une lampe de table et des cadrans qui luisent en veille.',
+    lightness: 'sombre',
+    bar: '#0d1214',
+    light: 'filament',
+    swatch: ['#0d1214', '#1d272b', '#5fc9d8', '#dfe8ea'],
+    // Ni empattements : à partir des années soixante, le matériel de bord et
+    // ses étiquettes sont en linéales. Georgia y serait un anachronisme.
+    period: false,
+    years: [1950, 1999],
   },
   {
     id: 'neon',

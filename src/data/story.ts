@@ -1757,6 +1757,673 @@ const LES_SANGLOTS_LONGS: Episode = {
   ],
 };
 
+/**
+ * Génération V — Modéré Duguet, né en 1943, officier radio puis opérateur
+ * de station côtière.
+ *
+ * C’est la génération qui assiste à la fin de son propre métier. Le fil des
+ * quatre épisodes est celui-là : un homme qui apprend un savoir-faire dont
+ * personne, lui compris, ne sait encore qu’il sera le dernier à l’exercer.
+ * Rien de tragique là-dedans — ce qui remplace le morse en mer sauve plus de
+ * vies que lui. C’est seulement la fin de quelque chose.
+ */
+
+const SEPT_KILOMETRES: Episode = {
+  id: 'sept-kilometres',
+  generation: 5,
+  year: 1960,
+  title: 'Sept kilomètres',
+  summary: 'Pourquoi votre père sursaute quand une voiture ralentit dans la rue.',
+  optional: true,
+  sound: { timbre: 'pur', snrDb: 20 },
+  beats: [
+    {
+      kind: 'recit',
+      text: [
+        'Vous avez dix-sept ans et vous avez remarqué la chose depuis longtemps.',
+        'Quand une voiture ralentit devant la maison, votre père s’arrête. Pas ' +
+          'longtemps — une seconde, peut-être deux. Il repose ce qu’il tient, il ' +
+          'écoute, et il reprend. Il ne s’en aperçoit pas. Votre mère si, et elle ' +
+          'ne dit rien.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Ce soir-là vous demandez.',
+        'Il ne répond pas tout de suite. Il finit son verre, il regarde la fenêtre, ' +
+          'et il vous dit de vous asseoir — ce qu’il n’a jamais fait pour vous parler.',
+      ],
+      speaker: '{prenom}',
+    },
+    {
+      kind: 'recit',
+      text: [
+        '« Entre 1941 et 1944, j’ai porté une valise de douze kilos. »',
+        '« Dedans : un émetteur, un récepteur, un manipulateur, des quartz. Je ' +
+          'changeais d’adresse toutes les trois semaines. J’émettais cinq minutes, ' +
+          'jamais plus, parce qu’au-delà on vous relève. »',
+        '« Ils avaient des camionnettes avec un cadre qui tourne. Deux relevés, deux ' +
+          'droites, et les droites se croisent sur un immeuble. Ensuite ils montent ' +
+          'les étages avec des appareils portatifs. »',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Vous lui demandez comment on tient trois ans à ce régime.',
+        '« On ne tient pas. On a de la chance, ou on n’en a pas. Ceux qui n’en ont ' +
+          'pas eu, je ne les ai pour la plupart jamais rencontrés — on ne se voyait ' +
+          'pas. Je connaissais leur main, pas leur visage. »',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Il vous raconte la nuit du 5 juin.',
+        'Les vers de Verlaine, la bicyclette, sept kilomètres dans le noir pour ' +
+          'rejoindre une valise cachée sous un plancher. Puis quarante minutes en ' +
+          'l’air, quand il n’en avait jamais fait plus de cinq, parce que cette ' +
+          'nuit-là la France entière émettait en même temps et qu’on ne relève pas ' +
+          'trois cents postes.',
+        '« C’est la seule fois où j’ai fait le métier de mon père. »',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Vous demandez ce que faisait son père.',
+        'Il se lève, il ouvre un tiroir, et il pose sur la table un manipulateur ' +
+          'droit à socle de laiton, lourd, dont le contact est usé jusqu’au creux.',
+        '« Celui-ci a servi à ouvrir la ligne de Brest en 1855. Ton arrière-arrière-' +
+          'grand-père s’appelait comme toi. Le sine de la famille se lit sur deux ' +
+          'lettres et il n’a jamais changé de seconde lettre en cent seize ans. »',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Vous passez la soirée à apprendre les vingt-six lettres.',
+        'Il vous prévient que ce sera long, que la reconnaissance à l’oreille n’a ' +
+          'rien à voir avec le déchiffrage sur le papier, et qu’il ne faut jamais ' +
+          'ralentir les caractères. Vous les tenez avant l’été.',
+        'En septembre vous vous inscrivez à l’école des officiers radio. Personne ' +
+          'dans la maison ne dit à voix haute que cela fait cinq.',
+      ],
+    },
+  ],
+};
+
+const LE_QUART: Episode = {
+  id: 'le-quart',
+  generation: 5,
+  year: 1965,
+  title: 'Le quart',
+  summary: 'Seul dans une cabine, à écouter une fréquence où il ne se passe rien.',
+  sound: { timbre: 'pur', snrDb: 16 },
+  beats: [
+    {
+      kind: 'recit',
+      text: [
+        'Le cargo fait cent trente-cinq mètres et vous êtes le seul à bord à savoir ' +
+          'lire ce que la mer raconte autour de lui.',
+        'La cabine radio tient dans quatre mètres carrés, sous la passerelle. Un ' +
+          'récepteur principal, un récepteur de veille, un émetteur, une machine à ' +
+          'écrire, un manipulateur, et une pendule dont le cadran porte deux secteurs ' +
+          'peints en rouge.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Les deux secteurs rouges vont de la quinzième à la dix-huitième minute, et ' +
+          'de la quarante-cinquième à la quarante-huitième.',
+        'Vous y reviendrez. Pour l’instant il faut comprendre ce qu’est le 500.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Cinq cents kilohertz est la fréquence internationale de détresse et d’appel.',
+        'Tous les navires du monde y veillent. On s’y appelle, puis on se déroute ' +
+          'ailleurs pour la conversation, parce qu’il faut la laisser libre. Une ' +
+          'fréquence encombrée ne sert à rien à celui qui coule.',
+        'C’est une bande longue, qui contourne l’horizon et porte loin la nuit. Le ' +
+          'métier tient en un mot : rester dessus.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Le second récepteur ne sert qu’à une chose : entendre douze traits.',
+        'Douze traits de quatre secondes, séparés par une seconde. Aucun signal ' +
+          'naturel ne ressemble à cela, et aucun trafic ordinaire non plus. Un ' +
+          'appareil peut donc le reconnaître tout seul, et sonner une cloche dans la ' +
+          'cabine du radio endormi.',
+        'On appelle ça le signal d’alarme automatique. Il précède le SOS pour ' +
+          'réveiller les navires dont l’opérateur n’est pas à son poste.',
+      ],
+    },
+    {
+      kind: 'receive',
+      text: 'CQ DE FFU QTC 3 QSW 454 K',
+      from: 'Une station côtière',
+      wpm: 22,
+      note: 'QTC 3 : trois télégrammes en attente. QSW 454 : je transmettrai sur 454 kHz.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Ceci est une liste de trafic, et c’est le pain quotidien.',
+        'Quatre fois par jour, chaque station côtière appelle en aveugle et énumère ' +
+          'les navires pour lesquels elle détient un message. On écoute la liste ; si ' +
+          'son indicatif y figure, on répond et on va chercher. Sinon, on se tait.',
+        'Ce jour-là votre indicatif n’y est pas. Vous accusez quand même : la station ' +
+          'a demandé un accusé général.',
+      ],
+    },
+    {
+      kind: 'send',
+      text: 'FFU DE {sine} R QRU',
+      to: 'La station côtière',
+      hint: 'R pour reçu, QRU pour rien à vous transmettre. Deux mots, cinq secondes.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Puis la pendule entre dans le premier secteur rouge.',
+        'De la quinzième à la dix-huitième minute, plus personne n’a le droit ' +
+          'd’émettre sur 500 kHz. Tout le monde se tait, et tout le monde écoute. ' +
+          'Trois minutes, deux fois par heure, quarante-huit fois par jour, sur ' +
+          'toutes les mers du globe en même temps.',
+      ],
+    },
+    {
+      kind: 'silence',
+      seconds: 12,
+      text: 'Période de silence. La bande est vide, et c’est exactement le but.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Il ne se passe rien, et il ne s’est rien passé la fois d’avant.',
+        'C’est le service le plus étrange qu’un métier puisse demander : se taire à ' +
+          'heure fixe pour que le plus faible des signaux ait une chance d’être ' +
+          'entendu. Vous le ferez des milliers de fois. Il servira peut-être une.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Le reste du quart est du commerce.',
+        'Le commandant veut prévenir l’armateur de l’heure d’arrivée ; un mécanicien ' +
+          'veut annoncer une naissance ; le commissaire commande des vivres. Vous ' +
+          'facturez au mot, vous inscrivez tout sur un registre, et vous transmettez.',
+      ],
+    },
+    {
+      kind: 'send',
+      text: 'FFU DE {sine} QTC 1 ARRIVEE LE HAVRE LE 14 A 0600 TOUT VA BIEN A BORD',
+      to: 'La station côtière',
+      hint:
+        'Le premier télégramme que vous facturez de votre vie. Douze mots, et une ' +
+        'famille au Havre qui saura demain matin.',
+    },
+    {
+      kind: 'receive',
+      text: 'R QSL DE FFU 73 OM',
+      from: 'La station côtière',
+      wpm: 22,
+      note: '73 : mes amitiés. On se les envoie depuis le siècle dernier.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Vous avez vingt-deux ans et vous venez de comprendre quelque chose.',
+        'Votre arrière-grand-père signalait des trains sur une ligne fixe. Votre ' +
+          'grand-père copiait l’ennemi dans une tour. Votre père émettait cinq ' +
+          'minutes et fuyait. Vous, vous facturez au mot et vous vous taisez trois ' +
+          'minutes deux fois par heure.',
+        'Le geste est le même. C’est le seul métier de la famille où personne ne ' +
+          'risque rien, et cela vous paraît un progrès considérable.',
+      ],
+    },
+    {
+      kind: 'epilogue',
+      text: [
+        'Les périodes de silence sur 500 kHz sont authentiques : de la quinzième à ' +
+          'la dix-huitième minute et de la quarante-cinquième à la quarante-huitième ' +
+          'de chaque heure, l’émission y était interdite pour laisser passer les ' +
+          'appels de détresse. Les cadrans des pendules de cabine radio portaient ces ' +
+          'secteurs peints en rouge.',
+        'Le signal d’alarme automatique — douze traits de quatre secondes séparés ' +
+          'par une seconde — existait bien, et déclenchait un avertisseur à bord des ' +
+          'navires dont l’opérateur n’était pas de quart.',
+        'Les listes de trafic, l’appel en aveugle des stations côtières et la ' +
+          'facturation au mot sont exacts. Le navire et le voyage sont inventés, les ' +
+          '{nom} aussi.',
+      ],
+    },
+  ],
+};
+
+const LES_TROIS_MINUTES: Episode = {
+  id: 'les-trois-minutes',
+  generation: 5,
+  year: 1972,
+  title: 'Les trois minutes',
+  summary: 'Sept ans de silences pour rien. Puis un, où il y a quelque chose.',
+  sound: { timbre: 'pur', snrDb: 12 },
+  beats: [
+    {
+      kind: 'recit',
+      text: [
+        'Sept ans. Vous ne comptez plus les périodes de silence.',
+        'On vous a dit à l’école qu’il fallait les tenir religieusement, et vous les ' +
+          'tenez, comme on continue à fermer une porte à clef dans un village où ' +
+          'personne ne vole rien. La main s’arrête à la quinzième minute sans que la ' +
+          'tête ait besoin d’y penser.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Cette nuit-là vous êtes au milieu de l’Atlantique nord, en février.',
+        'La propagation est excellente — c’est l’hiver, il fait nuit, et les ondes ' +
+          'longues contournent la terre. Vous entendez des stations que vous ' +
+          'n’entendez jamais. Une pendule marque la quarante-cinquième minute.',
+      ],
+    },
+    {
+      kind: 'silence',
+      seconds: 14,
+      text: 'Vous levez la main du manipulateur. Trois minutes.',
+    },
+    {
+      kind: 'receive',
+      text: 'SOS SOS SOS DE FNRT FNRT FNRT',
+      from: 'Très loin, très faible',
+      wpm: 16,
+      sound: { snrDb: 3 },
+      note:
+        'Le signal est au ras du bruit. Sans les trois minutes de silence, vous ne ' +
+        'l’auriez pas entendu — et personne d’autre non plus.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Votre première réaction est de répondre. C’est la mauvaise.',
+        'La règle est stricte et elle est bonne : celui qui entend un SOS ne répond ' +
+          'pas tout de suite. Il écoute. Une station côtière ou un navire proche va ' +
+          'prendre l’appel, et si trois navires répondent en même temps, personne ne ' +
+          'comprend plus rien et le naufragé n’a plus de fréquence.',
+        'Vous avez la main à dix centimètres du manipulateur et vous ne la posez pas.',
+      ],
+    },
+    {
+      kind: 'receive',
+      text: 'SOS DE FNRT 4612 N 00840 W CALE AVANT ENVAHIE 11 A BORD',
+      from: 'FNRT',
+      wpm: 16,
+      sound: { snrDb: 4 },
+      note: 'Position, nature de l’avarie, nombre d’hommes. Dans cet ordre, toujours.',
+    },
+    {
+      kind: 'silence',
+      seconds: 10,
+      text: 'Vous attendez qu’une station côtière prenne l’appel.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Personne ne répond.',
+        'Vous relevez la position sur la carte : il est à quatre cents milles de la ' +
+          'côte la plus proche, en pleine nuit, et son émetteur est manifestement sur ' +
+          'batteries. Les stations côtières ne l’entendent pas. Les navires proches, ' +
+          's’il y en a, ne l’entendent pas non plus.',
+        'Vous l’entendez, vous, parce qu’il est trois heures quarante-six du matin en ' +
+          'février et que la bande était vide.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'À partir de maintenant vous n’êtes plus un témoin.',
+        'La procédure a un nom : le relais de détresse. Un navire qui a entendu un ' +
+          'SOS auquel personne n’a répondu doit le retransmettre lui-même, avec la ' +
+          'position, en indiquant clairement qu’il relaie et qu’il n’est pas le ' +
+          'navire en détresse.',
+        'Vous avez le droit d’écraser tout le trafic de la bande pour le faire. C’est ' +
+          'même une obligation.',
+      ],
+    },
+    {
+      kind: 'send',
+      text: 'SOS RELAY DE {sine} FNRT 4612 N 00840 W CALE AVANT ENVAHIE 11 A BORD',
+      to: 'À tous',
+      hint:
+        'RELAY, pour que personne ne croie que c’est vous qui coulez. Puis sa ' +
+        'position, mot pour mot, sans rien y ajouter.',
+    },
+    {
+      kind: 'receive',
+      text: 'R SOS RELAY QSL DE FFU QRT ALL',
+      from: 'Une station côtière',
+      wpm: 22,
+      note: 'QRT ALL : que tout le monde cesse d’émettre. La bande vient d’être fermée.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Le reste ne vous appartient plus.',
+        'La station côtière prend la direction des opérations, appelle les navires ' +
+          'de la zone, déroute le plus proche. Vous continuez votre route, parce que ' +
+          'vous êtes à onze heures de là et que vous ne serviriez à rien.',
+        'On vous demande seulement de rester à l’écoute. Vous restez huit heures.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'À midi, un cargo norvégien récupère onze hommes dans un canot.',
+        'Vous l’apprenez par une liste de trafic ordinaire, entre un avis de tempête ' +
+          'et un télégramme commercial, et personne à bord de votre navire ne sait ' +
+          'ce qui s’est passé cette nuit sauf le commandant, qui vous serre la main ' +
+          'sans rien dire.',
+        'Vous avez tenu peut-être quatre mille périodes de silence. Celle-là a servi.',
+      ],
+    },
+    {
+      kind: 'epilogue',
+      text: [
+        'La procédure de relais de détresse est authentique dans tous ses détails : ' +
+          'ne pas répondre immédiatement, laisser une station mieux placée prendre ' +
+          'l’appel, et relayer soi-même seulement si personne ne l’a fait — en ' +
+          'signalant explicitement qu’on relaie.',
+        'La propagation des ondes longues la nuit en hiver est réelle, et c’est bien ' +
+          'elle qui rendait ces sauvetages à très longue distance possibles. Le ' +
+          'silence imposé deux fois par heure existait précisément pour donner une ' +
+          'chance aux signaux faibles.',
+        'Le navire FNRT, son naufrage et le cargo norvégien sont inventés. Des ' +
+          'sauvetages de ce type, déclenchés par un opérateur qui a entendu pendant ' +
+          'une période de silence ce que personne d’autre n’entendait, il y en a eu ' +
+          'beaucoup. Les {nom} restent inventés.',
+      ],
+    },
+  ],
+};
+
+const NOTRE_DERNIER_CRI: Episode = {
+  id: 'notre-dernier-cri',
+  generation: 5,
+  year: 1997,
+  title: 'Notre dernier cri',
+  summary: 'La dernière station côtière française ferme sa veille en morse.',
+  sound: { timbre: 'pur', snrDb: 18 },
+  beats: [
+    {
+      kind: 'recit',
+      text: [
+        'Vous avez cinquante-quatre ans et vous êtes à terre depuis 1981.',
+        'Une station côtière, en Bretagne, face à l’ouest. Vous y faites le même ' +
+          'métier que sur le cargo, de l’autre côté : c’est vous, maintenant, qui ' +
+          'appelez en aveugle quatre fois par jour et qui énumérez les navires ayant ' +
+          'du trafic en attente.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Ce qui arrive était annoncé depuis dix ans et vous l’avez vu venir.',
+        'Un navire en détresse n’a plus besoin d’un opérateur qui sache le morse. Il ' +
+          'a une balise qui, jetée à l’eau, émet toute seule vers un satellite en ' +
+          'donnant sa position au mille près. Il a un appel sélectif numérique qui ' +
+          'réveille les navires de la zone sans que personne ait à veiller une ' +
+          'fréquence.',
+        'Ce système sauve davantage de vies que le vôtre. Vous en êtes convaincu, et ' +
+          'cela ne vous console pas.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'La date est fixée au 31 janvier.',
+        'Le matin, tout est ordinaire. On transmet les avis de tempête, on prend les ' +
+          'télégrammes des chalutiers, on répond aux essais. Un vendredi comme les ' +
+          'autres, à ceci près que chacun sait quelle heure il est.',
+      ],
+    },
+    {
+      kind: 'receive',
+      text: 'FFU DE FNGL QTC 1 QRV',
+      from: 'Un chalutier',
+      wpm: 20,
+      note: 'Le trafic ordinaire, jusqu’au bout. Un télégramme à passer, et c’est tout.',
+    },
+    {
+      kind: 'send',
+      text: 'FNGL DE {sine} R QRV K',
+      to: 'Le chalutier',
+      hint: 'Comme les dix mille fois précédentes.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Le texte du dernier message a été écrit à plusieurs, la veille, et discuté.',
+        'Certains voulaient quelque chose de sobre : la station cesse la veille ' +
+          'radiotélégraphique, date, signature. D’autres trouvaient qu’après un ' +
+          'siècle et demi on avait le droit d’une phrase.',
+        'C’est la phrase qui l’a emporté.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'On ne l’adresse à personne en particulier.',
+        'CQ : appel à tous. C’est le premier mot que vous avez appris, celui qu’on ' +
+          'lance quand on ne sait pas qui écoute et qu’on espère que quelqu’un le ' +
+          'fait. Il n’a jamais été aussi exact.',
+      ],
+    },
+    {
+      kind: 'send',
+      text: 'CQ CQ CQ DE FFU APPEL A TOUS CECI EST NOTRE DERNIER CRI AVANT NOTRE SILENCE ETERNEL',
+      to: 'À tous',
+      hint:
+        'Quatre-vingt-trois caractères. Prenez le temps que vous voulez : plus ' +
+        'personne n’attend la fréquence.',
+    },
+    {
+      kind: 'silence',
+      seconds: 16,
+      text: 'Vous levez la main. La salle est pleine et personne ne parle.',
+    },
+    {
+      kind: 'receive',
+      text: 'FFU DE FNGL 73 ET MERCI POUR TOUTES CES ANNEES',
+      from: 'Le chalutier de ce matin',
+      wpm: 20,
+      note: 'Puis d’autres. Des navires, des stations étrangères, des amateurs.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Il en arrive pendant vingt minutes, et vous répondez à chacun.',
+        'Des chalutiers, un pétrolier au large de Gibraltar, une station portugaise, ' +
+          'et beaucoup d’amateurs qui n’avaient rien à faire là mais qui écoutaient ' +
+          'depuis le matin. Certains signent avec des sines que vous connaissez ' +
+          'depuis trente ans sans avoir jamais vu le visage qui va avec.',
+      ],
+    },
+    {
+      kind: 'send',
+      text: 'DE FFU SK',
+      to: 'À tous',
+      hint:
+        'SK. Fin de travail. Ce n’est pas au revoir et ce n’est pas une avarie : ' +
+        'c’est la marque qu’on pose quand il n’y aura plus rien après.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Quelqu’un coupe l’émetteur et le bruit de fond de la salle change.',
+        'On n’avait pas remarqué qu’il y avait un bruit. Un émetteur qui chauffe ' +
+          'depuis des décennies fait une note très basse qu’on n’entend plus, et ' +
+          'quand elle s’arrête la pièce paraît trop grande.',
+        'Vous rentrez chez vous. Sur le buffet, il y a un manipulateur droit à socle ' +
+          'de laiton dont le contact est usé jusqu’au creux.',
+      ],
+    },
+    {
+      kind: 'epilogue',
+      text: [
+        'La France a cessé la veille radiotélégraphique en morse sur ses stations ' +
+          'côtières le 31 janvier 1997, deux ans avant l’échéance internationale. Le ' +
+          'dernier message émis est resté célèbre, et il est rapporté sous une forme ' +
+          'très proche de celle donnée ici : un appel à tous annonçant le dernier cri ' +
+          'avant le silence éternel.',
+        'Ce qui remplace le morse est le SMDSM, système mondial de détresse et de ' +
+          'sécurité en mer : balises de détresse qui émettent vers un satellite, ' +
+          'appel sélectif numérique, télex par satellite. Il ne demande aucune ' +
+          'compétence particulière à l’équipage, ce qui est précisément l’argument, ' +
+          'et il fonctionne quand plus personne n’est en état de manipuler.',
+        'Les navires nommés ici, la salle et les hommes qui s’y trouvent sont ' +
+          'inventés. Les {nom} aussi. Le silence, non.',
+      ],
+    },
+  ],
+};
+
+const SK: Episode = {
+  id: 'sk',
+  generation: 5,
+  year: 1999,
+  title: 'SK',
+  summary: 'Le 31 janvier 1999, le monde entier cesse d’écouter le 500.',
+  sound: { timbre: 'pur', snrDb: 20 },
+  beats: [
+    {
+      kind: 'recit',
+      text: [
+        'Deux ans plus tard, c’est au tour du reste du monde.',
+        'Le 1er février 1999, le SMDSM devient obligatoire pour tous les navires de ' +
+          'commerce. La veille sur 500 kHz cesse partout en même temps. La fréquence ' +
+          'ne sera pas réattribuée : on la laisse vide, par égard, et parce qu’on ne ' +
+          'sait pas quoi en faire.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Vous êtes à la retraite depuis un an et vous avez remonté un poste chez vous.',
+        'Rien d’extraordinaire : un récepteur de surplus, une antenne longue tendue ' +
+          'entre le pignon et un poteau, et le manipulateur de 1855, dont vous avez ' +
+          'seulement refait le ressort. Vous avez passé la licence d’amateur à ' +
+          'cinquante-trois ans, ce qui a beaucoup amusé l’examinateur.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Le dernier soir, vous écoutez le 500 pendant trois heures.',
+        'Il n’y a presque plus rien. Quelques stations d’Europe de l’Est qui n’ont ' +
+          'pas encore basculé, un cargo qui salue, de longs blancs. La bande se vide ' +
+          'comme une gare le dimanche soir.',
+      ],
+    },
+    {
+      kind: 'silence',
+      seconds: 18,
+      text: 'Vingt-trois heures cinquante. Vous n’avez rien entendu depuis onze minutes.',
+    },
+    {
+      kind: 'receive',
+      text: 'CQ CQ DE UFN QRT SK',
+      from: 'Quelque part à l’est',
+      wpm: 18,
+      sound: { snrDb: 6 },
+      note: 'Une station qui s’en va. Elle ne dit pas au revoir, elle pose sa marque.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Puis plus rien du tout, et cette fois ce n’est pas une période de silence.',
+        'Vous restez devant le poste sans bouger. Il y a un an et demi, vous auriez ' +
+          'eu le devoir de relever ce que vous entendiez. Ce soir vous n’avez plus ' +
+          'aucun devoir, et la fréquence la plus écoutée du monde pendant un siècle ' +
+          'ne porte plus que le souffle de l’atmosphère.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Vous pensez à un homme de vingt-trois ans, en 1844, devant une table de cuisine.',
+        'Il ne savait ni ce qu’il apprenait ni pourquoi. Il a écrit son nom dans un ' +
+          'alphabet que la France interdisait encore, parce que la première chose ' +
+          'qu’on écrit dans un alphabet neuf, ce n’est jamais une phrase : c’est son ' +
+          'nom.',
+        'Cent cinquante-cinq ans plus tard, la seconde lettre du sine n’a pas changé.',
+      ],
+    },
+    {
+      kind: 'send',
+      text: 'CQ CQ CQ DE {sine} 1844 1999 CENT CINQUANTE CINQ ANS MERCI A TOUS SK',
+      to: 'À personne, et à tout le monde',
+      hint:
+        'Le manipulateur de 1855, sur une fréquence que plus personne ne veille. ' +
+        'Prenez tout votre temps — il n’y a plus d’horloge.',
+      limit: 0,
+    },
+    {
+      kind: 'silence',
+      seconds: 20,
+      text: 'Vous attendez une réponse que vous n’attendez pas vraiment.',
+    },
+    {
+      kind: 'receive',
+      text: 'R OM 73 SK',
+      from: 'Quelqu’un',
+      wpm: 18,
+      sound: { snrDb: 5 },
+      note:
+        'Vous ne saurez jamais qui. Quelqu’un écoutait une fréquence morte, un ' +
+        'dimanche soir, pour la même raison que vous.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Vous coupez, et vous remettez la housse sur le manipulateur.',
+        'Il a ouvert la ligne de Brest, il a passé quatre-vingt-dix ans dans des ' +
+          'tiroirs, il a servi une fois sous l’Occupation à un homme qui ne l’a jamais ' +
+          'raconté, et il vient de faire sa dernière émission. Le contact est usé ' +
+          'jusqu’au creux et il fonctionne parfaitement.',
+        'Vous avez un fils. Il est ingénieur en réseaux, il trouve tout cela ' +
+          'charmant, et il n’apprendra pas le morse. C’est très bien ainsi : le code ' +
+          'a cessé d’être utile, et il s’est mis à être beau.',
+      ],
+    },
+    {
+      kind: 'epilogue',
+      text: [
+        'Le 1er février 1999, le SMDSM est devenu obligatoire pour les navires ' +
+          'soumis à la convention SOLAS, et la veille radiotélégraphique sur 500 kHz ' +
+          'a cessé. La fréquence n’a pas été réattribuée à un autre service.',
+        'SK — parfois écrit VA — est le signal de fin de travail. Il se manipule ' +
+          'd’un seul tenant, sans espace entre les deux lettres, et il ne veut pas ' +
+          'dire au revoir : il veut dire qu’il n’y aura plus rien après. Les ' +
+          'opérateurs s’en servent encore aujourd’hui, et l’usage veut qu’on dise ' +
+          'd’un radioamateur mort qu’il est « silent key ».',
+        'Le morse n’a pas disparu. Il est interdit nulle part, il ne coûte presque ' +
+          'rien à mettre en œuvre, il passe là où la voix ne passe pas, et des ' +
+          'dizaines de milliers de personnes le pratiquent par goût. Il a seulement ' +
+          'cessé d’être obligatoire, ce qui est arrivé à la plupart des belles choses.',
+        'Les {nom} sont inventés d’un bout à l’autre. Tout le reste — les lignes, les ' +
+          'câbles, les tours, les naufrages, les silences et les dates — a eu lieu.',
+      ],
+    },
+  ],
+};
+
 export const EPISODES: Episode[] = [
   CE_QUE_DIEU_A_FAIT,
   LA_LIGNE,
@@ -1771,4 +2438,9 @@ export const EPISODES: Episode[] = [
   LE_POSTE_A_GALENE,
   CINQ_MINUTES,
   LES_SANGLOTS_LONGS,
+  SEPT_KILOMETRES,
+  LE_QUART,
+  LES_TROIS_MINUTES,
+  NOTRE_DERNIER_CRI,
+  SK,
 ];

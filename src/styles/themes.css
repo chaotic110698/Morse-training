@@ -276,6 +276,50 @@
   --radius-lg: 0;
 }
 
+/* --- Cabine radio — 1950 à 1999 --------------------------------------------
+ *
+ * La cabine du radio, sous la passerelle : de la tôle peinte, une lampe de
+ * table et des cadrans rétroéclairés. C'est le seul habit franchement froid de
+ * la série — après-guerre, le matériel de bord cesse d'être en bois et en
+ * laiton pour devenir gris.
+ *
+ * L'accent est le blanc-bleu d'un cadran en veille. Le juste passe donc à un
+ * vert franchement jaune, pour qu'aucune lueur claire ne se confonde avec une
+ * autre.
+ */
+
+:root[data-theme='cabine-radio'] {
+  --bg: #0d1214;
+  --bg-elevated: #131a1d;
+  --surface: #161e21;
+  --surface-2: #1d272b;
+  --surface-3: #273336;
+  --border: #2a3639;
+  --border-strong: #3e4d51;
+
+  --text: #dfe8ea;
+  --text-muted: #93a5a9;
+  --text-faint: #83959a;
+
+  --accent: #5fc9d8;
+  --accent-soft: #5fc9d81f;
+  --accent-text: #04161a;
+
+  --ok: #8ec45f;
+  --ok-soft: #8ec45f1f;
+  --error: #f0605f;
+  --error-soft: #f0605f1f;
+
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 10px 28px rgb(0 0 0 / 0.4);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.45);
+  --lamp-glow: 0 0 8px 2px var(--accent), 0 0 28px 8px #5fc9d84d;
+
+  /* Des panneaux vissés, pas des cartes : le coin est franc sans être coupant. */
+  --radius-sm: 2px;
+  --radius: 3px;
+  --radius-lg: 4px;
+}
+
 /* --- Néon 2087 — hors du temps -------------------------------------------
  *
  * Celui-ci ne prétend à aucune époque : c'est un habit pour le plaisir.

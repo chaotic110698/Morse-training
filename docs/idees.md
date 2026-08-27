@@ -264,16 +264,29 @@ le sommaire, le lecteur temps par temps, la sauvegarde JSON du bandeau, la
 réception avec sa table de déchiffrage, son mode « lettre suivante » et ses
 `QRS` / `AGN`, l'émission avec son retour vert et rouge et son effacement en
 `HH`, les manipulateurs réels branchés sur le message attendu, le grain de
-chaque époque à la lecture comme sous la main, et treize épisodes couvrant les
-générations I à IV.
+chaque époque à la lecture comme sous la main, l'habit de chaque époque, et
+**les dix-huit épisodes des cinq générations, de 1844 à 1999**.
 
-**Reste à écrire.** La génération V, de 1965 à 1999 : *Le quart*, *Les trois
-minutes*, *Notre dernier cri* (1997), *SK* (1999), et son « Entre les ondes ».
+Le récit est complet. La génération V — *Sept kilomètres* (1960), *Le quart*
+(1965), *Les trois minutes* (1972), *Notre dernier cri* (1997), *SK* (1999) —
+raconte la fin du métier : les périodes de silence sur 500 kHz, un relais de
+détresse entendu parce que la bande était vide, la dernière émission d'une
+station côtière française le 31 janvier 1997, et l'extinction mondiale du
+1er février 1999.
 
 **Reste à faire, plus petit.**
 
 - Les faits listés plus haut sous « À vérifier avant d'écrire » ne sont pas
-  tous vérifiés : ils tiennent lieu de décor, pas de source.
+  tous vérifiés : ils tiennent lieu de décor, pas de source. **Le point le plus
+  exposé de la génération V** est le texte exact du dernier message d'Ouessant
+  Radio, le 31 janvier 1997. Il est célèbre et rapporté partout sous une forme
+  très proche de celle employée dans l'épisode — un appel à tous annonçant le
+  dernier cri avant le silence éternel — mais je n'ai pas pu remonter à une
+  source primaire depuis cet environnement. La date, elle, est solide.
+- Le trait `period` fait deux choses à la fois : il commande les empattements
+  *et* le ternissement des émojis. « Cabine radio » voudrait le second sans le
+  premier — une linéale convient à 1965, pas Georgia. En attendant qu'on sépare
+  les deux traits, l'habit renonce aux deux.
 - Le dépassement du temps d'antenne — le compteur qui passe au rouge — n'est
   couvert par aucun essai.
 
