@@ -10,6 +10,11 @@ export type Waveform = 'sine' | 'square' | 'triangle' | 'sawtooth';
  */
 export type Theme = 'auto' | string;
 export type KochOrderId = 'lcwo' | 'classic' | 'alphabetical';
+/**
+ * La force de l'ambiance : la lumière de la pièce que déclare l'habit. Sans
+ * effet sur les habits qui n'ont pas de source.
+ */
+export type Ambience = 'aucune' | 'discrete' | 'marquee';
 
 export interface Settings {
   /** Vitesse des caractères, en mots par minute. */
@@ -71,6 +76,8 @@ export interface Settings {
   themeFollowsSystem: boolean;
   /** Employer les empattements des habits d'époque. */
   periodFont: boolean;
+  /** Force de la lumière de la pièce. */
+  ambience: Ambience;
   /**
    * Indicatif fictif adopté par l'opérateur. Sert d'exemple d'entraînement, il
    * n'a aucune valeur officielle et ne doit pas être émis sur l'air.
@@ -116,6 +123,7 @@ export const DEFAULT_SETTINGS: Settings = {
   theme: 'auto',
   themeFollowsSystem: false,
   periodFont: true,
+  ambience: 'discrete',
   callsign: '',
   kochOrder: 'lcwo',
   kochThreshold: 0.9,
@@ -125,6 +133,7 @@ export const DEFAULT_SETTINGS: Settings = {
 
 const WAVEFORMS: Waveform[] = ['sine', 'square', 'triangle', 'sawtooth'];
 const ORDERS: KochOrderId[] = ['lcwo', 'classic', 'alphabetical'];
+const AMBIENCES: Ambience[] = ['aucune', 'discrete', 'marquee'];
 
 const clamp = (value: number, min: number, max: number): number =>
   Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : min;
@@ -151,6 +160,7 @@ export function normalizeSettings(input: Partial<Settings> | null | undefined): 
     // Un habit inconnu — supprimé depuis, ou jamais existé — retombe sur le
     // suivi du système plutôt que de laisser la racine sans palette.
     theme: raw.theme === 'auto' || isKnownTheme(raw.theme) ? raw.theme : 'auto',
+    ambience: AMBIENCES.includes(raw.ambience) ? raw.ambience : 'discrete',
     kochOrder: ORDERS.includes(raw.kochOrder) ? raw.kochOrder : 'lcwo',
     kochThreshold: clamp(raw.kochThreshold, 0.6, 1),
     sessionLength: Math.round(clamp(raw.sessionLength, 5, 100)),

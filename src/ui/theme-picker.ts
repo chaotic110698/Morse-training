@@ -12,8 +12,17 @@
  */
 
 import { field, h } from './dom.ts';
-import { resolveThemeId, THEMES, themeById } from '../data/themes.ts';
+import { resolveThemeId, THEMES, themeById, type LightSource } from '../data/themes.ts';
 import type { AppStore } from '../core/store.ts';
+import type { Ambience } from '../core/settings.ts';
+
+/** Ce que chaque source éclaire, dit en une phrase sous le réglage. */
+const LIGHT_BLURB: Record<Exclude<LightSource, 'aucune'>, string> = {
+  fenetre: 'Le jour entre par la gauche et dérive lentement, comme un ciel où passent des nuages.',
+  bougie: 'Une flamme ne respire pas régulièrement : elle saute, et la lumière penche avec elle.',
+  filament: 'L’ampoule est bien plus stable qu’une flamme, mais le réseau lui fait de loin en loin un petit creux.',
+  tube: 'Un néon de bureau est parfaitement égal, sauf deux fois par minute.',
+};
 
 export interface ThemePickerOptions {
   store: AppStore;
@@ -146,6 +155,33 @@ export function createThemeOptions(store: AppStore): HTMLElement[] {
           store.updateSettings({ themeFollowsSystem: value }),
         ),
         `Bascule entre « ${theme.name} » et « ${twin.name} » selon que votre appareil est réglé en clair ou en sombre.`,
+      ),
+    );
+  }
+
+  if (theme && theme.light !== 'aucune') {
+    rows.push(
+      field(
+        'Ambiance',
+        h(
+          'div',
+          { class: 'segmented', attrs: { role: 'group', 'aria-label': 'Force de l’ambiance' } },
+          ...(
+            [
+              ['aucune', 'Aucune'],
+              ['discrete', 'Discrète'],
+              ['marquee', 'Marquée'],
+            ] as Array<[Ambience, string]>
+          ).map(([value, label]) =>
+            h('button', {
+              class: `segmented__item${store.settings.ambience === value ? ' is-active' : ''}`,
+              type: 'button',
+              text: label,
+              on: { click: () => store.updateSettings({ ambience: value }) },
+            }),
+          ),
+        ),
+        `${LIGHT_BLURB[theme.light]} Le vacillement s’arrête de lui-même si votre appareil demande moins d’animation.`,
       ),
     );
   }

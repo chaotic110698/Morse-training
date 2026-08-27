@@ -1,0 +1,168 @@
+/*
+ * L'ambiance : la lumière de la pièce.
+ *
+ * Chaque habit déclare sa source dans le registre, la coquille la pose en
+ * `data-lumiere` sur la racine, et les règles ci-dessous s'y accrochent. Un
+ * habit ajouté plus tard qui dit `bougie` héritera de cette lampe sans qu'on
+ * écrive une ligne.
+ *
+ * Deux couches emboîtées, et c'est volontaire :
+ *
+ *   .ambiance         force réglée par le joueur — une opacité fixe
+ *   .ambiance__lueur  la lumière elle-même — la teinte, et le vacillement
+ *
+ * Les deux opacités se multiplient. Sans cette séparation, le réglage de force
+ * et l'animation se disputeraient la même propriété.
+ *
+ * Sur l'innocuité : tout ce qui bouge ici est l'opacité d'un dégradé déjà
+ * très transparent. L'écart de luminance le plus grand — le clignotement du
+ * tube — reste sous les trois pour cent de l'écran, loin des seuils qui
+ * gênent les personnes photosensibles. Et le mouvement s'arrête entièrement
+ * dès que le système demande moins d'animation : la teinte reste, le
+ * vacillement s'en va.
+ */
+
+.ambiance {
+  position: fixed;
+  inset: 0;
+  /* Au-dessus des pages et des panneaux — la lumière tombe sur tout ce qui est
+     dans la pièce — mais sous l'écran de lecture visuelle, qui est un signal
+     et non un décor, et sous le lien d'évitement. */
+  z-index: 80;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+
+:root[data-lumiere][data-ambiance='discrete'] .ambiance { opacity: 0.62; }
+:root[data-lumiere][data-ambiance='marquee'] .ambiance { opacity: 1; }
+
+.ambiance__lueur {
+  position: absolute;
+  inset: -6%;
+  opacity: 1;
+  will-change: opacity, transform;
+}
+
+/* --- La fenêtre ------------------------------------------------------------
+ *
+ * Le jour qui entre par la gauche : une nappe claire d'un côté, l'ombre qui
+ * s'épaissit dans les coins opposés, et la dérive très lente d'un ciel où
+ * passent des nuages.
+ */
+
+:root[data-lumiere='fenetre'] .ambiance__lueur {
+  background:
+    radial-gradient(115% 85% at 8% -12%, rgb(255 249 231 / 0.62), transparent 58%),
+    radial-gradient(125% 115% at 78% 108%, rgb(72 58 34 / 0.16), transparent 62%);
+  animation: ambiance-fenetre 46s ease-in-out infinite;
+}
+
+@keyframes ambiance-fenetre {
+  0%, 100% { opacity: 0.86; transform: translate3d(0, 0, 0); }
+  33% { opacity: 1; transform: translate3d(0.7%, -0.4%, 0); }
+  61% { opacity: 0.78; transform: translate3d(-0.5%, 0.3%, 0); }
+}
+
+/* --- La lampe à huile ------------------------------------------------------
+ *
+ * Une flamme ne respire pas régulièrement : elle saute. Les étapes sont donc
+ * volontairement inégales, et la lumière penche un peu en même temps qu'elle
+ * faiblit, comme si l'air passait.
+ */
+
+:root[data-lumiere='bougie'] .ambiance__lueur {
+  background:
+    radial-gradient(85% 65% at 50% 96%, rgb(255 182 92 / 0.30), transparent 62%),
+    radial-gradient(130% 120% at 50% -20%, rgb(8 4 0 / 0.34), transparent 68%);
+  animation: ambiance-bougie 6.5s ease-in-out infinite;
+}
+
+@keyframes ambiance-bougie {
+  0% { opacity: 0.92; transform: translate3d(0, 0, 0); }
+  7% { opacity: 1; transform: translate3d(0.3%, -0.2%, 0); }
+  13% { opacity: 0.86; transform: translate3d(-0.2%, 0.1%, 0); }
+  21% { opacity: 0.97; transform: translate3d(0.1%, 0, 0); }
+  28% { opacity: 0.80; transform: translate3d(-0.4%, 0.2%, 0); }
+  33% { opacity: 0.94; transform: translate3d(0.2%, -0.1%, 0); }
+  44% { opacity: 0.88; transform: translate3d(-0.1%, 0.1%, 0); }
+  52% { opacity: 1; transform: translate3d(0.3%, -0.2%, 0); }
+  59% { opacity: 0.83; transform: translate3d(-0.3%, 0.2%, 0); }
+  67% { opacity: 0.96; transform: translate3d(0.1%, 0, 0); }
+  76% { opacity: 0.89; transform: translate3d(-0.2%, 0.1%, 0); }
+  84% { opacity: 1; transform: translate3d(0.2%, -0.1%, 0); }
+  91% { opacity: 0.85; transform: translate3d(-0.1%, 0.1%, 0); }
+  100% { opacity: 0.92; transform: translate3d(0, 0, 0); }
+}
+
+/* --- Le filament -----------------------------------------------------------
+ *
+ * L'ampoule électrique est bien plus stable qu'une flamme : elle respire
+ * lentement, et le réseau lui fait de loin en loin un petit creux.
+ */
+
+:root[data-lumiere='filament'] .ambiance__lueur {
+  background:
+    radial-gradient(95% 75% at 50% -18%, rgb(255 208 138 / 0.26), transparent 64%),
+    radial-gradient(135% 125% at 50% 118%, rgb(6 5 0 / 0.30), transparent 66%);
+  animation: ambiance-filament 9s ease-in-out infinite;
+}
+
+@keyframes ambiance-filament {
+  0%, 100% { opacity: 1; }
+  34% { opacity: 0.93; }
+  47% { opacity: 0.97; }
+  50% { opacity: 0.80; }
+  53% { opacity: 0.96; }
+  72% { opacity: 0.90; }
+}
+
+/* --- Le tube ---------------------------------------------------------------
+ *
+ * Un néon de bureau est parfaitement égal, sauf quand il ne l'est pas. Le
+ * papillotement est bref et rare — deux creux en douze secondes — parce que
+ * c'est ainsi qu'il se remarque sans fatiguer.
+ */
+
+:root[data-lumiere='tube'] .ambiance__lueur {
+  background:
+    linear-gradient(180deg, rgb(226 240 255 / 0.40), transparent 48%),
+    radial-gradient(130% 120% at 50% 112%, rgb(40 48 60 / 0.13), transparent 64%);
+  animation: ambiance-tube 12s linear infinite;
+}
+
+@keyframes ambiance-tube {
+  0%, 94%, 100% { opacity: 1; }
+  94.6% { opacity: 0.74; }
+  95.4% { opacity: 1; }
+  96.4% { opacity: 0.82; }
+  97.2% { opacity: 1; }
+}
+
+/* --- Quand on demande moins de mouvement -----------------------------------
+ *
+ * On garde la teinte, qui fait partie de l'habit, et on retire le vacillement,
+ * qui n'en est que l'agrément.
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  .ambiance { transition: none; }
+
+  /* La spécificité doit égaler celle des règles qui allument le vacillement,
+     sinon l'arrêt ne prend pas : `.ambiance__lueur` seul perd contre
+     `:root[data-lumiere] .ambiance__lueur`. */
+  :root[data-lumiere] .ambiance__lueur {
+    animation: none;
+    opacity: 1;
+  }
+
+  /* On ne touche pas au repos de `.ambiance` : un habit sans source doit
+     rester éteint ici comme ailleurs. */
+  :root[data-lumiere][data-ambiance='discrete'] .ambiance { opacity: 0.55; }
+  :root[data-lumiere][data-ambiance='marquee'] .ambiance { opacity: 0.85; }
+}
+
+/* La lumière n'a rien à faire sur une page imprimée. */
+@media print {
+  .ambiance { display: none; }
+}

@@ -199,6 +199,7 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
 
     if (theme.light === 'aucune') delete root.dataset['lumiere'];
     else root.dataset['lumiere'] = theme.light;
+    root.dataset['ambiance'] = store.settings.ambience;
 
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme.bar);
   };
@@ -321,6 +322,10 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
   };
 
   root.append(
+    // La lumière de la pièce, posée avant tout le reste : elle ne réagit à
+    // rien et n'intercepte rien, c'est un décor qui se contente d'être là.
+    h('div', { class: 'ambiance', attrs: { 'aria-hidden': 'true' } },
+      h('div', { class: 'ambiance__lueur' })),
     sidebar,
     overlay,
     h(
