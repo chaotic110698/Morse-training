@@ -201,7 +201,16 @@ de sommaire.
 - l'année du câble français Brest — Saint-Pierre ;
 - la durée d'émission au-delà de laquelle la goniométrie localisait un poste
   clandestin — cinq minutes est souvent cité, rarement sourcé ;
-- la légalisation des prénoms bretons en 1966.
+- la légalisation des prénoms bretons en 1966 ;
+- le tarif du mot sur le câble transatlantique — la génération II avance seize
+  francs, un ordre de grandeur plausible mais non sourcé ;
+- le nombre de ballons montés pendant le siège de Paris, donné comme « une
+  soixantaine » ;
+- le fait que le réseau télégraphique intérieur de Paris ait continué à
+  fonctionner pendant le siège : c'est le ressort de l'épisode, et c'est le
+  point le plus fragile de la génération II ;
+- les conditions exactes de la correspondance privée par pigeon — longueur
+  admise et prix au mot.
 
 Les transcriptions du trafic du Titanic sont, elles, largement documentées.
 

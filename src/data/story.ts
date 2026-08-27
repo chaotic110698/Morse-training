@@ -548,6 +548,385 @@ const LA_DERNIERE_TOUR: Episode = {
   ],
 };
 
+
+/**
+ * Génération II — Claude Duguet, né dans le fil.
+ *
+ * Modéré avait vu le monde changer ; Claude, lui, naît après. Le télégraphe
+ * est pour lui ce que l'eau est au poisson, et son arc est l'inverse de celui
+ * de son père : il ne découvre pas ce que le fil apporte, il découvre ce qu'il
+ * coûte, et ce qui reste quand on le coupe.
+ */
+
+const LE_FIL_SOUS_ATLANTIQUE: Episode = {
+  id: 'le-fil-sous-atlantique',
+  generation: 2,
+  year: 1869,
+  title: 'Le fil sous l’Atlantique',
+  summary: 'Un câble part de Brest vers l’Amérique, et un mot coûte une fortune.',
+  sound: { timbre: 'relais', snrDb: 12 },
+  beats: [
+    {
+      kind: 'recit',
+      text: [
+        'Vous avez vingt et un ans et vous n’avez jamais vu une tour fonctionner.',
+        'Votre père en parle encore — les bras, la lunette, le brouillard d’octobre ' +
+          'qui coûtait une journée — et vous l’écoutez comme on écoute une histoire ' +
+          'de diligence. Pour vous, un message va d’un bout à l’autre du pays parce ' +
+          'que c’est ainsi. Vous êtes de la première génération à qui personne n’a ' +
+          'eu besoin d’expliquer le miracle.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Cet été-là, à Brest, on déroule un fil vers l’Amérique.',
+        'Les Anglais l’ont fait il y a trois ans, après deux échecs et un câble qui ' +
+          'n’avait tenu que trois semaines. Cette fois c’est une ligne française, et ' +
+          'elle part de chez vous. Le navire qui la pose est le plus grand jamais ' +
+          'construit ; il porte trois mille kilomètres de cuivre dans son ventre et ' +
+          'il avance au pas d’un homme.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'On vous explique la difficulté, et elle n’a rien à voir avec ce que vous ' +
+          'imaginiez.',
+        'À cette longueur, le signal n’arrive pas : il transpire. Ce qui sort à ' +
+          'l’autre bout est si faible qu’aucun appareil ordinaire ne le rend audible. ' +
+          'On le lit à l’œil, sur un miroir suspendu à un fil de soie, qui renvoie ' +
+          'une tache de lumière sur une règle graduée. Un opérateur passe ses ' +
+          'journées à regarder une lueur trembler d’un côté ou de l’autre.',
+        'Un point à gauche, un trait à droite. C’est le même alphabet, et personne ' +
+          'ne l’entend.',
+      ],
+    },
+    {
+      kind: 'send',
+      text: 'VVV DE {sine} PRET POUR ESSAI',
+      to: 'Brest, la station du câble',
+      hint: 'La ligne de terre, elle, marche comme d’habitude.',
+    },
+    {
+      kind: 'receive',
+      text: 'ESSAI RECU CABLE TIENT',
+      from: 'Brest',
+      wpm: 7,
+      note:
+        'Lent, et pour une fois ce n’est pas une politesse : à cette distance, ' +
+        'personne ne sait faire autrement.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Puis on vous donne le tarif, et vous croyez à une erreur d’écriture.',
+        'Un mot vers l’Amérique coûte davantage qu’une journée de votre salaire. Pas ' +
+          'une phrase : un mot. On ne rédige donc pas, on ampute. Les articles sautent, ' +
+          'les verbes aussi quand on peut, et il reste une langue sèche que les gens du ' +
+          'métier lisent sans effort et qui paraît brutale à tous les autres.',
+        'Tout ce que vous croyez savoir du style télégraphique vient de là. Ce n’est ' +
+          'pas une mode, c’est une facture.',
+      ],
+    },
+    {
+      kind: 'send',
+      text: 'CABLE OUVERT CE JOUR TARIF SEIZE FRANCS LE MOT DE {sine}',
+      to: 'Rennes',
+      hint:
+        'Cinquante-six caractères. Sur la ligne de terre ils ne coûtent rien ; ' +
+        'de l’autre côté du câble, ils vaudraient un mois de gages.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Votre père est venu. Il ne l’avait pas annoncé et il ne dit pas pourquoi.',
+        'Il reste debout derrière vous, les mains dans le dos, pendant que vous ' +
+          'travaillez. Il a quarante-huit ans et il en a passé onze sur des tours à ' +
+          'lever des bras de bois vers l’horizon, par tous les temps, pour porter un ' +
+          'mot à quatre minutes de là.',
+        'Vous ne lui expliquez rien. Vous poussez le manipulateur vers lui.',
+      ],
+    },
+    {
+      kind: 'receive',
+      text: 'BONNE NUIT DE BREST',
+      from: 'Brest',
+      wpm: 8,
+      note: 'La station ferme. Rien d’important, et c’est justement le sujet.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Il n’y touche pas.',
+        'Il regarde la bande sortir, il lit les quatre mots, et il hoche la tête ' +
+          'comme devant un travail bien fait. Puis il remet son chapeau et rentre.',
+        'Vous mettrez vingt ans à comprendre ce qu’il est venu voir : non pas ' +
+          'l’Amérique, non pas le câble. Un homme assis qui reçoit, sans se lever, ' +
+          'des nouvelles qui ne le concernent pas.',
+      ],
+    },
+    {
+      kind: 'epilogue',
+      text: [
+        'Le premier câble transatlantique durable est posé en 1866 par le Great ' +
+          'Eastern, entre l’Irlande et Terre-Neuve. Deux tentatives avaient échoué, et ' +
+          'un câble de 1858 n’avait tenu que quelques semaines. Un câble français ' +
+          'reliant Brest à Saint-Pierre-et-Miquelon suit à la fin de la décennie.',
+        'Le miroir n’est pas une image : le signal transatlantique était trop faible ' +
+          'pour un appareil ordinaire, et se lisait à la déviation d’une tache de ' +
+          'lumière sur une règle. Le prix par mot, lui, est la vraie raison du style ' +
+          'télégraphique — la langue s’est resserrée parce qu’elle se payait au mot, ' +
+          'et les abréviations que le morse emploie encore aujourd’hui en descendent ' +
+          'en droite ligne.',
+        'Les {nom} sont inventés. Le tarif, le miroir et le navire ne le sont pas.',
+      ],
+    },
+  ],
+};
+
+const PARIS_COUPE: Episode = {
+  id: 'paris-coupe',
+  generation: 2,
+  year: 1870,
+  title: 'Paris coupé',
+  summary: 'Une ville entière sans une seule ligne, et des oiseaux pour tout secours.',
+  sound: { timbre: 'relais', snrDb: 9 },
+  beats: [
+    {
+      kind: 'recit',
+      text: [
+        'La guerre est déclarée le 19 juillet, et le service manque de bras à Paris.',
+        'On vous y envoie pour l’été. Vous avez vingt-deux ans, vous n’êtes jamais ' +
+          'monté plus haut que Rennes, et votre mère vous fait promettre d’écrire.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Le 19 septembre, l’armée prussienne referme le cercle autour de la ville.',
+        'Vous êtes dedans. Deux millions de personnes, et vous.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Les lignes tombent l’une après l’autre, et pas par accident : on les coupe.',
+        'Un fil télégraphique se suit à pied. Il suffit de longer les poteaux jusqu’à ' +
+          'trouver l’endroit, et de sectionner. Le nord d’abord, puis l’est, puis ' +
+          'l’ouest. À la fin de la semaine, Paris n’a plus rien vers la province, ' +
+          'sauf une chose à laquelle personne n’a encore pensé.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'On a immergé un câble dans le lit de la Seine, en aval, sous l’eau et sous ' +
+          'leurs pieds.',
+        'Il tient trois jours. Le trafic passe la nuit, en clair et vite, parce que ' +
+          'personne ne sait combien de temps il reste. Vous êtes de garde quand vient ' +
+          'votre tour.',
+      ],
+    },
+    {
+      kind: 'send',
+      text: 'PARIS INVESTIE DEPUIS LE 19 VIVRES POUR QUATRE SEMAINES LES LIGNES DU NORD SONT',
+      to: 'Tours, la délégation',
+      hint:
+        'Transmettez tant que ça passe. Vous n’aurez pas le temps de finir la ' +
+        'phrase — ce n’est pas une figure de style.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Le manipulateur ne rend plus rien.',
+        'Pas de craquement, pas de faiblesse progressive : la ligne était là, et ' +
+          'elle n’y est plus. Ils ont trouvé le câble et l’ont relevé. Votre phrase ' +
+          's’arrête sur « sont », et l’homme de Tours ne saura jamais ce que les ' +
+          'lignes du nord étaient devenues.',
+        'Vous restez la main dessus un long moment, comme votre grand-père autrefois, ' +
+          'pour une raison exactement contraire.',
+      ],
+    },
+    {
+      kind: 'silence',
+      seconds: 18,
+      text: 'Plus une ligne. Deux millions de personnes, et pas un fil qui sorte.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Alors la ville se met à faire voler son courrier.',
+        'On gonfle des ballons dans les gares désaffectées, on y met un homme, des ' +
+          'sacs de lettres et des cages. Ils partent au petit jour, au hasard du vent. ' +
+          'Une soixantaine s’en va pendant le siège ; certains atterrissent en ' +
+          'Bretagne, un en Norvège, quelques-uns chez l’ennemi.',
+        'Vous êtes télégraphiste dans une ville où le courrier part par le ciel.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Le retour, lui, tient dans une plume.',
+        'Les ballons emportent des pigeons ; on les relâche de province avec, ' +
+          'attachée à une penne, une pellicule photographique grande comme un ongle ' +
+          'où l’on a réduit des milliers de dépêches. À Paris, on projette la ' +
+          'pellicule à la lanterne sur un mur, et des employés recopient à la main ce ' +
+          'qui s’affiche, ligne après ligne.',
+        'C’est là qu’on vous met. Vous avez appris un métier où la distance ne compte ' +
+          'pas, et vous passez l’hiver à recopier à la plume ce qu’un oiseau a porté.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Le réseau de la ville, lui, fonctionne parfaitement.',
+        'Les fils entre les mairies, les forts et les gares n’ont pas bougé : ils ne ' +
+          'sortent pas du cercle, donc personne ne les a coupés. Vous transmettez ' +
+          'toute la journée, vite et bien, à l’intérieur d’une ville qui ne peut ' +
+          'joindre personne.',
+      ],
+    },
+    {
+      kind: 'send',
+      text: 'PAIN 300 GRAMMES DEMAIN DE {sine}',
+      to: 'les mairies d’arrondissement',
+      hint:
+        'Quatre mots qui ne quitteront pas les fortifications. On écrit court ' +
+        'par habitude, maintenant, même quand plus rien ne se paie au mot.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Le 4 janvier, un employé du bureau des pigeons vous cherche dans les couloirs.',
+        'Une dépêche particulière porte votre nom. Les particuliers ont le droit ' +
+          'd’écrire par pigeon : quelques mots, payés au mot, réduits à la pellicule ' +
+          'avec le reste. Quelqu’un, à cinq cents kilomètres, a payé pour vous dire ' +
+          'très peu de choses.',
+      ],
+    },
+    {
+      kind: 'receive',
+      text: 'TOUS BIEN PORTANTS TA MERE PRIE TON PERE DIT TIENS BON',
+      from: 'la pellicule',
+      wpm: 9,
+      note:
+        'Dix mots. C’est ce que la place permettait, et c’est déjà beaucoup ' +
+        'd’argent.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Dix mots pour un hiver.',
+        'Votre père a passé sa vie à raccourcir des phrases pour économiser une ' +
+          'ligne, et il a choisi celles-là. Vous les relisez toute la nuit en cherchant ' +
+          'ce qu’il a supprimé.',
+      ],
+    },
+    {
+      kind: 'epilogue',
+      text: [
+        'Paris est investie du 19 septembre 1870 au 28 janvier 1871. Les lignes ' +
+          'télégraphiques sont coupées méthodiquement, et un câble immergé dans la ' +
+          'Seine, qui a permis quelques jours de trafic, est repéré puis relevé.',
+        'Les ballons montés — une soixantaine pendant le siège — ont emporté du ' +
+          'courrier, des voyageurs et des pigeons. Le retour se faisait par ces ' +
+          'pigeons, porteurs de pellicules microphotographiques mises au point par ' +
+          'Dagron : les dépêches y étaient réduites au point qu’une seule pellicule ' +
+          'en contenait des milliers, et on les projetait à Paris pour les recopier. ' +
+          'Des particuliers pouvaient y faire passer quelques mots, payés au mot.',
+        'Le réseau intérieur de la ville continuait de fonctionner : c’est ce que ' +
+          'l’épisode retient, et c’est ce qui rend la situation si étrange — des ' +
+          'télégraphistes en parfait état de marche, dans une ville qui ne pouvait ' +
+          'joindre personne. Claude {nom} est inventé. Le reste est arrivé.',
+      ],
+    },
+  ],
+};
+
+const LA_DEMANDE: Episode = {
+  id: 'la-demande',
+  generation: 2,
+  year: 1876,
+  title: 'La demande',
+  summary: 'Ce qu’on ose écrire sur une ligne de service, et ce qu’on n’ose pas.',
+  optional: true,
+  sound: { timbre: 'relais', snrDb: 20 },
+  beats: [
+    {
+      kind: 'recit',
+      text: [
+        'Elle s’appelle Honorine et elle tient le bureau de poste de Landerneau.',
+        'Vous ne l’avez vue que deux fois, aux réunions de service, et vous ' +
+          'travaillez sur la même ligne depuis quatorze mois. Vous connaissez sa main ' +
+          'mieux que son visage : elle envoie serré, très régulier, avec un T qu’elle ' +
+          'tient un peu trop longtemps.',
+        'Vous avez vingt-huit ans et vous n’avez rien osé.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Votre père, à qui personne n’a rien demandé, raconte à table l’histoire de ' +
+          'Célestin Aubry, en 1852, qui lui avait glissé trois mots hors service au ' +
+          'bout d’un essai de ligne.',
+        '« Ça m’aurait coûté ma place », dit-il, content de lui. « Et ça ne m’a rien ' +
+          'coûté du tout. »',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Le lendemain, l’essai de ligne du matin part comme les autres.',
+        'Vous laissez passer trois secondes, et vous ajoutez ce qui n’a rien à faire ' +
+          'sur un fil de l’administration.',
+      ],
+    },
+    {
+      kind: 'send',
+      text: 'HR {sine} VOULEZ VOUS DE MOI',
+      to: 'Landerneau',
+      hint: 'Six mots. Vous avez compté trois fois s’il n’y avait pas moyen de faire plus court.',
+    },
+    {
+      kind: 'silence',
+      seconds: 20,
+      text: 'La ligne ne rend rien pendant un temps très long.',
+    },
+    {
+      kind: 'receive',
+      text: 'R',
+      from: 'Landerneau',
+      wpm: 10,
+      note: 'Un seul caractère. Dans le service, il veut dire : reçu.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Vous restez devant l’appareil sans savoir ce que vous venez de lire.',
+        'Reçu. Accusé de réception. Le mot le plus neutre du métier, celui qu’on ' +
+          'envoie deux cents fois par jour sans y penser, et qui ne veut strictement ' +
+          'rien dire d’autre.',
+        'Puis l’appareil repart.',
+      ],
+    },
+    {
+      kind: 'receive',
+      text: 'OUI',
+      from: 'Landerneau',
+      wpm: 10,
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Modéré Duguet naîtra deux ans plus tard, et portera le prénom de son ' +
+          'grand-père comme le veut l’usage.',
+        'Sa mère lui apprendra le morse avant l’alphabet.',
+      ],
+    },
+  ],
+};
+
 /**
  * Génération III — l’épisode d’amorce, sur lequel le moteur a été mis au point.
  */
@@ -633,5 +1012,8 @@ export const EPISODES: Episode[] = [
   CE_QUE_DIEU_A_FAIT,
   LA_LIGNE,
   LA_DERNIERE_TOUR,
+  LE_FIL_SOUS_ATLANTIQUE,
+  PARIS_COUPE,
+  LA_DEMANDE,
   MGY,
 ];

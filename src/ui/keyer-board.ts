@@ -13,10 +13,16 @@
 
 import { h } from './dom.ts';
 import { encodeChar, prettyCode } from '../core/morse.ts';
-import { ERROR_SIGN, eraseSend, keySend, sendDone, sendMarks, startSend, type SendState } from '../core/story.ts';
-
-/** Disposition française : c'est le clavier que les gens ont sous les doigts. */
-const ROWS = ['AZERTYUIOP', 'QSDFGHJKLM', 'WXCVBN'];
+import {
+  ERROR_SIGN,
+  eraseSend,
+  KEYER_ROWS,
+  keySend,
+  sendDone,
+  sendMarks,
+  startSend,
+  type SendState,
+} from '../core/story.ts';
 
 export interface KeyerBoardOptions {
   /** Joue le code d'un caractère, ou le signal d'erreur. */
@@ -44,14 +50,24 @@ export function createKeyerBoard(options: KeyerBoardOptions): KeyerBoard {
   const keys = h('div', { class: 'manip__clavier' });
   const keyByChar = new Map<string, HTMLButtonElement>();
 
+  /**
+   * Les caractères sont groupés par mot. Sans cela, le retour à la ligne tombe
+   * entre deux lettres et coupe « QUATRE » en « QU » et « ATRE » — illisible
+   * sur un téléphone, où la plupart des messages tiennent sur trois lignes.
+   */
   const draw = (): void => {
-    message.replaceChildren(
-      ...sendMarks(state).map((mark) =>
-        mark.status === 'space'
-          ? h('span', { class: 'manip__space' })
-          : h('span', { class: `manip__char is-${mark.status}`, text: mark.char }),
-      ),
-    );
+    const groups: HTMLElement[] = [];
+    let word = h('span', { class: 'manip__mot' });
+    for (const mark of sendMarks(state)) {
+      if (mark.status === 'space') {
+        groups.push(word, h('span', { class: 'manip__space' }));
+        word = h('span', { class: 'manip__mot' });
+        continue;
+      }
+      word.append(h('span', { class: `manip__char is-${mark.status}`, text: mark.char }));
+    }
+    groups.push(word);
+    message.replaceChildren(...groups);
   };
 
   const flash = (char: string): void => {
@@ -81,7 +97,7 @@ export function createKeyerBoard(options: KeyerBoardOptions): KeyerBoard {
     options.onChange?.(state);
   };
 
-  for (const row of ROWS) {
+  for (const row of KEYER_ROWS) {
     const line = h('div', { class: 'manip__rangee' });
     for (const char of row) {
       const key = h(

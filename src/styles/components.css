@@ -2703,6 +2703,13 @@
   letter-spacing: 0.1em;
 }
 
+/* Un mot ne se coupe pas : ses caractères restent solidaires, et seule
+   l'espace entre deux mots autorise un retour à la ligne. */
+.manip__mot {
+  display: inline-flex;
+  gap: 0.1rem 0.25rem;
+}
+
 .manip__space { width: 1.1rem; }
 
 .manip__char {
@@ -2874,7 +2881,9 @@
 .topbar__save svg { display: block; }
 
 @media (max-width: 620px) {
-  .manip__touche {
+  /* La touche d'effacement garde sa forme : lui imposer le carré des autres
+     en ferait un pavé de la hauteur d'une main. */
+  .manip__touche:not(.manip__touche--large) {
     max-width: none;
     aspect-ratio: 1 / 1.15;
   }

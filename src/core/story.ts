@@ -106,6 +106,24 @@ export interface SendState {
 /** Le signal d'erreur réel : huit points. */
 export const ERROR_SIGN = '........';
 
+/**
+ * Le clavier du manipulateur, rangée par rangée — et donc, exactement, ce
+ * qu'un message à transmettre a le droit de contenir.
+ *
+ * La liste vit ici plutôt que dans l'interface parce qu'elle est un contrat :
+ * un épisode qui demanderait un caractère absent du clavier serait injouable,
+ * et le contrôle des données le refuse. Disposition française, chiffres en
+ * tête comme sur un vrai poste.
+ */
+export const KEYER_ROWS = ['1234567890', 'AZERTYUIOP', 'QSDFGHJKLM', 'WXCVBN.'];
+
+const KEYABLE = new Set(KEYER_ROWS.join(''));
+
+/** Vrai si le manipulateur à clavier sait produire ce caractère. */
+export function isKeyable(char: string): boolean {
+  return char === ' ' || KEYABLE.has(char.toUpperCase());
+}
+
 const normalise = (text: string): string => text.toUpperCase();
 
 /** Avance le curseur au prochain caractère réellement manipulable. */
@@ -372,7 +390,15 @@ export function validateStory(episodes: Episode[] = EPISODES, lineage?: Lineage)
           : beat.text.replace(/\{[a-z]+\}/g, 'XX');
         const unknown = encodable(resolved);
         if (unknown.length > 0) {
-          problems.push(`Caractères non manipulables dans ${episode.id} : ${unknown.join(' ')}`);
+          problems.push(`Caractères non codables dans ${episode.id} : ${unknown.join(' ')}`);
+        }
+        // Un message à émettre doit être frappable : sinon l'épisode se bloque
+        // sur un caractère que le clavier ne porte pas.
+        if (beat.kind === 'send') {
+          const absent = [...resolved.toUpperCase()].filter((char) => !isKeyable(char));
+          if (absent.length > 0) {
+            problems.push(`Caractères absents du clavier dans ${episode.id} : ${[...new Set(absent)].join(' ')}`);
+          }
         }
         const size = resolved.trim().length;
         if (size > MAX_MESSAGE) {
