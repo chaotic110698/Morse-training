@@ -928,8 +928,232 @@ const LA_DEMANDE: Episode = {
 };
 
 /**
- * Génération III — l’épisode d’amorce, sur lequel le moteur a été mis au point.
+ * Génération III — Modéré Duguet, celui qui entend ce qui n'est relié à rien.
+ *
+ * Son grand-père transmettait sans comprendre, son père a vu le fil se couper.
+ * Lui voit disparaître le fil lui-même — et découvre que ce qui le remplace
+ * n'appartient plus à personne : tout le monde entend tout, en même temps.
  */
+
+const TROIS_POINTS: Episode = {
+  id: 'trois-points',
+  generation: 3,
+  year: 1901,
+  title: 'Trois points',
+  summary: 'Une lettre traverse l’Atlantique sans fil, et personne ne peut le prouver.',
+  sound: { timbre: 'etincelle', snrDb: 2 },
+  beats: [
+    {
+      kind: 'recit',
+      text: [
+        'Votre mère vous a appris le morse avant l’alphabet. Vous aviez quatre ans, ' +
+          'elle tenait le bureau de Landerneau, et elle frappait votre prénom sur le ' +
+          'bord de la table pour vous faire venir manger.',
+        'À vingt-trois ans, vous êtes le troisième Duguet sur les lignes et vous n’avez ' +
+          'jamais envisagé autre chose. Le fil est votre métier, votre maison et votre ' +
+          'nom.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Depuis quelques années, des gens sérieux prétendent s’en passer.',
+        'Ils font claquer une étincelle entre deux boules de laiton, et à cent mètres ' +
+          'de là un appareil réagit. Sans fil. Le premier qui vous l’a raconté était ' +
+          'ivre, et vous l’avez cru quand même, parce qu’il vous a montré le journal.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Le son n’a rien à voir avec ce que vous connaissez.',
+        'Un manipulateur sur une ligne, c’est un claquement propre. Une étincelle, ' +
+          'c’est un raclement — un bruit d’arrachement qui couvre la moitié de la ' +
+          'bande et que les voisins entendent aussi bien que vous. Il n’y a plus de ' +
+          'fil, donc il n’y a plus de destinataire : tout le monde reçoit tout.',
+        'Vous mettrez dix ans à mesurer ce que cette phrase contient.',
+      ],
+    },
+    {
+      kind: 'receive',
+      text: 'VVV DE FL',
+      from: 'un poste de la côte',
+      wpm: 10,
+      sound: { snrDb: 5 },
+      note:
+        'Un essai à quelques milles, dans des conditions honnêtes. Retenez ce que ' +
+        'ça donne : la suite ne ressemblera pas à ça.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Le 12 décembre, une dépêche traverse les bureaux et personne ne travaille ' +
+          'de l’après-midi.',
+        'Un Italien installé à Terre-Neuve annonce avoir reçu un signal parti de ' +
+          'Cornouailles. Trois mille kilomètres. Pas de câble, pas de relais, rien ' +
+          'entre les deux que l’Atlantique et la courbure de la Terre — dont tous les ' +
+          'traités disent qu’elle rend la chose impossible.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Ce qu’il dit avoir reçu tient en une lettre.',
+        'Pas une phrase, pas un mot : la lettre S. Trois points. Répétée pendant des ' +
+          'heures depuis l’autre rive, dans l’espoir qu’un fragment passe.',
+        'Il n’avait pas d’enregistreur. Une antenne tenue par un cerf-volant, un ' +
+          'écouteur contre l’oreille, et son assistant à côté de lui. Il n’existe ' +
+          'aucune trace de ce qu’il a entendu, sinon qu’il l’a dit.',
+      ],
+    },
+    {
+      kind: 'receive',
+      text: 'S',
+      from: 'l’autre rive, peut-être',
+      wpm: 6,
+      sound: { snrDb: 1 },
+      note:
+        'Trois points dans ce vacarme. Écoutez plusieurs fois si vous voulez. La ' +
+        'question n’est pas de savoir ce que c’est — c’est de savoir si c’est là.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Et voilà le problème, celui que les savants soulèvent dès le lendemain.',
+        'Une décharge atmosphérique, un contact qui frotte, un orage à trois cents ' +
+          'kilomètres : tout cela fait des clics. Trois clics d’affilée dans une nuit ' +
+          'd’hiver, ce n’est pas un événement rare, c’est un mardi.',
+        'Un homme qui écoute pendant des heures en espérant trois points finit par ' +
+          'les entendre. Ce n’est pas de la malhonnêteté, c’est de l’oreille — et ' +
+          'vous, qui copiez depuis l’enfance, vous savez mieux que quiconque à quel ' +
+          'point elle arrange ce qu’elle attend.',
+      ],
+    },
+    {
+      kind: 'receive',
+      text: 'S',
+      from: 'la bande, ou rien',
+      wpm: 6,
+      sound: { snrDb: 0 },
+      note: 'Encore une fois. Notez ce que vous croyez avoir entendu, et rien de plus.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Au bureau, on se divise en deux camps le soir même, et vous n’êtes ni dans ' +
+          'l’un ni dans l’autre.',
+        'Les anciens haussent les épaules : sans trace écrite, ce n’est pas une ' +
+          'expérience, c’est un témoignage. Les jeunes trouvent le doute mesquin. ' +
+          'Vous, vous pensez à autre chose, et vous le gardez pour vous parce que ' +
+          'ça n’a rien à voir avec la question posée.',
+        'Si c’est vrai, alors le fil que votre arrière-grand-père a vu remplacer les ' +
+          'tours vient d’être remplacé à son tour. Et vous avez vingt-trois ans.',
+      ],
+    },
+    {
+      kind: 'send',
+      text: 'DE {sine} RIEN A SIGNALER CETTE NUIT',
+      to: 'Rennes',
+      hint: 'Le service continue, quoi qu’il arrive de l’autre côté de l’Atlantique.',
+    },
+    {
+      kind: 'epilogue',
+      text: [
+        'Le 12 décembre 1901, Guglielmo Marconi annonce avoir reçu à Signal Hill, ' +
+          'près de Saint-Jean de Terre-Neuve, la lettre S émise depuis Poldhu, en ' +
+          'Cornouailles. L’antenne était portée par un cerf-volant, la réception se ' +
+          'faisait à l’écouteur, et aucun appareil n’a rien enregistré : il n’existe ' +
+          'de l’événement que le témoignage de Marconi et de son assistant Kemp.',
+        'La contestation est immédiate et sérieuse. Les parasites atmosphériques ' +
+          'produisent des clics ; une oreille qui guette trois points pendant des ' +
+          'heures est mal placée pour jurer les avoir entendus ; et la théorie de ' +
+          'l’époque n’expliquait pas comment une onde aurait suivi la courbure du ' +
+          'globe. On sait aujourd’hui que la haute atmosphère la réfléchit, ce que ' +
+          'personne ne soupçonnait alors, et que les conditions de décembre pouvaient ' +
+          'le permettre. La plupart des historiens penchent pour l’authenticité sans ' +
+          'pouvoir la démontrer.',
+        'Le poste à étincelle est réel, et son bruit aussi : un émetteur crachait ' +
+          'sur une large portion de la bande, ce qui rendait le partage impossible et ' +
+          'conduira aux règlements internationaux. Les {nom} sont inventés.',
+      ],
+    },
+  ],
+};
+
+const LA_MAIN: Episode = {
+  id: 'la-main',
+  generation: 3,
+  year: 1909,
+  title: 'La main',
+  summary: 'On reconnaît un opérateur à sa frappe comme on reconnaît un pas dans l’escalier.',
+  optional: true,
+  sound: { timbre: 'relais', snrDb: 18 },
+  beats: [
+    {
+      kind: 'recit',
+      text: [
+        'Il y a une chose que le métier n’enseigne pas et que tout le monde finit ' +
+          'par savoir : deux opérateurs ne frappent jamais pareil.',
+        'Les durées sont réglementées, les proportions apprises, et pourtant chacun ' +
+          'a sa main. L’un tasse ses points, l’autre traîne sur les traits, un ' +
+          'troisième laisse un souffle avant chaque mot comme s’il réfléchissait. On ' +
+          'appelle ça la main, et au bout de deux ans sur la même ligne on reconnaît ' +
+          'ses correspondants sans qu’ils se nomment, exactement comme un pas dans ' +
+          'un escalier.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Ce mardi de novembre, Landerneau ouvre à sept heures et vous levez la tête ' +
+          'avant d’avoir compris pourquoi.',
+        'Ce n’est pas le titulaire. Celui-là attaque sec et va vite. Là, quelqu’un ' +
+          'tient le T une fraction de trop, régulièrement, sur chaque T, depuis ' +
+          'toujours.',
+      ],
+    },
+    {
+      kind: 'receive',
+      text: 'BUREAU OUVERT DE LANDERNEAU',
+      from: 'Landerneau',
+      wpm: 12,
+      note: 'Rien que du service. Écoutez la main, pas les mots.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Votre mère a soixante et un ans et n’a plus tenu un manipulateur depuis ' +
+          'huit ans.',
+        'Le titulaire est malade, on a cherché quelqu’un dans le bourg, et il se ' +
+          'trouve qu’il y avait, au-dessus de l’épicerie, une vieille dame qui avait ' +
+          'fait ça toute sa vie.',
+      ],
+    },
+    {
+      kind: 'send',
+      text: 'HR {sine} BONJOUR MAMAN',
+      to: 'Landerneau',
+      hint: 'Sur une ligne de service. Comme votre père en 1876, et pour la même raison.',
+    },
+    {
+      kind: 'receive',
+      text: 'JE SAVAIS QUE TU RECONNAITRAIS',
+      from: 'Landerneau',
+      wpm: 12,
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Honorine Duguet tiendra le bureau onze jours, puis le titulaire reviendra ' +
+          'et elle remontera chez elle.',
+        'Elle meurt l’hiver suivant. Pendant des années, il vous arrivera de lever la ' +
+          'tête au milieu d’un trafic ordinaire parce que quelqu’un, quelque part, ' +
+          'aura tenu un T une fraction de trop.',
+      ],
+    },
+  ],
+};
+
 const MGY: Episode = {
   id: 'mgy',
   generation: 3,
@@ -941,11 +1165,34 @@ const MGY: Episode = {
     {
       kind: 'recit',
       text: [
+        'Onze ans que la lettre S a traversé l’Atlantique, et le monde ne s’en est ' +
+          'pas remis.',
+        'Les navires ont des postes, les côtes ont des stations, et vous avez ' +
+          'trente-quatre ans. Vous avez quitté le fil pour la bande sans jamais vous ' +
+          'poser la question : on vous a proposé, vous avez dit oui, votre père a ' +
+          'trouvé ça imprudent.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Le métier a changé de nature et personne ne le dit encore à voix haute.',
+        'Sur un fil, un message va d’un point à un autre. Ici, il part dans toutes ' +
+          'les directions à la fois, et n’importe qui peut l’entendre. Les opérateurs ' +
+          'se connaissent tous, se reconnaissent à la main, se saluent la nuit quand ' +
+          'le trafic tombe. Il y a dans cette bande quelque chose qui ressemble à un ' +
+          'village, et vous n’aviez jamais eu ça sur une ligne.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
         'Vingt-trois heures quarante. Le trafic de la journée est écoulé : deux ' +
           'télégrammes de courtoisie, un relevé de position, et la liste de passagers ' +
           'que Cape Race réclamait depuis midi.',
-        'Votre père vous a appris à ne jamais couper la veille avant minuit. Il disait ' +
-          'que la nuit, l’Atlantique porte loin, et qu’un poste qui se tait n’entend rien.',
+        'Votre grand-père vous a appris à ne jamais couper la veille avant minuit. ' +
+          'Il disait que la nuit, l’Atlantique porte loin, et qu’un poste qui se tait ' +
+          'n’entend rien.',
       ],
     },
     {
@@ -978,6 +1225,9 @@ const MGY: Episode = {
         'MGY. Vous connaissez l’indicatif : il est neuf, il est sur toutes les listes ' +
           'depuis une semaine. Le plus grand navire jamais construit vient de demander ' +
           'de l’aide à quatre cents milles de la côte.',
+        'Et vous connaissez la main. Un garçon rapide, un peu sec sur les traits, qui ' +
+          'a passé les trois derniers jours à écouler des télégrammes de passagers ' +
+          'fortunés vers Cape Race, et qui s’en plaignait la nuit.',
       ],
     },
     {
@@ -988,25 +1238,205 @@ const MGY: Episode = {
       sound: { snrDb: 3 },
     },
     {
+      kind: 'recit',
+      text: [
+        'La bande se remplit d’un coup.',
+        'Tout le monde a entendu, parce que tout le monde entend toujours tout. ' +
+          'Dix postes appellent en même temps, se couvrent les uns les autres, et ' +
+          'personne ne s’efface. Ce village dont vous étiez si fier est en train de ' +
+          'se rendre inaudible au pire moment.',
+        'Il faut répondre court. Très court. Chaque mot que vous ajoutez est un mot ' +
+          'qu’un autre n’entend pas.',
+      ],
+    },
+    {
       kind: 'send',
       text: 'MGY DE {sine} R COMING',
       to: 'MGY',
-      hint: 'On accuse réception et on annonce qu’on fait route. Rien d’autre : la bande est encombrée.',
+      hint: 'On accuse réception et on annonce qu’on fait route. Rien d’autre.',
+    },
+    {
+      kind: 'silence',
+      seconds: 20,
+      text: 'Entre deux appels, il y a des trous. Personne ne sait ce qu’ils veulent dire.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'À une heure quarante-cinq, la main de MGY faiblit.',
+        'Ce n’est pas l’opérateur qui ralentit : c’est le courant. Les dynamos ' +
+          'meurent avec le navire, et l’étincelle a besoin de puissance. Le signal ' +
+          'devient mou, traînant, à peine formé.',
+        'Vous avez copié des mains toute votre vie. C’est la première fois que vous ' +
+          'entendez une machine mourir.',
+      ],
+    },
+    {
+      kind: 'receive',
+      text: 'CQD SOS DE MGY',
+      from: 'MGY',
+      wpm: 9,
+      sound: { snrDb: 0 },
+      note: 'Ce qu’il en reste.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Puis plus rien, et le plus rien dure jusqu’au matin.',
+        'Un navire à cinquante-huit milles a fait route et recueilli sept cent douze ' +
+          'personnes. Un autre, beaucoup plus près, n’a rien entendu : son opérateur ' +
+          'unique avait coupé sa veille pour la nuit et dormait à trente kilomètres ' +
+          'du naufrage.',
+        'Votre grand-père disait qu’un poste qui se tait n’entend rien. Il parlait ' +
+          'd’un fil, dans une cuisine, en 1844.',
+      ],
     },
     {
       kind: 'epilogue',
       text: [
-        'Le Titanic a émis pendant environ deux heures, d’abord en CQD puis en SOS. ' +
-          'Le Carpathia, à cinquante-huit milles, a fait route et recueilli sept cent ' +
-          'douze personnes. Le Californian, beaucoup plus proche, avait coupé sa veille ' +
-          'pour la nuit : son opérateur dormait.',
-        'La famille {nom} est inventée. Les indicatifs, les positions et la teneur des ' +
-          'messages ne le sont pas.',
+        'Le Titanic a émis pendant environ deux heures dans la nuit du 14 au 15 avril ' +
+          '1912, d’abord en CQD puis en SOS, sous l’indicatif MGY. Le Carpathia a fait ' +
+          'route et recueilli les survivants. Le Californian, beaucoup plus proche, ' +
+          'n’avait qu’un opérateur, qui avait cessé la veille pour la nuit.',
+        'Deux conséquences directes, et ce sont elles qui comptent pour ce site. La ' +
+          'veille radio permanente devient obligatoire sur les navires de commerce, ' +
+          'avec plusieurs opérateurs quand il le faut. Et l’encombrement de la bande ' +
+          'cette nuit-là — des dizaines de postes se couvrant les uns les autres — ' +
+          'accélère la discipline du trafic : priorité absolue à la détresse, silence ' +
+          'des autres, procédure courte. Tout ce que le morse a de sec vient de nuits ' +
+          'comme celle-là.',
+        'La famille {nom} est inventée. Les indicatifs, les positions, l’heure et la ' +
+          'teneur des messages ne le sont pas.',
       ],
     },
   ],
 };
 
+const LA_TOUR_QUI_ECOUTE: Episode = {
+  id: 'la-tour-qui-ecoute',
+  generation: 3,
+  year: 1917,
+  title: 'La tour qui écoute',
+  summary: 'Copier parfaitement un message dont on ne comprendra jamais un mot.',
+  sound: { timbre: 'etincelle', snrDb: 4 },
+  beats: [
+    {
+      kind: 'recit',
+      text: [
+        'On voulait la démolir en 1909. Elle avait vingt ans, son bail expirait, et ' +
+          'Paris la trouvait laide.',
+        'Ce qui l’a sauvée n’est pas son architecture : c’est qu’on avait posé une ' +
+          'antenne dessus. Trois cents mètres de fer au milieu d’une capitale, c’est ' +
+          'le plus beau support d’Europe, et l’armée l’a compris avant tout le monde.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Vous y êtes affecté en 1917, à trente-neuf ans, parce que vous copiez vite ' +
+          'et proprement dans le bruit.',
+        'La station n’émet presque pas. Elle écoute. Toute la journée, toute la nuit, ' +
+          'des hommes en rangs devant des postes recopient ce que l’ennemi envoie à ' +
+          'l’ennemi — et qui traverse la moitié de l’Europe parce que, sans fil, tout ' +
+          'le monde entend tout.',
+        'Votre arrière-grand-père relayait des figures dont la clef était ailleurs. ' +
+          'Vous voilà à la même table, quatre-vingts ans plus tard.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'La consigne est absolue et vous la trouvez d’abord absurde : copier ce qui ' +
+          'passe, exactement, sans rien corriger.',
+        'Un message chiffré n’a pas de sens, donc pas de contexte, donc aucune ' +
+          'possibilité de deviner. Sur du texte clair, une oreille exercée rattrape ' +
+          'une lettre perdue sans même s’en apercevoir — et c’est précisément ce ' +
+          'qu’il ne faut pas faire ici. Une lettre inventée peut coûter un déchiffrage.',
+      ],
+    },
+    {
+      kind: 'receive',
+      text: 'GKQ WZ RMTLA HVBNE CXOP',
+      from: 'la bande, quelque part à l’est',
+      wpm: 15,
+      note:
+        'Rien de tout cela ne veut dire quoi que ce soit. Copiez ce que vous ' +
+        'entendez, pas ce qui vous arrangerait.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Vous portez la feuille au bureau du chiffre, deux étages plus bas, et vous ' +
+          'ne saurez jamais ce qu’elle contenait.',
+        'Personne ne remonte vous le dire. Ce n’est pas du mépris, c’est la règle : ' +
+          'un homme qui sait ce qu’il a copié copie moins bien la fois suivante.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Il y a une chose, pourtant, que le chiffre ne peut pas vous prendre.',
+        'Vous ne comprenez pas les messages, mais vous connaissez les mains. Celui de ' +
+          'Nauen frappe carré, celui de Bruxelles hésite avant les groupes, et un ' +
+          'troisième, quelque part, tasse ses points exactement comme votre mère ' +
+          'traînait ses traits. Vous savez quand un poste change d’opérateur. Vous ' +
+          'savez quand un opérateur est fatigué.',
+        'Vous le signalez une fois, et l’officier vous regarde comme si vous veniez ' +
+          'de lui vendre une carte.',
+      ],
+    },
+    {
+      kind: 'receive',
+      text: 'ZPQ44 LKMWE BVCXA RTNOU IHGFD SEQZL',
+      from: 'le même poste, une main plus lente',
+      wpm: 13,
+      sound: { snrDb: 2 },
+      note: 'Trente-six caractères sans un mot dedans. Il n’y a que la copie.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'En novembre 1918, une station allemande demande les conditions de ' +
+          'l’armistice en clair, sur la bande, à qui veut l’entendre.',
+        'Vous êtes de garde. Vous copiez la demande d’un homme qui vous a fait ' +
+          'travailler pendant deux ans sans que vous sachiez son nom, et vous ' +
+          'comprenez chaque mot pour la première fois depuis dix-huit mois.',
+      ],
+    },
+    {
+      kind: 'send',
+      text: 'RECU DE {sine} TRANSMIS AU COMMANDEMENT',
+      to: 'le bureau du chiffre',
+      hint: 'Le dernier message que vous porterez sans savoir. Il n’y en avait rien à savoir.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Claude a sept ans et il sait déjà son alphabet. Sa grand-mère n’aura pas eu ' +
+          'le temps de le lui apprendre ; c’est vous qui vous en chargez, sur le bord ' +
+          'de la table, exactement de la même façon.',
+        'Vous lui tenez les T un peu trop longtemps sans même y penser.',
+      ],
+    },
+    {
+      kind: 'epilogue',
+      text: [
+        'La tour Eiffel devait être démontée à l’expiration de sa concession. ' +
+          'L’antenne installée à son sommet, puis son usage militaire, l’ont sauvée : ' +
+          'elle devient l’une des principales stations d’écoute françaises, et le ' +
+          'renseignement obtenu par interception radio prend pendant la guerre une ' +
+          'importance que personne n’avait prévue.',
+        'La règle de copie littérale est réelle et vaut encore : sur du texte chiffré, ' +
+          'l’opérateur ne doit rien reconstituer, parce qu’une lettre corrigée de bonne ' +
+          'foi peut rendre un message indéchiffrable. Et la reconnaissance des ' +
+          'opérateurs à leur frappe — la main — a bel et bien servi au renseignement : ' +
+          'on suivait le déplacement d’une unité en suivant la main de son ' +
+          'télégraphiste.',
+        'Les {nom} sont inventés. Le métier qu’ils font, non.',
+      ],
+    },
+  ],
+};
 
 export const EPISODES: Episode[] = [
   CE_QUE_DIEU_A_FAIT,
@@ -1015,5 +1445,8 @@ export const EPISODES: Episode[] = [
   LE_FIL_SOUS_ATLANTIQUE,
   PARIS_COUPE,
   LA_DEMANDE,
+  TROIS_POINTS,
+  LA_MAIN,
   MGY,
+  LA_TOUR_QUI_ECOUTE,
 ];

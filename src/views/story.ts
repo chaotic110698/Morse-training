@@ -53,6 +53,29 @@ export function storyView(context: ViewContext): View {
   const timingAt = (wpm: number) =>
     resolveTiming({ charWpm: wpm, effectiveWpm: Math.max(5, Math.round(wpm * 0.75)) });
 
+  /**
+   * Le bruit de bande de l'époque.
+   *
+   * Chaque épisode porte son rapport signal sur bruit : 1901 gratte, 1970 est
+   * calme. Le réglage n'est appliqué qu'au moteur audio, jamais enregistré —
+   * on emprunte le bruit le temps d'une scène et on rend l'appareil comme on
+   * l'a trouvé. Et si le joueur a coupé le bruit dans ses réglages, on n'y
+   * touche pas : c'est son choix, pas celui du récit.
+   */
+  const startNoise = (snrDb: number): void => {
+    if (!store.settings.noiseEnabled) return;
+    store.audio.updateSettings({ noiseEnabled: true, noiseSnrDb: snrDb });
+    void store.audio.startNoise();
+  };
+
+  const stopNoise = (): void => {
+    store.audio.stopNoise();
+    store.audio.updateSettings({
+      noiseEnabled: store.settings.noiseEnabled,
+      noiseSnrDb: store.settings.noiseSnrDb,
+    });
+  };
+
   /** Joue un code brut : un caractère émis au manipulateur, ou le signal HH. */
   const playCode = (code: string, wpm: number): void => {
     const elements = elementsForCode(code, timingAt(wpm));
@@ -205,6 +228,7 @@ export function storyView(context: ViewContext): View {
 
     const stop = (): void => {
       player.stop();
+      stopNoise();
       board?.destroy();
       board = null;
     };
@@ -294,6 +318,7 @@ export function storyView(context: ViewContext): View {
     const renderReceive = (beat: Extract<Beat, { kind: 'receive' }>, text: string): HTMLElement => {
       let wpm = beat.wpm ?? 12;
       let step = 0;
+      const snrDb = beat.sound?.snrDb ?? episode.sound.snrDb;
 
       const tape = h('p', {
         class: 'recit-bande',
@@ -347,6 +372,7 @@ export function storyView(context: ViewContext): View {
 
       const listen = async (): Promise<void> => {
         player.stop();
+        startNoise(snrDb);
         step = 0;
         showTape(0);
         lastChar = '';
@@ -368,6 +394,7 @@ export function storyView(context: ViewContext): View {
       const oneMore = async (): Promise<void> => {
         if (step >= text.length) return;
         player.stop();
+        startNoise(snrDb);
         // On saute les espaces plutôt que de les compter comme un pas : un
         // clic qui ne produit aucun son passe pour un bouton cassé.
         while (step < text.length && text[step] === ' ') step += 1;
@@ -383,6 +410,7 @@ export function storyView(context: ViewContext): View {
       const again = async (): Promise<void> => {
         if (!stepMode) return listen();
         player.stop();
+        startNoise(snrDb);
         if (lastChar !== '') await playAt(lastChar, wpm);
       };
 
@@ -574,6 +602,7 @@ export function storyView(context: ViewContext): View {
     element: root,
     destroy: () => {
       player.stop();
+      stopNoise();
       board?.destroy();
     },
   };

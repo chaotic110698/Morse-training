@@ -210,7 +210,13 @@ de sommaire.
   fonctionner pendant le siège : c'est le ressort de l'épisode, et c'est le
   point le plus fragile de la génération II ;
 - les conditions exactes de la correspondance privée par pigeon — longueur
-  admise et prix au mot.
+  admise et prix au mot ;
+- ce qui a réellement sauvé la tour Eiffel de la démolition à l'expiration de
+  sa concession, et la part qu'y a prise son usage radio ;
+- l'usage du suivi des opérateurs à leur frappe dans le renseignement de la
+  Grande Guerre : le fait est cité, sa portée reste à mesurer ;
+- l'heure exacte à laquelle le signal du Titanic a faibli, et la cause —
+  l'affaiblissement des dynamos est l'explication courante.
 
 Les transcriptions du trafic du Titanic sont, elles, largement documentées.
 
