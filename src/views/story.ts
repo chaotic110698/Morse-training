@@ -26,6 +26,8 @@ import {
   type StoryContext,
 } from '../core/story.ts';
 import { EPISODES, LINEAGE, type Beat, type Episode } from '../data/story.ts';
+import { themeForYear } from '../data/themes.ts';
+import { borrowTheme } from '../core/theme-stage.ts';
 import type { ToneVoice } from '../core/audio.ts';
 import type { View, ViewContext } from '../ui/router.ts';
 
@@ -141,6 +143,7 @@ export function storyView(context: ViewContext): View {
   // --- Sommaire ---
 
   const drawHub = (): void => {
+    borrowTheme(null);
     const blocks: HTMLElement[] = [];
     for (const rank of [1, 2, 3, 4, 5]) {
       const member = LINEAGE.generations.find((entry) => entry.rank === rank);
@@ -232,6 +235,11 @@ export function storyView(context: ViewContext): View {
    * terminé, auquel cas il n'y a plus rien à reprendre : on le rejoue.
    */
   const openEpisode = (episode: Episode, fromStart = false): void => {
+    // L'habit de l'époque, au même titre que son grain sonore. C'est un
+    // emprunt : le sommaire le rendra.
+    const era = themeForYear(episode.year);
+    borrowTheme(store.settings.storyTheme && era ? era.id : null);
+
     const ctx = storyContext(episode);
     const record = store.progress.story.episodes[episode.id];
     const resume = record && !record.completed ? record.beat : 0;
@@ -672,6 +680,15 @@ export function storyView(context: ViewContext): View {
           text: VOICE_LABELS[voiceOf(episode)].nom,
           title: VOICE_LABELS[voiceOf(episode)].quoi,
         }),
+        // Sans cette mention, le changement d'habit serait une surprise sans
+        // cause visible. Elle ne s'affiche que lorsqu'il a bien eu lieu.
+        store.settings.storyTheme && era
+          ? h('span', {
+              class: 'recit-entete__habit',
+              text: era.name,
+              title: `${era.blurb} L’habit suit l’époque de l’épisode ; on peut le débrancher dans les réglages.`,
+            })
+          : null,
       ),
       h('h2', { class: 'recit-titre', text: episode.title }),
       meter,
@@ -689,6 +706,7 @@ export function storyView(context: ViewContext): View {
       player.stop();
       stopNoise();
       board?.destroy();
+      borrowTheme(null);
     },
   };
 }

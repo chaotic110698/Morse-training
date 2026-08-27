@@ -159,6 +159,18 @@ export function createThemeOptions(store: AppStore): HTMLElement[] {
     );
   }
 
+  // Celui-ci vaut pour tous les habits, y compris les deux modernes : c'est le
+  // mode histoire qui prête l'habit, pas l'habit qui l'appelle.
+  rows.push(
+    field(
+      'Mode histoire',
+      toggle(store.settings.storyTheme, 'Suivre l’époque de l’épisode', (value) =>
+        store.updateSettings({ storyTheme: value }),
+      ),
+      'Chaque épisode s’ouvre dans l’habit de son année, comme il choisit déjà son grain sonore : le registre de papier en 1844, la cabine à la lampe en 1901, le poste de campagne en 1944. Votre habit vous est rendu en sortant.',
+    ),
+  );
+
   if (theme && theme.light !== 'aucune') {
     rows.push(
       field(

@@ -2868,6 +2868,15 @@
   color: var(--text-faint);
 }
 
+/* L'habit emprunté à l'époque, annoncé à côté du grain sonore. */
+.recit-entete__habit {
+  padding: 0.15rem 0.6rem;
+  border: 1px dashed var(--border-strong);
+  border-radius: 999px;
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
 /* --- Galerie des habits --- */
 
 /* Les vignettes se rangent d'elles-mêmes : la galerie ne connaît pas le nombre

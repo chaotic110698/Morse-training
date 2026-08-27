@@ -79,6 +79,11 @@ export interface Settings {
   /** Force de la lumière de la pièce. */
   ambience: Ambience;
   /**
+   * Ouvrir chaque épisode du mode histoire dans l'habit de son époque, comme
+   * il choisit déjà son grain sonore. L'emprunt est rendu en sortant.
+   */
+  storyTheme: boolean;
+  /**
    * Indicatif fictif adopté par l'opérateur. Sert d'exemple d'entraînement, il
    * n'a aucune valeur officielle et ne doit pas être émis sur l'air.
    */
@@ -124,6 +129,7 @@ export const DEFAULT_SETTINGS: Settings = {
   themeFollowsSystem: false,
   periodFont: true,
   ambience: 'discrete',
+  storyTheme: true,
   callsign: '',
   kochOrder: 'lcwo',
   kochThreshold: 0.9,

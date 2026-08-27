@@ -18,6 +18,7 @@ import { LICENCE_HUB, locate } from '../data/licence-syllabus.ts';
 import type { RouteDefinition, ToastKind } from './router.ts';
 import type { AppStore } from '../core/store.ts';
 import { resolveThemeId, themeById } from '../data/themes.ts';
+import { borrowedTheme, onBorrowedTheme } from '../core/theme-stage.ts';
 import type { Theme } from '../core/settings.ts';
 
 const COLLAPSED_KEY = 'morse-training/nav-collapsed';
@@ -184,9 +185,12 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
    * lumière ou pour ses empattements.
    */
   const applyTheme = (): void => {
+    // Un habit emprunté par le mode histoire l'emporte : c'est l'époque qui
+    // parle, et elle ne suit ni le système ni le jumeau.
+    const lent = borrowedTheme();
     const chosen: Theme = store.settings.theme;
     const theme = themeById(
-      resolveThemeId(chosen, store.settings.themeFollowsSystem, media.matches),
+      lent ?? resolveThemeId(chosen, store.settings.themeFollowsSystem, media.matches),
     );
     const root = document.documentElement;
     root.dataset['theme'] = theme.id;
@@ -204,6 +208,7 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme.bar);
   };
   media.addEventListener('change', applyTheme);
+  onBorrowedTheme(applyTheme);
   store.subscribe(applyTheme);
   applyTheme();
 
