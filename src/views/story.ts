@@ -26,6 +26,7 @@ import {
   type StoryContext,
 } from '../core/story.ts';
 import { EPISODES, KEYER_ERAS, LINEAGE, type Beat, type Episode } from '../data/story.ts';
+import type { ToneVoice } from '../core/audio.ts';
 import type { View, ViewContext } from '../ui/router.ts';
 
 const GENERATION_NAMES = ['I', 'II', 'III', 'IV', 'V'];
@@ -36,6 +37,25 @@ const GENERATION_NAMES = ['I', 'II', 'III', 'IV', 'V'];
  * sonore de sa propre frappe.
  */
 const SEND_WPM = 18;
+
+/**
+ * Ce que l'époque donne à entendre. Le nom est affiché en tête d'épisode : sans
+ * lui, on remarque que le son a changé sans savoir de quoi il s'agit.
+ */
+const VOICE_LABELS: Record<ToneVoice, { nom: string; quoi: string }> = {
+  relais: {
+    nom: 'Sondeur à relais',
+    quoi: 'Le télégraphe filaire ne chantait pas : il claquait, une fois à la fermeture du circuit, une fois à l’ouverture.',
+  },
+  etincelle: {
+    nom: 'Poste à étincelle',
+    quoi: 'Une note sale, hachée à la cadence des décharges. C’est le son de la radio de 1900 aux années 1920.',
+  },
+  pur: {
+    nom: 'Note pure',
+    quoi: 'La note propre d’un oscillateur, telle qu’on l’entend depuis les années 1930.',
+  },
+};
 
 /** Minutes et secondes, pour le temps d'antenne. */
 const format = (seconds: number): string => {
@@ -82,16 +102,23 @@ export function storyView(context: ViewContext): View {
     });
   };
 
+  /**
+   * Le grain de l'époque. Les données parlent de timbre, le moteur audio de
+   * voix : c'est la même chose, et la traduction tient sur une ligne.
+   */
+  const voiceOf = (episode: Episode): ToneVoice => episode.sound.timbre;
+
   /** Joue un code brut : un caractère émis au manipulateur, ou le signal HH. */
-  const playCode = (code: string, wpm: number): void => {
+  const playCode = (code: string, wpm: number, voice: ToneVoice = 'pur'): void => {
     const elements = elementsForCode(code, timingAt(wpm));
-    if (elements.length > 0) void player.playElements(elements);
+    if (elements.length > 0) void player.playElements(elements, { voice });
   };
 
   /** Joue un texte à la vitesse de l'épisode, sans toucher aux réglages du site. */
   const playAt = async (
     text: string,
     wpm: number,
+    voice: ToneVoice,
     onChar?: (index: number, char: string | undefined) => void,
   ): Promise<boolean> => {
     const timing = timingAt(wpm);
@@ -103,7 +130,7 @@ export function storyView(context: ViewContext): View {
       timing,
     );
     if (elements.length === 0) return false;
-    return player.playElements(elements, { onChar: onChar ?? undefined });
+    return player.playElements(elements, { onChar: onChar ?? undefined, voice });
   };
 
   // --- Sommaire ---
@@ -207,7 +234,7 @@ export function storyView(context: ViewContext): View {
     let errors = 0;
     let bestCopy = record?.bestCopy ?? 0;
 
-    table = createMorseTable({ onPick: (_, code) => playCode(code, SEND_WPM) });
+    table = createMorseTable({ onPick: (_, code) => playCode(code, SEND_WPM, voiceOf(episode)) });
     // La table se règle une fois pour l'épisode : toutes les lettres, plus les
     // chiffres et la ponctuation seulement s'il en emploie.
     table.limit(
@@ -332,6 +359,7 @@ export function storyView(context: ViewContext): View {
       let wpm = beat.wpm ?? 12;
       let step = 0;
       const snrDb = beat.sound?.snrDb ?? episode.sound.snrDb;
+      const voice = beat.sound?.timbre ?? voiceOf(episode);
 
       const tape = h('p', {
         class: 'recit-bande',
@@ -389,7 +417,7 @@ export function storyView(context: ViewContext): View {
         step = 0;
         showTape(0);
         lastChar = '';
-        const complete = await playAt(text, wpm, (position) => {
+        const complete = await playAt(text, wpm, voice, (position) => {
           step = position + 1;
           showTape(step);
         });
@@ -417,14 +445,14 @@ export function storyView(context: ViewContext): View {
         lastChar = char;
         showTape(step);
         refresh();
-        await playAt(char, wpm);
+        await playAt(char, wpm, voice);
       };
 
       const again = async (): Promise<void> => {
         if (!stepMode) return listen();
         player.stop();
         startNoise(snrDb);
-        if (lastChar !== '') await playAt(lastChar, wpm);
+        if (lastChar !== '') await playAt(lastChar, wpm, voice);
       };
 
       const wpmLabel = h('output', { class: 'recit-tempo__valeur', text: `${wpm} WPM` });
@@ -576,7 +604,7 @@ export function storyView(context: ViewContext): View {
       showClock();
 
       board = createKeyerBoard({
-        play: (code) => playCode(code, SEND_WPM),
+        play: (code) => playCode(code, SEND_WPM, voiceOf(episode)),
         onChange: (state) => { errors = state.errors; },
         onFirstKey: startClock,
         onDone: () => {
@@ -633,6 +661,11 @@ export function storyView(context: ViewContext): View {
         h('span', {
           class: 'recit-entete__qui',
           text: `${interpolate('{prenom} {nom}', ctx)} · sine ${sineOf(LINEAGE, episode.generation)}`,
+        }),
+        h('span', {
+          class: 'recit-entete__son',
+          text: VOICE_LABELS[voiceOf(episode)].nom,
+          title: VOICE_LABELS[voiceOf(episode)].quoi,
         }),
       ),
       h('h2', { class: 'recit-titre', text: episode.title }),

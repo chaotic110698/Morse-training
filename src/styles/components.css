@@ -2456,6 +2456,17 @@
   font-size: 0.84rem;
 }
 
+/* Le grain de l'époque, nommé. Le son change d'un épisode à l'autre ; sans
+   étiquette, on l'entend sans savoir ce qu'on entend. */
+.recit-entete__son {
+  padding: 0.1rem 0.6rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  cursor: help;
+}
+
 .recit-titre {
   margin: 0;
   font-size: clamp(1.6rem, 4vw, 2.2rem);

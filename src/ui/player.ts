@@ -9,6 +9,7 @@
 import { encodeChar, isValidCode, normalizeMorseInput } from '../core/morse.ts';
 import { buildSequence, sequenceDuration, type TimedElement } from '../core/timing.ts';
 import type { AppStore } from '../core/store.ts';
+import type { ToneVoice } from '../core/audio.ts';
 import type { SignalLamp } from './lamp.ts';
 
 export interface PlayOptions {
@@ -21,6 +22,11 @@ export interface PlayOptions {
   onSignal?: (on: boolean, element: TimedElement) => void;
   onStart?: (duration: number) => void;
   onEnd?: (completed: boolean) => void;
+  /**
+   * Le grain de l'époque, pour le mode histoire. Par défaut la note propre
+   * qu'emploie tout le reste du site.
+   */
+  voice?: ToneVoice;
 }
 
 export class MorsePlayer {
@@ -108,7 +114,9 @@ export class MorsePlayer {
 
     let lastCharIndex = -1;
     let lastSignalElement: TimedElement | null = null;
-    const handle = this.store.audio.play(elements, {
+    const handle = this.store.audio.play(
+      elements,
+      {
       onToneStart: (element) => {
         this.lamp?.on(element.kind ?? null);
         lastSignalElement = element;
@@ -122,7 +130,9 @@ export class MorsePlayer {
         this.lamp?.off();
         options.onSignal?.(false, element);
       },
-    });
+      },
+      options.voice ?? 'pur',
+    );
 
     // La vibration est confiée au système en une seule fois : l'ordonnancement
     // par l'OS est bien plus régulier qu'une série d'appels depuis JavaScript.

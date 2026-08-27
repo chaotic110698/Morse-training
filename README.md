@@ -161,6 +161,21 @@ mot suffit. Les flèches déplacent la sélection, Entrée ouvre, Échap efface 
 referme. Choisir une section ouvre son chapitre à la bonne hauteur ; choisir un
 terme ouvre le lexique sur sa définition.
 
+**Le mode histoire**
+
+Cinq générations de télégraphistes de 1844 à 1999, sur des situations et des
+messages historiques ; seule la famille est inventée, et chaque épisode dit à
+la fin ce qui est vrai. Le récit se lit, le morse se manipule : beaucoup de
+texte lu autour de quelques échanges très courts, seul dosage qui rende une
+longue scène tenable.
+
+Le son suit l'époque. Le télégraphe filaire ne chantait pas — il claquait, une
+fois à la fermeture du circuit, une fois à l'ouverture ; les postes à étincelle
+des années 1900 rendaient une note sale, hachée à la cadence des décharges ; la
+note propre d'un oscillateur n'arrive qu'ensuite. Le rapport signal sur bruit
+change lui aussi d'un épisode à l'autre, et parfois d'un message à l'autre
+quand un navire perd ses dynamos.
+
 **Le lexique**
 
 Quatre-vingt-dix-sept définitions — du point et du trait à la PIRE, en passant

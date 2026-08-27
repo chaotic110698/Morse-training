@@ -44,6 +44,22 @@ export const DEFAULT_AUDIO_SETTINGS: AudioSettings = {
   waveform: 'sine',
 };
 
+/**
+ * Le grain d'une époque.
+ *
+ * `pur` est la note propre d'un oscillateur à quartz — le son que tout le site
+ * emploie. `etincelle` reproduit un émetteur à éclateur : une note sale,
+ * hachée par la fréquence des décharges, telle qu'on l'entendait de 1900 aux
+ * années 1920. `relais` évoque le télégraphe filaire, qui ne produisait aucune
+ * note : deux claquements, un à la fermeture du circuit, un à l'ouverture.
+ *
+ * Le `relais` d'ici est une reconstitution et non une copie : le claquement est
+ * posé sur une note tenue, alors qu'un vrai sondeur n'en avait pas. Sans elle,
+ * il faudrait lire la durée au silence entre deux clics, ce que savaient faire
+ * les opérateurs de 1860 et personne d'autre.
+ */
+export type ToneVoice = 'pur' | 'etincelle' | 'relais';
+
 export interface PlaybackHooks {
   /** Appelé au début de chaque son, calé sur l'horloge audio. */
   onToneStart?: (element: TimedElement, index: number) => void;
@@ -70,6 +86,13 @@ export class AudioEngine {
   private playbackGain: GainNode | null = null;
   private sidetoneOsc: OscillatorNode | null = null;
   private sidetoneGain: GainNode | null = null;
+  /** Rugosité de l'éclateur : un gain que module une basse fréquence. */
+  private roughGain: GainNode | null = null;
+  private roughDepth: GainNode | null = null;
+  private roughOsc: OscillatorNode | null = null;
+  /** Bruit court, pour le claquement du relais. */
+  private clickBuffer: AudioBuffer | null = null;
+  private voice: ToneVoice = 'pur';
   private activeHandle: PlaybackHandle | null = null;
   private noiseGain: GainNode | null = null;
   private noiseSource: AudioBufferSourceNode | null = null;
@@ -236,6 +259,25 @@ export class AudioEngine {
     [this.playbackOsc, this.playbackGain] = makeVoice();
     [this.sidetoneOsc, this.sidetoneGain] = makeVoice();
 
+    // La lecture traverse un étage de rugosité, transparent au repos. Une
+    // basse fréquence vient moduler son gain pour l'éclateur ; à profondeur
+    // nulle, le signal passe intact.
+    this.roughGain = ctx.createGain();
+    this.roughGain.gain.value = 1;
+    this.playbackGain.disconnect();
+    this.playbackGain.connect(this.roughGain);
+    this.roughGain.connect(this.master);
+
+    this.roughDepth = ctx.createGain();
+    this.roughDepth.gain.value = 0;
+    this.roughDepth.connect(this.roughGain.gain);
+
+    this.roughOsc = ctx.createOscillator();
+    this.roughOsc.type = 'square';
+    this.roughOsc.frequency.value = 120;
+    this.roughOsc.connect(this.roughDepth);
+    this.roughOsc.start();
+
     // Le bruit a sa propre voie, réglée indépendamment des tonalités.
     this.noiseGain = ctx.createGain();
     this.noiseGain.gain.value = 0;
@@ -243,15 +285,71 @@ export class AudioEngine {
   }
 
   private get ramp(): number {
+    // Le relais claque : sa montée est franche quoi qu'on ait réglé, sinon le
+    // claquement se noie dans une attaque douce et ne s'entend plus.
+    if (this.voice === 'relais') return 0.0015;
     return Math.max(0.001, this.settings.rampMs / 1000);
+  }
+
+  /** Règle le grain de la voix de lecture avant de programmer une séquence. */
+  private applyVoice(voice: ToneVoice): void {
+    this.voice = voice;
+    const ctx = this.context;
+    const osc = this.playbackOsc;
+    const depth = this.roughDepth;
+    if (!ctx || !osc || !depth) return;
+    const now = ctx.currentTime;
+
+    if (voice === 'etincelle') {
+      osc.type = 'sawtooth';
+      // Un éclateur émet un train d'étincelles : la note existe, mais elle est
+      // hachée à la cadence des décharges. C'est ce hachage qu'on entend, et
+      // c'est lui qui rend le son reconnaissable entre mille.
+      this.roughOsc?.frequency.setValueAtTime(140, now);
+      depth.gain.setTargetAtTime(0.45, now, 0.02);
+      return;
+    }
+
+    osc.type = voice === 'relais' ? 'sine' : this.settings.waveform;
+    depth.gain.setTargetAtTime(0, now, 0.02);
+  }
+
+  /**
+   * Le claquement du relais : une bouffée de bruit très courte, posée à
+   * l'ouverture et à la fermeture du circuit.
+   */
+  private scheduleClick(at: number): void {
+    const ctx = this.context;
+    const master = this.master;
+    if (!ctx || !master) return;
+
+    if (!this.clickBuffer) {
+      const frames = Math.max(1, Math.round(ctx.sampleRate * 0.006));
+      const buffer = ctx.createBuffer(1, frames, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < frames; i += 1) {
+        // Une décroissance rapide : c'est ce qui fait un clic plutôt qu'un souffle.
+        data[i] = (Math.random() * 2 - 1) * (1 - i / frames) ** 3;
+      }
+      this.clickBuffer = buffer;
+    }
+
+    const source = ctx.createBufferSource();
+    source.buffer = this.clickBuffer;
+    const gain = ctx.createGain();
+    gain.gain.value = this.settings.volume * 0.5;
+    source.connect(gain);
+    gain.connect(master);
+    source.start(at);
   }
 
   /**
    * Programme une séquence complète et renvoie une poignée permettant de
    * l'interrompre. Une seule lecture est active à la fois.
    */
-  play(elements: TimedElement[], hooks: PlaybackHooks = {}): PlaybackHandle {
+  play(elements: TimedElement[], hooks: PlaybackHooks = {}, voice: ToneVoice = 'pur'): PlaybackHandle {
     this.stop();
+    this.applyVoice(voice);
     const ctx = this.context;
     const gain = this.playbackGain;
     if (!ctx || !gain) {
@@ -283,6 +381,10 @@ export class AudioEngine {
         gain.gain.linearRampToValueAtTime(0, cursor + hold + ramp);
         transitions.push({ time: cursor, index, start: true });
         transitions.push({ time: cursor + element.duration, index, start: false });
+        if (voice === 'relais') {
+          this.scheduleClick(cursor);
+          this.scheduleClick(cursor + hold);
+        }
       }
       cursor += element.duration;
     });
