@@ -155,9 +155,13 @@ du clavier, avec l'indicatif de la famille dedans.
 Cela règle du même coup la règle « l'échec ne bloque jamais » : on se corrige
 toujours, à l'intérieur de la fiction.
 
-Idée : l'époque *propose* le manipulateur d'époque — droit seul en 1844, le
-« bug » à partir de 1904, l'électronique après 1940, le clavier après 1960 —
-mais le joueur peut toujours en changer.
+L'époque *propose* le manipulateur d'époque — droit seul en 1844, le « bug » à
+partir de 1904, l'électronique après 1940, le clavier après 1960 — mais le
+joueur peut toujours en changer. **Fait** : les cinq manipulateurs sont côte à
+côte sous le message, ceux qui n'existaient pas encore portent une astérisque
+et une mention datée les explique, et le choix suit le joueur d'un message à
+l'autre comme d'un épisode au suivant. Le « bug » n'a pas d'équivalent exact
+sur le site : ce sont les palettes sans répétition qui portent son année.
 
 ### La réception
 
@@ -253,11 +257,27 @@ Les transcriptions du trafic du Titanic sont, elles, largement documentées.
 - **La maquette est abandonnée** : on construit et on débogue directement sur
   le site.
 
-### Ce qui reste ouvert
+### Où en est le mode, au 27 août
 
-1. Le volume d'écriture : quatorze épisodes de cette densité représentent
-   plusieurs dizaines de milliers de mots. **La méthode qui a marché pour le
-   questionnaire s'applique** : le moteur d'abord avec un épisode complet de
-   bout en bout, puis les autres génération par génération.
+**Fait.** Le moteur (`src/core/story.ts`) et ses données (`src/data/story.ts`),
+le sommaire, le lecteur temps par temps, la sauvegarde JSON du bandeau, la
+réception avec sa table de déchiffrage, son mode « lettre suivante » et ses
+`QRS` / `AGN`, l'émission avec son retour vert et rouge et son effacement en
+`HH`, les manipulateurs réels branchés sur le message attendu, le grain de
+chaque époque à la lecture comme sous la main, et treize épisodes couvrant les
+générations I à IV.
 
-**Rien n'est commencé.** Une maquette d'écran existe, elle n'est reliée à rien.
+**Reste à écrire.** La génération V, de 1965 à 1999 : *Le quart*, *Les trois
+minutes*, *Notre dernier cri* (1997), *SK* (1999), et son « Entre les ondes ».
+
+**Reste à faire, plus petit.**
+
+- Les faits listés plus haut sous « À vérifier avant d'écrire » ne sont pas
+  tous vérifiés : ils tiennent lieu de décor, pas de source.
+- Le dépassement du temps d'antenne — le compteur qui passe au rouge — n'est
+  couvert par aucun essai.
+
+Le volume d'écriture reste le vrai coût : quatorze épisodes de cette densité
+font plusieurs dizaines de milliers de mots. La méthode tient — le moteur
+d'abord avec un épisode complet de bout en bout, puis les autres génération par
+génération — et c'est celle qui a mené jusqu'ici.
