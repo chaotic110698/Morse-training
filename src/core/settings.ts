@@ -144,13 +144,42 @@ const AMBIENCES: Ambience[] = ['aucune', 'discrete', 'marquee'];
 const clamp = (value: number, min: number, max: number): number =>
   Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : min;
 
+/** Les réglages dont la valeur est le nom d'une touche du clavier. */
+const KEY_BINDINGS = ['keyStraight', 'keyDit', 'keyDah'] as const;
+
+/**
+ * Ramène chaque champ au type attendu, avant tout contrôle de bornes.
+ *
+ * Les nombres et les listes fermées étaient vérifiés un par un ; les booléens
+ * et les noms de touches, non — ils passaient tels quels depuis le fichier
+ * importé. Un `haptics: 3` restait un 3, et une touche à `null` éteignait le
+ * manipulateur en silence, `matchesBinding` comparant par identité sans jamais
+ * lever.
+ *
+ * Le modèle est pris dans les valeurs par défaut plutôt qu'écrit à la main :
+ * un booléen ajouté demain sera couvert sans qu'on ait à y penser.
+ */
+function typed(raw: Settings): Settings {
+  const out = raw as unknown as Record<string, unknown>;
+  for (const [key, fallback] of Object.entries(DEFAULT_SETTINGS)) {
+    if (typeof fallback === 'boolean' && typeof out[key] !== 'boolean') out[key] = fallback;
+  }
+  for (const key of KEY_BINDINGS) {
+    const value = out[key];
+    // Un code de touche est court et sans espace : « Space », « ArrowLeft ».
+    const usable = typeof value === 'string' && value.trim() !== '' && value.length <= 40;
+    if (!usable) out[key] = DEFAULT_SETTINGS[key];
+  }
+  return raw;
+}
+
 /**
  * Ramène des réglages arbitraires dans les bornes valides. Utilise au
  * chargement du stockage local et à l'import d'une sauvegarde, où les données
  * peuvent provenir d'une version antérieure ou avoir été éditées à la main.
  */
 export function normalizeSettings(input: Partial<Settings> | null | undefined): Settings {
-  const raw = { ...DEFAULT_SETTINGS, ...(input ?? {}) };
+  const raw = typed({ ...DEFAULT_SETTINGS, ...(input ?? {}) });
   const charWpm = Math.round(clamp(raw.charWpm, 5, 60));
   return {
     ...raw,

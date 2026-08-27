@@ -1,46 +1,18 @@
-/** Table des pages : sert à la fois au routeur et à la navigation latérale. */
+/**
+ * Table des pages : sert à la fois au routeur et à la navigation latérale.
+ *
+ * Les métadonnées — chemin, libellé, icône, groupe — sont statiques, parce que
+ * le menu latéral les affiche toutes dès le premier écran. Les vues, elles,
+ * sont chargées à la demande : `load` est un import dynamique, que l'outil de
+ * construction transforme en un fichier par page. Ouvrir l'accueil ne
+ * télécharge donc plus les vingt-trois chapitres du cours de licence ni les
+ * cent kilo-octets de récit du mode histoire.
+ *
+ * Seul l'accueil échappe à la règle : c'est la page servie en premier, et lui
+ * imposer un aller-retour de plus au démarrage serait un recul.
+ */
 
 import { homeView } from './home.ts';
-import { principlesView } from './learn-principles.ts';
-import { historyView } from './learn-history.ts';
-import { alphabetView } from './learn-alphabet.ts';
-import { phoneticView } from './learn-phonetic.ts';
-import { communicationView } from './learn-communication.ts';
-import { radioView } from './learn-radio.ts';
-import { licenceExamView } from './licence-exam.ts';
-import { licenceFrameworkView } from './licence-framework.ts';
-import { licenceEmissionsView } from './licence-emissions.ts';
-import { licenceBandsView } from './licence-bands.ts';
-import { licenceTrafficView } from './licence-traffic.ts';
-import { licenceStationView } from './licence-station.ts';
-import { licenceDecibelsView } from './licence-decibels.ts';
-import { licenceAntennasView } from './licence-antennas.ts';
-import { licenceSafetyView } from './licence-safety.ts';
-import { licenceMathsView } from './licence-maths.ts';
-import { licenceOhmView } from './licence-ohm.ts';
-import { licenceAcView } from './licence-ac.ts';
-import { licenceTransformersView } from './licence-transformers.ts';
-import { licenceCircuitsView } from './licence-circuits.ts';
-import { licenceDiodesView } from './licence-diodes.ts';
-import { licenceTransistorsView } from './licence-transistors.ts';
-import { licenceStagesView } from './licence-stages.ts';
-import { licenceDigitalView } from './licence-digital.ts';
-import { licenceReceiversView } from './licence-receivers.ts';
-import { licenceModulationsView } from './licence-modulations.ts';
-import { licenceFormularyView } from './licence-formulary.ts';
-import { licenceQuizView } from './licence-quiz.ts';
-import { licenceHubView } from './licence-hub.ts';
-import { storyView } from './story.ts';
-import { freeView } from './train-free.ts';
-import { listenView } from './train-listen.ts';
-import { sendView } from './train-send.ts';
-import { wordsView } from './train-words.ts';
-import { readView } from './train-read.ts';
-import { statsView } from './stats.ts';
-import { achievementsView } from './achievements.ts';
-import { settingsView } from './settings.ts';
-import { translateView } from './translate.ts';
-import { recordView } from './record.ts';
 import type { RouteDefinition } from '../ui/router.ts';
 
 export const NAV_GROUPS: Array<{ id: string; label: string }> = [
@@ -62,7 +34,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Point de départ et état de votre progression.',
     icon: '🏠',
     group: 'accueil',
-    factory: homeView,
+    load: () => Promise.resolve(homeView),
   },
   {
     path: '/apprendre/principes',
@@ -71,7 +43,7 @@ export const ROUTES: RouteDefinition[] = [
     description: "Les règles de durée, la vitesse, Farnsworth et Koch.",
     icon: '📐',
     group: 'apprendre',
-    factory: principlesView,
+    load: () => import('./learn-principles.ts').then((m) => m.principlesView),
   },
   {
     path: '/apprendre/histoire',
@@ -80,7 +52,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'De 1794 à aujourd’hui, en dix jalons.',
     icon: '📜',
     group: 'apprendre',
-    factory: historyView,
+    load: () => import('./learn-history.ts').then((m) => m.historyView),
   },
   {
     path: '/apprendre/alphabet',
@@ -89,7 +61,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Le code complet, écoutable ligne à ligne.',
     icon: '🔤',
     group: 'apprendre',
-    factory: alphabetView,
+    load: () => import('./learn-alphabet.ts').then((m) => m.alphabetView),
   },
   {
     path: '/apprendre/alphabet-otan',
@@ -98,7 +70,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Épeler à la voix : Alfa, Bravo, Charlie…',
     icon: '🗣️',
     group: 'apprendre',
-    factory: phoneticView,
+    load: () => import('./learn-phonetic.ts').then((m) => m.phoneticView),
   },
   {
     path: '/apprendre/communication',
@@ -107,7 +79,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Signaux de procédure, codes Q, abréviations et indicatifs.',
     icon: '💬',
     group: 'apprendre',
-    factory: communicationView,
+    load: () => import('./learn-communication.ts').then((m) => m.communicationView),
   },
   {
     path: '/apprendre/radio',
@@ -116,7 +88,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Ondes, bandes, propagation et modes d’émission.',
     icon: '📻',
     group: 'apprendre',
-    factory: radioView,
+    load: () => import('./learn-radio.ts').then((m) => m.radioView),
   },
   {
     path: '/licence',
@@ -125,7 +97,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Le cours des deux épreuves, ses calculateurs et son questionnaire.',
     icon: '🎓',
     group: 'licence',
-    factory: licenceHubView,
+    load: () => import('./licence-hub.ts').then((m) => m.licenceHubView),
   },
   {
     path: '/licence/examen',
@@ -135,7 +107,7 @@ export const ROUTES: RouteDefinition[] = [
     icon: '🎓',
     group: 'licence',
     menu: false,
-    factory: licenceExamView,
+    load: () => import('./licence-exam.ts').then((m) => m.licenceExamView),
   },
   {
     path: '/licence/cadre',
@@ -145,7 +117,7 @@ export const ROUTES: RouteDefinition[] = [
     icon: '⚖️',
     group: 'licence',
     menu: false,
-    factory: licenceFrameworkView,
+    load: () => import('./licence-framework.ts').then((m) => m.licenceFrameworkView),
   },
   {
     path: '/licence/emissions',
@@ -155,7 +127,7 @@ export const ROUTES: RouteDefinition[] = [
     icon: '📶',
     group: 'licence',
     menu: false,
-    factory: licenceEmissionsView,
+    load: () => import('./licence-emissions.ts').then((m) => m.licenceEmissionsView),
   },
   {
     path: '/licence/bandes',
@@ -165,7 +137,7 @@ export const ROUTES: RouteDefinition[] = [
     icon: '🎚️',
     group: 'licence',
     menu: false,
-    factory: licenceBandsView,
+    load: () => import('./licence-bands.ts').then((m) => m.licenceBandsView),
   },
   {
     path: '/licence/trafic',
@@ -175,7 +147,7 @@ export const ROUTES: RouteDefinition[] = [
     icon: '📋',
     group: 'licence',
     menu: false,
-    factory: licenceTrafficView,
+    load: () => import('./licence-traffic.ts').then((m) => m.licenceTrafficView),
   },
   {
     path: '/licence/station',
@@ -185,7 +157,7 @@ export const ROUTES: RouteDefinition[] = [
     icon: '🪪',
     group: 'licence',
     menu: false,
-    factory: licenceStationView,
+    load: () => import('./licence-station.ts').then((m) => m.licenceStationView),
   },
   {
     path: '/licence/decibels',
@@ -195,7 +167,7 @@ export const ROUTES: RouteDefinition[] = [
     icon: '🧮',
     group: 'licence',
     menu: false,
-    factory: licenceDecibelsView,
+    load: () => import('./licence-decibels.ts').then((m) => m.licenceDecibelsView),
   },
   {
     path: '/licence/antennes',
@@ -205,7 +177,7 @@ export const ROUTES: RouteDefinition[] = [
     icon: '🗼',
     group: 'licence',
     menu: false,
-    factory: licenceAntennasView,
+    load: () => import('./licence-antennas.ts').then((m) => m.licenceAntennasView),
   },
   {
     path: '/licence/securite',
@@ -215,7 +187,7 @@ export const ROUTES: RouteDefinition[] = [
     icon: '⚡',
     group: 'licence',
     menu: false,
-    factory: licenceSafetyView,
+    load: () => import('./licence-safety.ts').then((m) => m.licenceSafetyView),
   },
   {
     path: '/licence/calcul',
@@ -225,7 +197,7 @@ export const ROUTES: RouteDefinition[] = [
     icon: '🔢',
     group: 'licence',
     menu: false,
-    factory: licenceMathsView,
+    load: () => import('./licence-maths.ts').then((m) => m.licenceMathsView),
   },
   {
     path: '/licence/ohm',
@@ -235,7 +207,7 @@ export const ROUTES: RouteDefinition[] = [
     icon: '🔌',
     group: 'licence',
     menu: false,
-    factory: licenceOhmView,
+    load: () => import('./licence-ohm.ts').then((m) => m.licenceOhmView),
   },
   {
     path: '/licence/alternatif',
@@ -245,7 +217,7 @@ export const ROUTES: RouteDefinition[] = [
     icon: '〰️',
     group: 'licence',
     menu: false,
-    factory: licenceAcView,
+    load: () => import('./licence-ac.ts').then((m) => m.licenceAcView),
   },
   {
     path: '/licence/transformateurs',
@@ -255,7 +227,7 @@ export const ROUTES: RouteDefinition[] = [
     icon: '🔋',
     group: 'licence',
     menu: false,
-    factory: licenceTransformersView,
+    load: () => import('./licence-transformers.ts').then((m) => m.licenceTransformersView),
   },
   {
     path: '/licence/circuits',
@@ -265,7 +237,7 @@ export const ROUTES: RouteDefinition[] = [
     icon: '🎛️',
     group: 'licence',
     menu: false,
-    factory: licenceCircuitsView,
+    load: () => import('./licence-circuits.ts').then((m) => m.licenceCircuitsView),
   },
   {
     path: '/licence/diodes',
@@ -275,7 +247,7 @@ export const ROUTES: RouteDefinition[] = [
     icon: '▶️',
     group: 'licence',
     menu: false,
-    factory: licenceDiodesView,
+    load: () => import('./licence-diodes.ts').then((m) => m.licenceDiodesView),
   },
   {
     path: '/licence/transistors',
@@ -285,7 +257,7 @@ export const ROUTES: RouteDefinition[] = [
     icon: '🧩',
     group: 'licence',
     menu: false,
-    factory: licenceTransistorsView,
+    load: () => import('./licence-transistors.ts').then((m) => m.licenceTransistorsView),
   },
   {
     path: '/licence/etages',
@@ -295,7 +267,7 @@ export const ROUTES: RouteDefinition[] = [
     icon: '📢',
     group: 'licence',
     menu: false,
-    factory: licenceStagesView,
+    load: () => import('./licence-stages.ts').then((m) => m.licenceStagesView),
   },
   {
     path: '/licence/numerique',
@@ -305,7 +277,7 @@ export const ROUTES: RouteDefinition[] = [
     icon: '🔣',
     group: 'licence',
     menu: false,
-    factory: licenceDigitalView,
+    load: () => import('./licence-digital.ts').then((m) => m.licenceDigitalView),
   },
   {
     path: '/licence/recepteurs',
@@ -315,7 +287,7 @@ export const ROUTES: RouteDefinition[] = [
     icon: '📺',
     group: 'licence',
     menu: false,
-    factory: licenceReceiversView,
+    load: () => import('./licence-receivers.ts').then((m) => m.licenceReceiversView),
   },
   {
     path: '/licence/modulations',
@@ -325,7 +297,7 @@ export const ROUTES: RouteDefinition[] = [
     icon: '🌊',
     group: 'licence',
     menu: false,
-    factory: licenceModulationsView,
+    load: () => import('./licence-modulations.ts').then((m) => m.licenceModulationsView),
   },
   {
     path: '/licence/formulaire',
@@ -335,7 +307,7 @@ export const ROUTES: RouteDefinition[] = [
     icon: '📄',
     group: 'licence',
     menu: false,
-    factory: licenceFormularyView,
+    load: () => import('./licence-formulary.ts').then((m) => m.licenceFormularyView),
   },
   {
     path: '/licence/questionnaire',
@@ -345,7 +317,7 @@ export const ROUTES: RouteDefinition[] = [
     icon: '📝',
     group: 'licence',
     menu: false,
-    factory: licenceQuizView,
+    load: () => import('./licence-quiz.ts').then((m) => m.licenceQuizView),
   },
   {
     path: '/histoire',
@@ -354,7 +326,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Cinq générations de télégraphistes, de 1844 à 1999.',
     icon: '📻',
     group: 'histoire',
-    factory: storyView,
+    load: () => import('./story.ts').then((m) => m.storyView),
   },
   {
     path: '/entrainement/ecoute',
@@ -363,7 +335,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Reconnaître les caractères au son, méthode Koch.',
     icon: '🎧',
     group: 'entrainement',
-    factory: listenView,
+    load: () => import('./train-listen.ts').then((m) => m.listenView),
   },
   {
     path: '/entrainement/libre',
@@ -372,7 +344,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Vos caractères, sans limite de durée, avec les statistiques en direct.',
     icon: '🎚️',
     group: 'entrainement',
-    factory: freeView,
+    load: () => import('./train-free.ts').then((m) => m.freeView),
   },
   {
     path: '/entrainement/emission',
@@ -381,7 +353,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Manipulateur droit ou palettes iambiques.',
     icon: '🔑',
     group: 'entrainement',
-    factory: sendView,
+    load: () => import('./train-send.ts').then((m) => m.sendView),
   },
   {
     path: '/entrainement/mots',
@@ -390,7 +362,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Copier des groupes entiers, pas seulement des caractères.',
     icon: '📡',
     group: 'entrainement',
-    factory: wordsView,
+    load: () => import('./train-words.ts').then((m) => m.wordsView),
   },
   {
     path: '/entrainement/lecture',
@@ -399,7 +371,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Réviser sans son, points et traits à l’écran.',
     icon: '👁️',
     group: 'entrainement',
-    factory: readView,
+    load: () => import('./train-read.ts').then((m) => m.readView),
   },
   {
     path: '/outils/traducteur',
@@ -408,7 +380,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Traduire dans les deux sens, écouter, et émettre en lumière.',
     icon: '🔁',
     group: 'outils',
-    factory: translateView,
+    load: () => import('./translate.ts').then((m) => m.translateView),
   },
   {
     path: '/outils/enregistreur',
@@ -417,7 +389,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Capter sa frappe et l’exporter en audio et en texte.',
     icon: '🎙️',
     group: 'outils',
-    factory: recordView,
+    load: () => import('./record.ts').then((m) => m.recordView),
   },
   {
     path: '/progression/statistiques',
@@ -426,7 +398,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Précision par caractère, points faibles, historique.',
     icon: '📊',
     group: 'progression',
-    factory: statsView,
+    load: () => import('./stats.ts').then((m) => m.statsView),
   },
   {
     path: '/progression/succes',
@@ -435,7 +407,7 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Vos paliers, et l’export de votre progression.',
     icon: '🏅',
     group: 'progression',
-    factory: achievementsView,
+    load: () => import('./achievements.ts').then((m) => m.achievementsView),
   },
   {
     path: '/reglages',
@@ -444,6 +416,6 @@ export const ROUTES: RouteDefinition[] = [
     description: 'Vitesse, son, manipulateur, sorties, données.',
     icon: '⚙️',
     group: 'reglages',
-    factory: settingsView,
+    load: () => import('./settings.ts').then((m) => m.settingsView),
   },
 ];

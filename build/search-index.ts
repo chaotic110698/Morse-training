@@ -177,6 +177,8 @@ function wordsOf(strings: string[]): string {
 /** Associe chaque route au fichier de vue qui la fabrique. */
 function routeFiles(root: string): Map<string, string> {
   const routes = readFileSync(join(root, VIEWS, 'routes.ts'), 'utf8');
+
+  // Les vues encore importées statiquement — l'accueil, et ce qu'on y ajoutera.
   const imports = new Map<string, string>();
   const importPattern = /import\s*\{\s*([A-Za-z0-9_]+)\s*\}\s*from\s*'\.\/([^']+)'/g;
   let match = importPattern.exec(routes);
@@ -185,13 +187,39 @@ function routeFiles(root: string): Map<string, string> {
     match = importPattern.exec(routes);
   }
 
+  // Chaque route déclare son chargeur sous l'une des deux formes :
+  //   load: () => import('./x.ts').then((m) => m.xView)
+  //   load: () => Promise.resolve(xView)
   const out = new Map<string, string>();
-  const entryPattern = /path:\s*'([^']+)'[\s\S]*?factory:\s*([A-Za-z0-9_]+)/g;
+  // Le corps du chargeur peut tenir sur plusieurs lignes : un formateur
+  // automatique coupera la ligne dès qu'elle dépasse la largeur retenue.
+  const entryPattern = /path:\s*'([^']+)'[\s\S]*?load:\s*\(\)\s*=>\s*([\s\S]*?),\n/g;
   match = entryPattern.exec(routes);
   while (match !== null) {
-    const file = imports.get(match[2] as string);
-    if (file) out.set(match[1] as string, file);
+    const path = match[1] as string;
+    const loader = match[2] as string;
+    const dynamic = /import\('\.\/([^']+)'\)/.exec(loader);
+    if (dynamic) out.set(path, dynamic[1] as string);
+    else {
+      const eager = /Promise\.resolve\(\s*([A-Za-z0-9_]+)\s*\)/.exec(loader);
+      const file = eager ? imports.get(eager[1] as string) : undefined;
+      if (file) out.set(path, file);
+    }
     match = entryPattern.exec(routes);
+  }
+
+  // Ce relevé est fait à la construction, en lisant du texte : une refonte de
+  // `routes.ts` peut le rendre aveugle sans qu'aucun test ne s'en aperçoive —
+  // c'est arrivé le jour où les vues sont passées en chargement différé. On
+  // compte donc les routes déclarées et on refuse de construire un index qui
+  // en aurait perdu en chemin, plutôt que de livrer une recherche à moitié
+  // vide.
+  const declared = (routes.match(/^\s*path:\s*'/gm) ?? []).length;
+  if (declared === 0 || out.size < declared) {
+    throw new Error(
+      `Index des pages : ${out.size} route(s) reconnue(s) sur ${declared} déclarée(s) dans routes.ts. ` +
+        'Le relevé des chargeurs ne correspond plus à la forme du fichier.',
+    );
   }
   return out;
 }
