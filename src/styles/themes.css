@@ -276,6 +276,52 @@
   --radius-lg: 0;
 }
 
+/* --- Néon 2087 — hors du temps -------------------------------------------
+ *
+ * Celui-ci ne prétend à aucune époque : c'est un habit pour le plaisir.
+ *
+ * L'éclairage cyberpunk tient à deux sources de couleurs opposées plutôt qu'à
+ * une seule — le violet d'un côté, le bleu électrique de l'autre — et le noir
+ * n'y est jamais neutre : il tire vers le violet, parce qu'il ne fait que
+ * renvoyer ce qui l'éclaire.
+ *
+ * L'accent est le violet de l'enseigne ; le bleu électrique n'est pas perdu
+ * pour autant, il forme la couronne du voyant. Un tube au néon a bien ce
+ * cœur saturé et ce halo plus froid autour.
+ */
+
+:root[data-theme='neon'] {
+  --bg: #08060f;
+  --bg-elevated: #0f0b1e;
+  --surface: #130d24;
+  --surface-2: #1a1233;
+  --surface-3: #241946;
+  --border: #2c1f57;
+  --border-strong: #4a3596;
+
+  --text: #e8e2ff;
+  --text-muted: #a99ede;
+  --text-faint: #9186c8;
+
+  --accent: #c15cff;
+  --accent-soft: #c15cff26;
+  --accent-text: #0d0418;
+
+  --ok: #3dffa8;
+  --ok-soft: #3dffa826;
+  --error: #ff4d6d;
+  --error-soft: #ff4d6d26;
+
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.6), 0 10px 34px rgb(58 20 118 / 0.45);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.5);
+  --lamp-glow: 0 0 10px 2px var(--accent), 0 0 34px 12px #3ddcff59;
+
+  /* Presque à l'équerre : rien de ce monde-là n'a le coin adouci. */
+  --radius-sm: 1px;
+  --radius: 2px;
+  --radius-lg: 3px;
+}
+
 /* --- Traits partagés -------------------------------------------------------
  *
  * Ces règles s'accrochent aux attributs de trait, pas aux noms d'habits : elles

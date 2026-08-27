@@ -139,6 +139,41 @@
   97.2% { opacity: 1; }
 }
 
+/* --- Le néon ---------------------------------------------------------------
+ *
+ * Deux enseignes de couleurs opposées, l'une en haut à gauche, l'autre en bas
+ * à droite : c'est cet éclairage croisé qui fait le genre, bien plus que les
+ * couleurs elles-mêmes.
+ *
+ * Un tube au néon fatigué ne clignote pas régulièrement — il bafouille, en
+ * salves, puis se tient tranquille un long moment. D'où la respiration lente
+ * des quatre premiers cinquièmes, et la bousculade sur la fin. La salve est
+ * volontairement étalée sur une seconde entière : plus serrée, elle
+ * ressemblerait davantage à un stroboscope qu'à une enseigne.
+ */
+
+:root[data-lumiere='neon'] .ambiance__lueur {
+  background:
+    radial-gradient(75% 60% at 4% 6%, rgb(193 92 255 / 0.28), transparent 62%),
+    radial-gradient(70% 58% at 97% 94%, rgb(61 220 255 / 0.22), transparent 62%),
+    radial-gradient(120% 110% at 50% 50%, transparent 42%, rgb(2 0 8 / 0.42));
+  animation: ambiance-neon 11s ease-in-out infinite;
+}
+
+@keyframes ambiance-neon {
+  0% { opacity: 0.92; }
+  40% { opacity: 1; }
+  70% { opacity: 0.94; }
+  80% { opacity: 1; }
+  81.5% { opacity: 0.42; }
+  83% { opacity: 0.98; }
+  84.5% { opacity: 0.5; }
+  86% { opacity: 1; }
+  87.5% { opacity: 0.6; }
+  89% { opacity: 1; }
+  100% { opacity: 0.92; }
+}
+
 /* --- Quand on demande moins de mouvement -----------------------------------
  *
  * On garde la teinte, qui fait partie de l'habit, et on retire le vacillement,

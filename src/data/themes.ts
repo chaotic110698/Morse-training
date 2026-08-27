@@ -15,9 +15,10 @@
 
 /**
  * Ce qui éclaire la pièce. Sert à l'ambiance : la lumière du jour dérive
- * lentement, une flamme est irrégulière, un filament respire, un tube grésille.
+ * lentement, une flamme est irrégulière, un filament respire, un tube grésille,
+ * et une enseigne au néon bafouille avant de se rallumer.
  */
-export type LightSource = 'aucune' | 'fenetre' | 'bougie' | 'filament' | 'tube';
+export type LightSource = 'aucune' | 'fenetre' | 'bougie' | 'filament' | 'tube' | 'neon';
 
 export interface ThemeDef {
   /** Identifiant stable : il part dans les réglages enregistrés. */
@@ -134,6 +135,19 @@ export const THEMES: ThemeDef[] = [
     swatch: ['#eceae3', '#e5e3db', '#24242a', '#17171a'],
     period: true,
     years: [1950, 2100],
+  },
+  {
+    id: 'neon',
+    name: 'Néon 2087',
+    blurb: 'Pour le plaisir : verre fumé, violet électrique, et une enseigne qui bafouille au fond de la rue.',
+    lightness: 'sombre',
+    bar: '#08060f',
+    light: 'neon',
+    swatch: ['#08060f', '#1a1233', '#c15cff', '#e8e2ff'],
+    // Pas d'empattements : celui-ci ne vient d'aucune époque qu'on ait connue.
+    period: false,
+    // Et pas d'années : le mode histoire s'arrête en 1999, et un habit sans
+    // intervalle ne lui sera jamais prêté.
   },
 ];
 

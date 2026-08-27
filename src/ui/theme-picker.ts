@@ -22,6 +22,7 @@ const LIGHT_BLURB: Record<Exclude<LightSource, 'aucune'>, string> = {
   bougie: 'Une flamme ne respire pas régulièrement : elle saute, et la lumière penche avec elle.',
   filament: 'L’ampoule est bien plus stable qu’une flamme, mais le réseau lui fait de loin en loin un petit creux.',
   tube: 'Un néon de bureau est parfaitement égal, sauf deux fois par minute.',
+  neon: 'Deux enseignes de couleurs opposées, et l’une des deux bafouille par salves avant de se tenir tranquille.',
 };
 
 export interface ThemePickerOptions {
