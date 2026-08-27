@@ -18,6 +18,7 @@ import {
   type QuizProgress,
   type StoryProgress,
 } from './progress.ts';
+import { KOCH_ORDERS, kochMaxLevel } from './koch.ts';
 
 const STORAGE_KEY = 'morse-training';
 export const SCHEMA_VERSION = 3;
@@ -112,6 +113,31 @@ function normalizeStory(input: Partial<StoryProgress> | null | undefined): Story
   return base;
 }
 
+/**
+ * Un compteur relu depuis un fichier : entier, fini, jamais négatif.
+ *
+ * `Number(x) || 0` ne suffit pas — il laisse passer l'infini, et JSON.stringify
+ * écrit `null` pour NaN comme pour l'infini, si bien qu'une sauvegarde peut
+ * très bien contenir l'un ou l'autre sans avoir été trafiquée.
+ */
+function counter(value: unknown): number {
+  const n = Number(value);
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
+}
+
+/** Un objet nu : ni tableau, ni chaîne, ni nombre — que l'on peut étaler. */
+function plainObject(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+/**
+ * Le niveau le plus haut qu'un ordre de Koch permette. Sert de plafond : sans
+ * lui, une sauvegarde abîmée affichait « Niveau 1000000000 / 41 ».
+ */
+const MAX_KOCH = Math.max(...KOCH_ORDERS.map((order) => kochMaxLevel(order.id)));
+
 function normalizeProgress(input: Partial<Progress> | null | undefined): Progress {
   const base = emptyProgress();
   if (!input || typeof input !== 'object') return base;
@@ -132,14 +158,40 @@ function normalizeProgress(input: Partial<Progress> | null | undefined): Progres
     ? input.sessions.filter((session) => session && typeof session === 'object').slice(0, MAX_SESSION_HISTORY)
     : [];
 
+  // Les compteurs étaient étalés tels quels : un fichier portant
+  // `attempts: "beaucoup"` donnait une progression dont les statistiques se
+  // calculaient sur une chaîne, et l'affichage sortait NaN.
+  const rawTotals = plainObject(input.totals);
+  const attempts = counter(rawTotals['attempts']);
+  const totals: Progress['totals'] = {
+    sessions: counter(rawTotals['sessions']),
+    attempts,
+    // On ne peut pas avoir répondu juste plus souvent qu'on n'a répondu.
+    correct: Math.min(attempts, counter(rawTotals['correct'])),
+    trainingMs: counter(rawTotals['trainingMs']),
+    sent: counter(rawTotals['sent']),
+  };
+
+  const rawStreak = plainObject(input.streak);
+  const current = counter(rawStreak['current']);
+  const streak: Progress['streak'] = {
+    current,
+    // Le record ne peut pas être plus bas que la série en cours.
+    longest: Math.max(current, counter(rawStreak['longest'])),
+    lastDay: typeof rawStreak['lastDay'] === 'string' ? rawStreak['lastDay'] : null,
+  };
+
+  const level = Number(input.kochLevel);
   return {
-    kochLevel: Math.max(2, Math.floor(Number(input.kochLevel) || base.kochLevel)),
+    kochLevel: Number.isFinite(level)
+      ? Math.min(MAX_KOCH, Math.max(2, Math.floor(level)))
+      : base.kochLevel,
     chars,
     sessions,
-    totals: { ...base.totals, ...(input.totals ?? {}) },
-    streak: { ...base.streak, ...(input.streak ?? {}) },
-    achievements: { ...(input.achievements ?? {}) },
-    flags: { ...(input.flags ?? {}) },
+    totals,
+    streak,
+    achievements: { ...plainObject(input.achievements) } as Progress['achievements'],
+    flags: { ...plainObject(input.flags) } as Progress['flags'],
     quiz: normalizeQuiz(input.quiz),
     story: normalizeStory(input.story),
   };

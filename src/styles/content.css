@@ -1489,7 +1489,6 @@
   /* Un formulaire sert à être emporté sur papier : on retire tout ce qui ne
      s'imprime pas utilement et on force les couleurs claires. */
   .sidebar,
-  .app__header,
   .topbar,
   .overlay,
   .toast-stack,
@@ -1517,7 +1516,6 @@
 
   body,
   .app,
-  .app__main,
   main {
     display: block !important;
     margin: 0 !important;

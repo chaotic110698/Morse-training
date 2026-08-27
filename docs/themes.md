@@ -79,10 +79,18 @@ Plus rare, mais même principe. Un nom de plus dans `LightSource`, un bloc dans
 
 Deux précautions valent d'être répétées, parce qu'elles se paient cher :
 
-- **La règle d'arrêt sous `prefers-reduced-motion` doit égaler la spécificité de
-  celle qui allume.** `.ambiance__lueur { animation: none }` perd contre
-  `:root[data-lumiere='x'] .ambiance__lueur` et le vacillement continue. Le bloc
-  en fin de fichier est écrit correctement — le copier plutôt que l'improviser.
+- **Tout ce qui annule doit égaler la spécificité de ce qui allume.** Le piège
+  s'est refermé deux fois sur ce seul fichier : `.ambiance__lueur { animation:
+  none }` perd contre `:root[data-lumiere='x'] .ambiance__lueur`, et
+  `:root[data-lumiere] … { will-change: auto }` perd contre
+  `:root[data-lumiere][data-ambiance='discrete'] …`. Dans les deux cas la règle
+  ne prend pas, et rien ne le signale. Le bloc en fin de fichier est écrit
+  correctement — le copier plutôt que l'improviser.
+- **Ne réserver une couche de composition que là où quelque chose bouge.**
+  `will-change` sur une surface plein écran coûte sa surface en mémoire vidéo.
+  Elle n'est demandée que sous un habit éclairé, ambiance allumée, et système
+  ne réclamant pas moins d'animation ; ailleurs la couche est en
+  `display: none`, pas seulement transparente.
 - **Rester loin des seuils de photosensibilité.** Tout ce qui bouge est
   l'opacité d'un dégradé déjà très transparent ; le plus grand écart de
   luminance, le clignotement du tube, reste sous les trois pour cent de l'écran.

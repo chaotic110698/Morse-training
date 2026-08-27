@@ -22,7 +22,17 @@
  * vacillement s'en va.
  */
 
-.ambiance {
+/*
+ * Sous un habit sans lumière — les deux modernes, et tout thème qui ne déclare
+ * pas de source — la couche disparaît vraiment. Une opacité nulle suffirait à
+ * la rendre invisible, mais le navigateur continuerait de la peindre et de la
+ * composer : une surface plein écran retenue pour rien, ce qui se paie en
+ * mémoire sur un téléphone.
+ */
+.ambiance { display: none; }
+
+:root[data-lumiere] .ambiance {
+  display: block;
   position: fixed;
   inset: 0;
   /* Au-dessus des pages et des panneaux — la lumière tombe sur tout ce qui est
@@ -41,6 +51,16 @@
   position: absolute;
   inset: -6%;
   opacity: 1;
+}
+
+/*
+ * `will-change` réserve une couche de composition, et une couche plein écran
+ * coûte sa surface en mémoire vidéo. On ne la demande donc que là où quelque
+ * chose bouge réellement : sous un habit éclairé, et seulement si l'ambiance
+ * est allumée et que le système ne demande pas moins d'animation.
+ */
+:root[data-lumiere][data-ambiance='discrete'] .ambiance__lueur,
+:root[data-lumiere][data-ambiance='marquee'] .ambiance__lueur {
   will-change: opacity, transform;
 }
 
@@ -189,6 +209,15 @@
   :root[data-lumiere] .ambiance__lueur {
     animation: none;
     opacity: 1;
+  }
+
+  /* Rien ne bouge plus : la couche de composition n'a plus lieu d'être. Il
+     faut de nouveau égaler la spécificité des règles qui la réservent — deux
+     attributs sur la racine — sinon la réservation tient. C'est le second
+     piège du même fichier ; il est décrit dans docs/themes.md. */
+  :root[data-lumiere][data-ambiance='discrete'] .ambiance__lueur,
+  :root[data-lumiere][data-ambiance='marquee'] .ambiance__lueur {
+    will-change: auto;
   }
 
   /* On ne touche pas au repos de `.ambiance` : un habit sans source doit
