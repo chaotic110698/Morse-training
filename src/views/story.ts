@@ -37,6 +37,12 @@ const GENERATION_NAMES = ['I', 'II', 'III', 'IV', 'V'];
  */
 const SEND_WPM = 18;
 
+/** Minutes et secondes, pour le temps d'antenne. */
+const format = (seconds: number): string => {
+  const total = Math.abs(seconds);
+  return `${Math.floor(total / 60)} min ${String(total % 60).padStart(2, '0')}`;
+};
+
 export function storyView(context: ViewContext): View {
   const { store } = context;
   const root = h('div', { class: 'stack' });
@@ -226,9 +232,16 @@ export function storyView(context: ViewContext): View {
       store.saveNow();
     };
 
+    let clock = 0;
+    const stopClock = (): void => {
+      if (clock) window.clearInterval(clock);
+      clock = 0;
+    };
+
     const stop = (): void => {
       player.stop();
       stopNoise();
+      stopClock();
       board?.destroy();
       board = null;
     };
@@ -533,10 +546,43 @@ export function storyView(context: ViewContext): View {
         on: { click: advance },
       }) as HTMLButtonElement;
 
+      /**
+       * Le temps d'antenne.
+       *
+       * Il ne démarre qu'à la première frappe : lire la consigne ne met
+       * personne en danger. Une fois la limite passée il ne s'arrête pas, il
+       * change de couleur et continue de monter — un poste clandestin ne perd
+       * pas la partie à la sixième minute, il se fait relever la position.
+       */
+      const limit = beat.limit ?? 0;
+      const clockLabel = limit > 0 ? h('span', { class: 'recit-chrono' }) : null;
+      let elapsed = 0;
+      const showClock = (): void => {
+        if (!clockLabel) return;
+        const left = limit - elapsed;
+        const over = left < 0;
+        clockLabel.textContent = over
+          ? `En l’air depuis ${format(elapsed)}`
+          : `Encore ${format(left)}`;
+        clockLabel.classList.toggle('is-over', over);
+      };
+      const startClock = (): void => {
+        if (!clockLabel || clock) return;
+        clock = window.setInterval(() => {
+          elapsed += 1;
+          showClock();
+        }, 1000);
+      };
+      showClock();
+
       board = createKeyerBoard({
         play: (code) => playCode(code, SEND_WPM),
         onChange: (state) => { errors = state.errors; },
-        onDone: () => { suivant.disabled = false; },
+        onFirstKey: startClock,
+        onDone: () => {
+          suivant.disabled = false;
+          stopClock();
+        },
       });
       board.load(text);
 
@@ -556,6 +602,7 @@ export function storyView(context: ViewContext): View {
           h('span', { class: 'recit-source__quoi', text: 'À transmettre' }),
           beat.to ? h('span', { class: 'recit-source__qui', text: beat.to }) : null),
         beat.hint ? h('p', { class: 'card__hint', text: beat.hint }) : null,
+        clockLabel,
         board.element,
         h('div', { class: 'recit-manips' }, ...eras),
         h('div', { class: 'recit-controles' }, suivant),

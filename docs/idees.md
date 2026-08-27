@@ -216,7 +216,13 @@ de sommaire.
 - l'usage du suivi des opérateurs à leur frappe dans le renseignement de la
   Grande Guerre : le fait est cité, sa portée reste à mesurer ;
 - l'heure exacte à laquelle le signal du Titanic a faibli, et la cause —
-  l'affaiblissement des dynamos est l'explication courante.
+  l'affaiblissement des dynamos est l'explication courante ;
+- la durée d'émission tolérée par les réseaux clandestins : cinq minutes est le
+  chiffre le plus cité, il variait selon les réseaux et les périodes ;
+- le rôle opérationnel exact des deux vers de Verlaine en juin 1944, que les
+  historiens discutent — la version scolaire est une simplification ;
+- l'ampleur réelle de la saturation de la bande dans les heures du
+  débarquement, et son effet sur la goniométrie.
 
 Les transcriptions du trafic du Titanic sont, elles, largement documentées.
 

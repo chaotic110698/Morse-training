@@ -34,8 +34,14 @@ export type Beat =
   | { kind: 'recit'; text: string[]; speaker?: string }
   /** Un message à copier. C'est un des rares moments réellement coûteux. */
   | { kind: 'receive'; text: string; from?: string; wpm?: number; sound?: Partial<EraSound>; note?: string }
-  /** Un message à émettre, avec le retour vert et rouge. */
-  | { kind: 'send'; text: string; to?: string; hint?: string }
+  /**
+   * Un message à émettre, avec le retour vert et rouge.
+   *
+   * `limit` donne le temps d'antenne, en secondes, au-delà duquel un poste
+   * clandestin se fait localiser. Le compte à rebours ne bloque rien — il
+   * continue à monter une fois dépassé, et c'est bien pire.
+   */
+  | { kind: 'send'; text: string; to?: string; hint?: string; limit?: number }
   /** Le blanc : on cesse d'émettre et on écoute. Rien, puis quelque chose. */
   | { kind: 'silence'; seconds: number; text?: string }
   /** Ce qui s'est réellement passé, et la part inventée. */
@@ -1438,6 +1444,319 @@ const LA_TOUR_QUI_ECOUTE: Episode = {
   ],
 };
 
+/**
+ * Génération IV — Claude Duguet, celui pour qui être entendu est le danger.
+ *
+ * Quatre générations ont cherché à porter plus loin : les bras de bois vers
+ * l'horizon, le fil sous l'Atlantique, l'onde qui traverse sans support. Claude
+ * hérite d'un métier dont toute l'histoire consiste à se faire entendre, et
+ * passe la guerre à faire l'inverse.
+ */
+
+const LE_POSTE_A_GALENE: Episode = {
+  id: 'le-poste-a-galene',
+  generation: 4,
+  year: 1927,
+  title: 'Le poste à galène',
+  summary: 'Un caillou, un fil de cuivre, et pour la première fois une voix.',
+  optional: true,
+  sound: { timbre: 'pur', snrDb: 14 },
+  beats: [
+    {
+      kind: 'recit',
+      text: [
+        'Vous avez seize ans et votre père vous a mis un caillou dans la main.',
+        'Un morceau de galène, gris, gras, qui ne ressemble à rien. Avec une bobine ' +
+          'de fil enroulée sur un tube de carton, une aiguille qu’on promène sur le ' +
+          'caillou jusqu’à trouver le point sensible, et un casque, cela fait un ' +
+          'poste. Aucune pile. Rien qui consomme. L’onde elle-même fournit le peu ' +
+          'd’énergie qu’il faut pour la rendre audible.',
+        'Vous avez mis trois soirs à le monter et il tient dans une boîte à ' +
+          'chaussures.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Ce qui sort du casque n’est pas ce que vous attendiez.',
+        'Il y a bien du morse quelque part au fond, des stations qui se répondent, ' +
+          'la respiration habituelle de la bande. Et par-dessus, quelqu’un parle. Un ' +
+          'homme, à Paris, lit un bulletin d’une voix appliquée, et derrière lui un ' +
+          'orchestre attend son tour.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Votre père écoute sans rien dire pendant un long moment, puis il repose le ' +
+          'casque.',
+        '« Mon grand-père faisait des signes avec des bras de bois. Mon père a passé ' +
+          'un hiver à recopier ce qu’un pigeon avait porté. Moi j’ai copié pendant ' +
+          'deux ans des lettres qui ne voulaient rien dire. »',
+        'Il regarde la boîte à chaussures. « Et toi tu écoutes un monsieur lire le ' +
+          'journal. »',
+      ],
+    },
+    {
+      kind: 'send',
+      text: 'HR {sine} JE TENTAIS UN ESSAI',
+      to: 'personne, comme en 1844',
+      hint:
+        'Le poste à galène ne sait que recevoir. Vous frappez quand même, sur le ' +
+        'bord de la table, comme votre arrière-arrière-grand-père.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Il ne le dit pas ce soir-là, et vous ne le comprendrez que bien plus tard.',
+        'Pendant quatre générations, savoir lire les points et les traits donnait ' +
+          'accès à quelque chose dont les autres étaient exclus. Un homme dans une ' +
+          'cuisine venait d’écouter Paris avec un caillou et trois mètres de fil.',
+        'Le métier n’est pas encore mort. Mais quelqu’un vient de laisser la porte ' +
+          'ouverte.',
+      ],
+    },
+  ],
+};
+
+const CINQ_MINUTES: Episode = {
+  id: 'cinq-minutes',
+  generation: 4,
+  year: 1943,
+  title: 'Cinq minutes',
+  summary: 'Émettre, c’est se faire entendre. C’est justement le problème.',
+  sound: { timbre: 'pur', snrDb: 7 },
+  beats: [
+    {
+      kind: 'recit',
+      text: [
+        'On vous appelle un pianiste, et vous n’avez jamais su qui avait trouvé le mot.',
+        'Il est juste : les doigts, la régularité, le fait qu’on vous entende de loin ' +
+          'et que ce soit tout le problème. Vous avez trente-deux ans, une valise de ' +
+          'douze kilos, et une adresse qui change toutes les trois semaines.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'La valise contient un émetteur, un récepteur, un manipulateur et un jeu de ' +
+          'quartz. Elle pèse le poids d’une valise de voyage, ce qui est exactement ' +
+          'l’idée, et elle vous ferait fusiller si on l’ouvrait devant vous.',
+        'Votre père a passé la guerre précédente dans une tour de fer, à copier ' +
+          'l’ennemi en toute sécurité. Le métier n’a pas changé de gestes. Il a changé ' +
+          'de conséquences.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Ils ont des camionnettes, et à l’intérieur un cadre qui tourne.',
+        'Le principe est simple et vous le connaissez mieux qu’eux : une antenne ' +
+          'orientable reçoit plus fort dans un axe que dans un autre. On tourne le ' +
+          'cadre jusqu’au maximum, on note la direction, on recommence d’un autre ' +
+          'point de la ville, et les deux droites se croisent sur un immeuble. Avec ' +
+          'des appareils portatifs, ils remontent ensuite les étages.',
+        'Tout ce qu’il faut pour cela, c’est que vous restiez en l’air.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'D’où la règle, que personne n’a jamais écrite et que tout le monde répète : ' +
+          'cinq minutes.',
+        'Au-delà, vous n’êtes plus un opérateur, vous êtes une adresse. On coupe, on ' +
+          'démonte, on change de toit, et on reprend au prochain rendez-vous — heure ' +
+          'fixée d’avance, fréquence fixée d’avance, parce qu’on ne peut pas se ' +
+          'chercher sur une bande quand on n’a pas le droit d’appeler.',
+      ],
+    },
+    {
+      kind: 'send',
+      text: 'DE {sine} QRV',
+      to: 'Londres',
+      hint: 'Le rendez-vous. Deux groupes, pas un de plus : on annonce qu’on est là.',
+      limit: 300,
+    },
+    {
+      kind: 'receive',
+      text: 'R DE MP QRV',
+      from: 'Londres',
+      wpm: 18,
+      note: 'Rapide. Là-bas, personne ne risque rien à aller vite.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Reste la chose que vous détestez faire et qui vous sauvera peut-être la vie.',
+        'Dans chaque message, vous glissez une faute. Toujours la même, toujours au ' +
+          'même endroit — un groupe de deux lettres qui ne veut rien dire, posé après ' +
+          'le troisième mot. Londres le sait. Vous le savez. Personne d’autre.',
+        'Si un jour ce groupe manque, cela signifie qu’un autre est assis à votre ' +
+          'place, avec votre poste et vos quartz, et que Londres parle à la Gestapo.',
+      ],
+    },
+    {
+      kind: 'send',
+      text: 'PARACHUTAGE RECU QX SIX COLIS DEUX HOMMES RAS DE {sine}',
+      to: 'Londres',
+      hint:
+        'Cinquante-quatre caractères, et le QX après le troisième mot. Ce n’est ' +
+        'pas une faute de frappe : c’est votre signature.',
+      limit: 300,
+    },
+    {
+      kind: 'silence',
+      seconds: 16,
+      text: 'Vous coupez. Dehors, une voiture roule au pas dans la rue.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Elle passe. Ce n’est probablement rien : il passe des voitures.',
+        'Vous démontez quand même, l’antenne d’abord, le fil enroulé sur le bras, la ' +
+          'valise refermée, et vous descendez par la cour. Vous serez ailleurs dans ' +
+          'une heure. Vous avez fait ça onze fois cette année et vous n’avez jamais ' +
+          'su si l’une d’elles avait servi à quelque chose.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'À la maison, votre femme a accouché en avril d’un garçon qu’on a appelé ' +
+          'Modéré, comme son grand-père, comme le veut l’usage.',
+        'Vous ne l’avez vu que deux fois. On ne dort pas où l’on émet, et on ne dort ' +
+          'pas non plus où dort son fils.',
+      ],
+    },
+    {
+      kind: 'epilogue',
+      text: [
+        'Les opérateurs radio clandestins étaient surnommés pianistes. Leur poste ' +
+          'tenait dans une valise, ils travaillaient sur des rendez-vous fixés à ' +
+          'l’avance, et leur espérance de vie opérationnelle se comptait en mois.',
+        'La goniométrie allemande fonctionnait comme décrit : relèvements croisés ' +
+          'depuis plusieurs points, puis appareils portatifs pour finir l’immeuble. ' +
+          'La consigne des cinq minutes est celle qu’on cite le plus souvent ; elle ' +
+          'variait selon les réseaux et les époques.',
+        'Les contrôles de sécurité sont réels : une erreur convenue, insérée à un ' +
+          'endroit précis, prouvait que l’opérateur n’émettait pas sous la contrainte. ' +
+          'Leur absence aurait dû faire cesser tout trafic. Elle a parfois été ' +
+          'ignorée à Londres, avec des conséquences que l’on connaît — le cas ' +
+          'néerlandais est le plus documenté. Les {nom} sont inventés ; ce dispositif ' +
+          'ne l’est pas.',
+      ],
+    },
+  ],
+};
+
+const LES_SANGLOTS_LONGS: Episode = {
+  id: 'les-sanglots-longs',
+  generation: 4,
+  year: 1944,
+  title: 'Les sanglots longs',
+  summary: 'Des vers de Verlaine à la radio, et une nuit où tout le monde émet.',
+  sound: { timbre: 'pur', snrDb: 6 },
+  beats: [
+    {
+      kind: 'recit',
+      text: [
+        'Chaque soir, la radio de Londres lit une liste de phrases absurdes.',
+        '« Jean a de longues moustaches. » « Le chat a neuf vies. » « La flèche ne ' +
+          'percera pas. » Le speaker les énonce lentement, deux fois, sans les ' +
+          'commenter, et personne au monde ne peut savoir laquelle veut dire quelque ' +
+          'chose ni à qui.',
+        'C’est l’exact contraire de votre métier. Aucun chiffre, aucune clef, aucun ' +
+          'destinataire caché : on parle en clair devant l’ennemi, et l’ennemi ' +
+          'n’apprend rien, parce que le sens n’est pas dans les mots.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Le 1er juin, la liste contient un vers.',
+        '« Les sanglots longs des violons de l’automne. » Vous connaissez le poème ; ' +
+          'tout le monde le connaît, on l’apprend à l’école. Ce soir-là il annonce ' +
+          'quelque chose, et vous savez seulement qu’il faut se tenir prêt.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Le 5 au soir, la seconde moitié tombe.',
+        '« Blessent mon cœur d’une langueur monotone. »',
+        'Vous n’avez pas de poste à ce moment-là : vous êtes dans une cuisine, à ' +
+          'sept kilomètres de votre valise, et vous mettez une heure et demie à la ' +
+          'rejoindre à bicyclette.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Ce qui suit ne ressemble à rien de ce que vous avez connu.',
+        'Depuis quatre ans, vous émettez cinq minutes et vous fuyez. Cette nuit-là, ' +
+          'toute la France émet en même temps. La bande est pleine — pleine comme la ' +
+          'nuit du naufrage dont votre père parlait, dix postes qui se couvrent, sauf ' +
+          'que cette fois ils sont des centaines et qu’ils le font exprès.',
+        'La goniométrie ne peut plus rien. On ne relève pas trois cents émetteurs.',
+      ],
+    },
+    {
+      kind: 'send',
+      text: 'DE {sine} QX RECU MESSAGE PLAN VERT EXECUTE',
+      to: 'Londres',
+      hint:
+        'Le QX à sa place, comme toujours. Et pour la première fois depuis 1940, ' +
+        'aucune raison de compter les minutes.',
+      limit: 600,
+    },
+    {
+      kind: 'receive',
+      text: 'R DE MP BONNE CHANCE OM',
+      from: 'Londres',
+      wpm: 20,
+      note: 'OM, old man. Sur la bande, c’est ainsi qu’on se parle entre opérateurs.',
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Vous restez en l’air quarante minutes.',
+        'Quarante. Vous n’avez pas dépassé cinq minutes depuis trois ans, et vous ' +
+          'passez la nuit du 5 au 6 juin avec la main sur le manipulateur, à recevoir ' +
+          'et à transmettre des ordres d’exécution, dans une bande saturée où ' +
+          'personne ne cherche plus à se cacher.',
+        'C’est la première fois de votre vie que vous faites le métier de votre père.',
+      ],
+    },
+    {
+      kind: 'recit',
+      text: [
+        'Au matin, la valise retourne sous le plancher et vous redevenez prudent.',
+        'La guerre dure encore onze mois. Vous survivrez, ce qui n’était pas le plus ' +
+          'probable, et vous ne le raconterez presque jamais — sauf une fois, très ' +
+          'tard, à un garçon de dix-sept ans qui voudra savoir pourquoi son père ' +
+          'sursaute quand une voiture ralentit dans la rue.',
+      ],
+    },
+    {
+      kind: 'epilogue',
+      text: [
+        'Les messages personnels de la radio de Londres sont authentiques : des ' +
+          'phrases sans rapport apparent, lues en clair, dont seul le destinataire ' +
+          'connaissait le sens. C’est un chiffrement parfait tant que la convention ' +
+          'reste secrète, et il n’offre aucune prise à l’analyse.',
+        'Les deux vers de Verlaine sont restés les plus célèbres. Leur rôle exact — ' +
+          'à quel réseau ils s’adressaient, ce qu’ils déclenchaient précisément — est ' +
+          'discuté par les historiens, et la version scolaire qui en fait le signal ' +
+          'du débarquement pour la France entière est une simplification. Ils ont ' +
+          'bien été diffusés, et quelque chose s’est bien déclenché.',
+        'La saturation de la bande dans les heures du débarquement est réelle, et ' +
+          'elle a effectivement mis la goniométrie hors d’état : on ne relève pas des ' +
+          'centaines d’émetteurs simultanés. Les {nom} sont inventés.',
+      ],
+    },
+  ],
+};
+
 export const EPISODES: Episode[] = [
   CE_QUE_DIEU_A_FAIT,
   LA_LIGNE,
@@ -1449,4 +1768,7 @@ export const EPISODES: Episode[] = [
   LA_MAIN,
   MGY,
   LA_TOUR_QUI_ECOUTE,
+  LE_POSTE_A_GALENE,
+  CINQ_MINUTES,
+  LES_SANGLOTS_LONGS,
 ];

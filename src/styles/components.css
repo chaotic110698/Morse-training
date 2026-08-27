@@ -2654,6 +2654,27 @@
   font-size: 0.82rem;
 }
 
+/* Le temps d'antenne. Il vire au rouge quand la limite est franchie, et
+   continue de monter : c'est le moment où l'on devient repérable. */
+.recit-chrono {
+  align-self: start;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.86rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+.recit-chrono.is-over {
+  color: var(--error);
+  border-color: var(--error);
+  background: var(--error-soft);
+  font-weight: 700;
+}
+
 .recit-manips {
   display: flex;
   flex-wrap: wrap;

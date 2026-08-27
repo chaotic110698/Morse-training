@@ -27,8 +27,14 @@ import {
 export interface KeyerBoardOptions {
   /** Joue le code d'un caractère, ou le signal d'erreur. */
   play: (code: string) => void;
-  /** Appelé après chaque geste, pour suivre l'avancement. */
+  /** Appelé après chaque geste, y compris au chargement d'un message. */
   onChange?: (state: SendState) => void;
+  /**
+   * Appelé au premier geste réel du joueur, et à lui seul. Charger un message
+   * n'est pas frapper : le temps d'antenne ne doit pas courir pendant qu'on
+   * lit la consigne.
+   */
+  onFirstKey?: () => void;
   onDone?: (state: SendState) => void;
 }
 
@@ -42,6 +48,13 @@ export interface KeyerBoard {
 
 export function createKeyerBoard(options: KeyerBoardOptions): KeyerBoard {
   let state = startSend('');
+  let touched = false;
+
+  const firstGesture = (): void => {
+    if (touched) return;
+    touched = true;
+    options.onFirstKey?.();
+  };
 
   const message = h('p', {
     class: 'manip__message',
@@ -79,6 +92,7 @@ export function createKeyerBoard(options: KeyerBoardOptions): KeyerBoard {
 
   const press = (char: string): void => {
     if (sendDone(state)) return;
+    firstGesture();
     const code = encodeChar(char);
     if (code) options.play(code);
     flash(char);
@@ -89,6 +103,7 @@ export function createKeyerBoard(options: KeyerBoardOptions): KeyerBoard {
   };
 
   const erase = (): void => {
+    firstGesture();
     // Le signal d'erreur part même quand il n'y a rien à effacer : sur une
     // vraie ligne, HH s'entend d'abord et se comprend ensuite.
     options.play(ERROR_SIGN);
@@ -158,6 +173,7 @@ export function createKeyerBoard(options: KeyerBoardOptions): KeyerBoard {
     element,
     load: (target: string) => {
       state = startSend(target);
+      touched = false;
       draw();
       options.onChange?.(state);
     },
