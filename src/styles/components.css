@@ -265,7 +265,10 @@
   color: var(--text);
 }
 
-.segmented__item.is-active {
+/* `aria-pressed` fait le même office que `.is-active`, en le disant aussi aux
+   lecteurs d'écran. Les deux mènent au même dessin. */
+.segmented__item.is-active,
+.segmented__item[aria-pressed='true'] {
   background: var(--accent);
   color: var(--accent-text);
 }
@@ -2686,26 +2689,7 @@
   font-weight: 700;
 }
 
-.recit-manips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.recit-manip {
-  padding: 0.2rem 0.6rem;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  color: var(--text-muted);
-  font-size: 0.76rem;
-}
-
-.recit-manip.is-off {
-  opacity: 0.4;
-  text-decoration: line-through;
-}
-
-/* --- Manipulateur à clavier --- */
+/* --- Manipulateurs du mode histoire --- */
 
 .manip {
   display: grid;
@@ -2766,6 +2750,71 @@
   box-shadow: inset 0 -2px 0 var(--accent);
 }
 
+/* Le code en cours de frappe sur un manipulateur réel. La hauteur est réservée
+   d'avance : sans elle, la première pression ferait sauter tout le clavier. */
+.manip__code-lu {
+  margin: 0;
+  min-height: 1.4em;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  letter-spacing: 0.35em;
+  color: var(--accent);
+}
+
+/* Toute déclaration `display` sur une classe l'emporte sur l'attribut `hidden`,
+   qui ne tient que d'une règle de l'agent utilisateur. On le lui rend. */
+.manip__code-lu[hidden] { display: none; }
+
+.manip__choix {
+  justify-self: center;
+  max-width: 100%;
+}
+
+/* Ce que l'époque ne connaît pas reste proposé : le jeu ne se joue pas à
+   l'exactitude du matériel. La marque prévient, elle n'interdit pas. */
+.manip__mode.is-anachronique {
+  color: var(--text-faint);
+}
+
+.manip__mode.is-anachronique::after {
+  content: '∗';
+  margin-left: 0.2em;
+  font-size: 0.85em;
+  vertical-align: super;
+}
+
+.manip__mode.is-anachronique[aria-pressed='true'] {
+  color: var(--accent-text);
+}
+
+.manip__epoque {
+  margin: calc(var(--space-3) * -1) 0 calc(var(--space-3) * -1);
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.manip__scene {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.manip__pied {
+  display: flex;
+  justify-content: center;
+}
+
+/* L'effacement porte son code : c'est une procédure du métier, pas une touche
+   d'ordinateur, et le joueur doit pouvoir l'émettre lui-même à la main. */
+.manip__effacer {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  color: var(--error);
+  border-color: color-mix(in srgb, var(--error) 35%, var(--border));
+}
+
 .manip__clavier {
   display: grid;
   gap: var(--space-2);
@@ -2777,8 +2826,6 @@
   justify-content: center;
   gap: var(--space-2);
 }
-
-.manip__rangee--actions { margin-top: var(--space-2); }
 
 .manip__touche {
   flex: 1 1 2rem;
@@ -2819,18 +2866,6 @@
   font-weight: 400;
   letter-spacing: 0.06em;
   color: var(--text-faint);
-}
-
-.manip__touche--large {
-  flex: 0 0 auto;
-  aspect-ratio: auto;
-  max-width: none;
-  padding: var(--space-2) var(--space-4);
-}
-
-.manip__touche--effacer {
-  color: var(--error);
-  border-color: color-mix(in srgb, var(--error) 35%, var(--border));
 }
 
 /* --- Table de déchiffrage --- */
@@ -2913,9 +2948,9 @@
 .topbar__save svg { display: block; }
 
 @media (max-width: 620px) {
-  /* La touche d'effacement garde sa forme : lui imposer le carré des autres
-     en ferait un pavé de la hauteur d'une main. */
-  .manip__touche:not(.manip__touche--large) {
+  /* Onze touches par rangée sur un écran de téléphone : elles cèdent leur
+     carré pour rester assez hautes sous le doigt. */
+  .manip__touche {
     max-width: none;
     aspect-ratio: 1 / 1.15;
   }
@@ -2923,11 +2958,9 @@
   .manip__rangee { gap: 3px; }
 
   /* Le code sous la lettre devient illisible avant d'être utile : sur un
-     téléphone, la touche ne porte plus que sa lettre. */
-  .manip__code { display: none; }
+     téléphone, la touche ne porte plus que sa lettre. Le bouton d'effacement
+     garde le sien, qui est la procédure elle-même. */
+  .manip__touche .manip__code { display: none; }
 
-  .manip__touche--large .manip__code {
-    display: block;
-    font-size: 0.5rem;
-  }
+  .manip__effacer .manip__code { font-size: 0.6rem; }
 }

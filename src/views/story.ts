@@ -10,7 +10,7 @@
  */
 
 import { h, setChildren } from '../ui/dom.ts';
-import { createKeyerBoard } from '../ui/keyer-board.ts';
+import { createSender, type Sender, type SenderMode } from '../ui/sender.ts';
 import { createMorseTable } from '../ui/morse-table.ts';
 import { MorsePlayer } from '../ui/player.ts';
 import { buildSequence, elementsForCode, resolveTiming } from '../core/timing.ts';
@@ -25,7 +25,7 @@ import {
   sineOf,
   type StoryContext,
 } from '../core/story.ts';
-import { EPISODES, KEYER_ERAS, LINEAGE, type Beat, type Episode } from '../data/story.ts';
+import { EPISODES, LINEAGE, type Beat, type Episode } from '../data/story.ts';
 import type { ToneVoice } from '../core/audio.ts';
 import type { View, ViewContext } from '../ui/router.ts';
 
@@ -68,7 +68,12 @@ export function storyView(context: ViewContext): View {
   const root = h('div', { class: 'stack' });
   const player = new MorsePlayer(store);
   let table = createMorseTable();
-  let board: ReturnType<typeof createKeyerBoard> | null = null;
+  let board: Sender | null = null;
+  /**
+   * Le manipulateur retenu suit le joueur d'un temps d'émission à l'autre :
+   * qui a choisi la palette ne veut pas la rechoisir à chaque message.
+   */
+  let senderMode: SenderMode = 'clavier';
 
   const storyContext = (episode: Episode): StoryContext => ({
     generation: episode.generation,
@@ -603,9 +608,19 @@ export function storyView(context: ViewContext): View {
       };
       showClock();
 
-      board = createKeyerBoard({
+      board = createSender({
+        store: context.store,
         play: (code) => playCode(code, SEND_WPM, voiceOf(episode)),
-        onChange: (state) => { errors = state.errors; },
+        available: keyersFor(episode.year),
+        year: episode.year,
+        voice: voiceOf(episode),
+        initialMode: senderMode,
+        onMode: (next) => {
+          senderMode = next;
+        },
+        onChange: (state) => {
+          errors = state.errors;
+        },
         onFirstKey: startClock,
         onDone: () => {
           suivant.disabled = false;
@@ -613,15 +628,6 @@ export function storyView(context: ViewContext): View {
         },
       });
       board.load(text);
-
-      const available = keyersFor(episode.year);
-      const eras = KEYER_ERAS.map((era) =>
-        h('span', {
-          class: `recit-manip${available.includes(era.kind) ? '' : ' is-off'}`,
-          text: era.label,
-          title: available.includes(era.kind) ? `Disponible depuis ${era.from}` : `N’existe pas encore en ${episode.year}`,
-        }),
-      );
 
       return h(
         'div',
@@ -632,7 +638,6 @@ export function storyView(context: ViewContext): View {
         beat.hint ? h('p', { class: 'card__hint', text: beat.hint }) : null,
         clockLabel,
         board.element,
-        h('div', { class: 'recit-manips' }, ...eras),
         h('div', { class: 'recit-controles' }, suivant),
       );
     };

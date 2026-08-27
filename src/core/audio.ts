@@ -86,10 +86,14 @@ export class AudioEngine {
   private playbackGain: GainNode | null = null;
   private sidetoneOsc: OscillatorNode | null = null;
   private sidetoneGain: GainNode | null = null;
-  /** Rugosité de l'éclateur : un gain que module une basse fréquence. */
-  private roughGain: GainNode | null = null;
+  /** Rugosité de l'éclateur : la profondeur du hachage appliqué à la lecture. */
   private roughDepth: GainNode | null = null;
   private roughOsc: OscillatorNode | null = null;
+  /** Le même étage, pour le retour local du manipulateur. */
+  private sidetoneRoughDepth: GainNode | null = null;
+  private sidetoneVoice: ToneVoice = 'pur';
+  /** État du contact, pour ne pas reclaquer un relais déjà ouvert. */
+  private sidetoneOn = false;
   /** Bruit court, pour le claquement du relais. */
   private clickBuffer: AudioBuffer | null = null;
   private voice: ToneVoice = 'pur';
@@ -151,8 +155,8 @@ export class AudioEngine {
     this.master.gain.setTargetAtTime(this.settings.volume, now, 0.01);
     this.playbackOsc?.frequency.setTargetAtTime(this.settings.frequency, now, 0.01);
     this.sidetoneOsc?.frequency.setTargetAtTime(this.settings.frequency, now, 0.01);
-    if (this.playbackOsc) this.playbackOsc.type = this.settings.waveform;
-    if (this.sidetoneOsc) this.sidetoneOsc.type = this.settings.waveform;
+    if (this.playbackOsc) this.playbackOsc.type = this.waveformFor(this.voice);
+    if (this.sidetoneOsc) this.sidetoneOsc.type = this.waveformFor(this.sidetoneVoice);
     this.applyNoiseLevel();
     // Le filtrage dépend de la tonalité : changer celle-ci périme le tampon.
     if (this.noiseBufferFrequency !== this.settings.frequency) {
@@ -259,29 +263,57 @@ export class AudioEngine {
     [this.playbackOsc, this.playbackGain] = makeVoice();
     [this.sidetoneOsc, this.sidetoneGain] = makeVoice();
 
-    // La lecture traverse un étage de rugosité, transparent au repos. Une
-    // basse fréquence vient moduler son gain pour l'éclateur ; à profondeur
-    // nulle, le signal passe intact.
-    this.roughGain = ctx.createGain();
-    this.roughGain.gain.value = 1;
-    this.playbackGain.disconnect();
-    this.playbackGain.connect(this.roughGain);
-    this.roughGain.connect(this.master);
-
-    this.roughDepth = ctx.createGain();
-    this.roughDepth.gain.value = 0;
-    this.roughDepth.connect(this.roughGain.gain);
-
+    // Une basse fréquence commune hache les tonalités quand on le lui demande.
+    // À profondeur nulle l'étage est transparent et le signal passe intact.
     this.roughOsc = ctx.createOscillator();
     this.roughOsc.type = 'square';
     this.roughOsc.frequency.value = 120;
-    this.roughOsc.connect(this.roughDepth);
     this.roughOsc.start();
+
+    /** Insère l'étage entre une voix et la sortie, et rend sa profondeur. */
+    const insertRough = (gain: GainNode): [GainNode, GainNode] => {
+      const rough = ctx.createGain();
+      rough.gain.value = 1;
+      gain.disconnect();
+      gain.connect(rough);
+      rough.connect(this.master as GainNode);
+
+      const depth = ctx.createGain();
+      depth.gain.value = 0;
+      depth.connect(rough.gain);
+      this.roughOsc?.connect(depth);
+      return [rough, depth];
+    };
+
+    // La lecture et le retour local ont chacun le leur : l'époque de l'épisode
+    // ne doit pas teinter la main du joueur pendant qu'il s'entraîne ailleurs.
+    [, this.roughDepth] = insertRough(this.playbackGain);
+    [, this.sidetoneRoughDepth] = insertRough(this.sidetoneGain);
+
+    // Le graphe naît contact ouvert : l'état suivi doit dire la même chose que
+    // le gain, sans quoi un appui en cours laisserait le retour muet pour de bon.
+    this.sidetoneOn = false;
+
+    // Un grain demandé avant le déverrouillage du contexte a été mis de côté :
+    // la construction du graphe est le moment de l'appliquer pour de bon.
+    this.applyVoice(this.voice);
+    this.setSidetoneVoice(this.sidetoneVoice);
 
     // Le bruit a sa propre voie, réglée indépendamment des tonalités.
     this.noiseGain = ctx.createGain();
     this.noiseGain.gain.value = 0;
     this.noiseGain.connect(ctx.destination);
+  }
+
+  /**
+   * La forme d'onde d'un grain, ou celle des réglages quand il n'en impose
+   * aucune. Passer par elle évite qu'un changement de réglage en cours
+   * d'épisode rende sa note propre à un éclateur.
+   */
+  private waveformFor(voice: ToneVoice): OscillatorType {
+    if (voice === 'etincelle') return 'sawtooth';
+    if (voice === 'relais') return 'sine';
+    return this.settings.waveform;
   }
 
   private get ramp(): number {
@@ -300,8 +332,8 @@ export class AudioEngine {
     if (!ctx || !osc || !depth) return;
     const now = ctx.currentTime;
 
+    osc.type = this.waveformFor(voice);
     if (voice === 'etincelle') {
-      osc.type = 'sawtooth';
       // Un éclateur émet un train d'étincelles : la note existe, mais elle est
       // hachée à la cadence des décharges. C'est ce hachage qu'on entend, et
       // c'est lui qui rend le son reconnaissable entre mille.
@@ -309,8 +341,27 @@ export class AudioEngine {
       depth.gain.setTargetAtTime(0.45, now, 0.02);
       return;
     }
+    depth.gain.setTargetAtTime(0, now, 0.02);
+  }
 
-    osc.type = voice === 'relais' ? 'sine' : this.settings.waveform;
+  /**
+   * Règle le grain du retour local : ce que le joueur s'entend produire quand
+   * c'est sa main qui manipule. Sans lui, un opérateur de 1844 frapperait au
+   * sondeur et s'entendrait en oscillateur d'entraînement.
+   */
+  setSidetoneVoice(voice: ToneVoice): void {
+    this.sidetoneVoice = voice;
+    const ctx = this.context;
+    const osc = this.sidetoneOsc;
+    const depth = this.sidetoneRoughDepth;
+    if (!ctx || !osc || !depth) return;
+    const now = ctx.currentTime;
+    osc.type = this.waveformFor(voice);
+    if (voice === 'etincelle') {
+      this.roughOsc?.frequency.setValueAtTime(140, now);
+      depth.gain.setTargetAtTime(0.45, now, 0.02);
+      return;
+    }
     depth.gain.setTargetAtTime(0, now, 0.02);
   }
 
@@ -458,26 +509,33 @@ export class AudioEngine {
     return this.activeHandle !== null;
   }
 
-  /** Allume le retour local du manipulateur. */
-  startSidetone(): void {
+  /**
+   * Montée et descente du retour local. Le sondeur claque des deux côtés du
+   * contact et attaque sec : c'est un électro-aimant, pas un oscillateur.
+   */
+  private gateSidetone(target: 0 | 1): void {
+    const wanted = target === 1;
+    if (this.sidetoneOn === wanted) return;
+    this.sidetoneOn = wanted;
     const ctx = this.context;
     const gain = this.sidetoneGain;
     if (!ctx || !gain) return;
     const now = ctx.currentTime;
+    const relais = this.sidetoneVoice === 'relais';
+    if (relais) this.scheduleClick(now);
     gain.gain.cancelScheduledValues(now);
     gain.gain.setValueAtTime(gain.gain.value, now);
-    gain.gain.linearRampToValueAtTime(1, now + this.ramp);
+    gain.gain.linearRampToValueAtTime(target, now + (relais ? 0.0015 : this.ramp));
+  }
+
+  /** Allume le retour local du manipulateur. */
+  startSidetone(): void {
+    this.gateSidetone(1);
   }
 
   /** Coupe le retour local du manipulateur. */
   stopSidetone(): void {
-    const ctx = this.context;
-    const gain = this.sidetoneGain;
-    if (!ctx || !gain) return;
-    const now = ctx.currentTime;
-    gain.gain.cancelScheduledValues(now);
-    gain.gain.setValueAtTime(gain.gain.value, now);
-    gain.gain.linearRampToValueAtTime(0, now + this.ramp);
+    this.gateSidetone(0);
   }
 
   /**
