@@ -10,7 +10,6 @@
 
 import { h, formatNumber, setChildren } from '../ui/dom.ts';
 import { SignalLamp } from '../ui/lamp.ts';
-import { createSignalTrace } from '../ui/trace.ts';
 import { MorsePlayer } from '../ui/player.ts';
 import { SessionTracker } from '../ui/session.ts';
 import { monte } from '../ui/compteur.ts';
@@ -44,7 +43,6 @@ export function listenView(context: ViewContext): View {
   const { store } = context;
   const lamp = new SignalLamp('Signal');
   const player = new MorsePlayer(store, lamp);
-  const ruban = createSignalTrace(store, player);
 
   let phase: Phase = 'idle';
   let queue: string[] = [];
@@ -540,7 +538,6 @@ export function listenView(context: ViewContext): View {
     ),
     h('div', { class: 'progress' }, progressBar, progressLabel),
     h('div', { class: 'trainer__stage' }, display, lamp.element),
-    ruban.trace.element,
     grid,
     actions,
     optionHint,
@@ -569,7 +566,6 @@ export function listenView(context: ViewContext): View {
       window.clearTimeout(advanceTimer);
       window.removeEventListener('keydown', onKeyDown);
       unsubscribe();
-      ruban.destroy();
       player.stop();
       store.audio.stopNoise();
       tracker.commit(level());

@@ -9,6 +9,7 @@
 
 import { h } from '../ui/dom.ts';
 import { SignalLamp } from '../ui/lamp.ts';
+import { createSignalTrace } from '../ui/trace.ts';
 import { MorsePlayer } from '../ui/player.ts';
 import { decodeText, encodeText, normalizeMorseInput, prettyCode, encodeChar } from '../core/morse.ts';
 import { Torch, torchPossiblySupported } from '../core/torch.ts';
@@ -23,6 +24,7 @@ export function translateView(context: ViewContext): View {
   const { store } = context;
   const lamp = new SignalLamp('Signal');
   const player = new MorsePlayer(store, lamp);
+  const ruban = createSignalTrace(store, player);
   const torch = new Torch();
 
   let source: 'text' | 'morse' = 'text';
@@ -440,6 +442,7 @@ export function translateView(context: ViewContext): View {
           morseArea,
         ),
       ),
+      ruban.trace.element,
       h(
         'div',
         { class: 'actions translate__actions' },
@@ -531,6 +534,7 @@ export function translateView(context: ViewContext): View {
     element,
     destroy: () => {
       unsubscribe();
+      ruban.destroy();
       player.stop();
       store.audio.stopNoise();
       torch.release();

@@ -6,10 +6,18 @@
  * qui écrivait le trait tant que le manipulateur restait fermé.
  *
  * Ce n'est pas qu'un agrément. Le débutant entend un flux continu ; le ruban
- * lui montre le **rythme** qu'il est censé entendre, en train de se dérouler,
- * et la lettre s'inscrit sous son groupe quand le silence long confirme
- * qu'elle est finie. C'est aussi pourquoi il se coupe dans les réglages :
- * arrivé à un certain point, voir le rythme empêche de l'entendre.
+ * lui montre le **rythme** qu'il est censé entendre, en train de se dérouler.
+ *
+ * Deux règles, apprises en le posant au mauvais endroit :
+ *
+ *  - **Il n'écrit jamais la lettre.** Un ruban qui décode n'est plus un ruban,
+ *    c'est un corrigé — et sur un exercice de reconnaissance, il donne la
+ *    réponse avant qu'on l'ait cherchée.
+ *  - **Il ne paraît que là où l'on sait déjà ce qui est envoyé** : la table de
+ *    l'alphabet, la page des principes, le traducteur, et le récepteur du
+ *    récit, où le code s'écrit de toute façon à côté. Dans les exercices de
+ *    copie, voir le rythme remplace l'entendre, ce qui est exactement ce que
+ *    la méthode Koch existe pour empêcher.
  *
  * Derrière le signal, le souffle du récepteur : une houle très basse qui
  * vacille, sur laquelle le trait se détache. Purement décorative, celle-là —
@@ -23,7 +31,6 @@
  */
 
 import { h } from './dom.ts';
-import type { TimedElement } from '../core/timing.ts';
 import type { AppStore } from '../core/store.ts';
 import type { MorsePlayer } from './player.ts';
 
@@ -41,15 +48,6 @@ const MEMOIRE_MS = 30_000;
 interface Marque {
   debut: number;
   fin: number;
-  groupe: number;
-}
-
-interface Groupe {
-  rang: number;
-  char: string;
-  debut: number;
-  fin: number;
-  close: boolean;
 }
 
 const moinsDeMouvement = (): boolean => {
@@ -67,9 +65,7 @@ export class SignalTrace {
   private readonly vide: HTMLElement;
 
   private marques: Marque[] = [];
-  private groupes: Groupe[] = [];
   private ouverte: Marque | null = null;
-  private rangCourant = -1;
 
   private actif = false;
   private allume = true;
@@ -134,40 +130,20 @@ export class SignalTrace {
   begin(): void {
     if (!this.element.isConnected) return;
     this.marques = [];
-    this.groupes = [];
     this.ouverte = null;
-    this.rangCourant = -1;
     this.actif = true;
     this.vide.hidden = true;
     this.dimensionne();
     this.relance();
   }
 
-  /**
-   * Une transition du signal, telle que la diode la reçoit.
-   *
-   * Le rang du caractère sert à grouper : un rang qui change ferme le groupe
-   * précédent, et c'est ce groupe fermé — donc confirmé fini — qui reçoit sa
-   * lettre sous le ruban.
-   */
-  mark(on: boolean, element: TimedElement): void {
+  /** Une transition du signal, telle que la diode la reçoit. */
+  mark(on: boolean): void {
     if (!this.allume || !this.element.isConnected) return;
     const maintenant = performance.now();
 
     if (on) {
-      const rang = element.charIndex ?? this.rangCourant;
-      if (rang !== this.rangCourant) {
-        this.ferme(maintenant);
-        this.rangCourant = rang;
-        this.groupes.push({
-          rang,
-          char: element.char ?? '',
-          debut: maintenant,
-          fin: maintenant,
-          close: false,
-        });
-      }
-      this.ouverte = { debut: maintenant, fin: Number.POSITIVE_INFINITY, groupe: this.rangCourant };
+      this.ouverte = { debut: maintenant, fin: Number.POSITIVE_INFINITY };
       this.marques.push(this.ouverte);
       this.actif = true;
       this.vide.hidden = true;
@@ -179,19 +155,14 @@ export class SignalTrace {
       this.ouverte.fin = maintenant;
       this.ouverte = null;
     }
-    const groupe = this.groupes[this.groupes.length - 1];
-    if (groupe) groupe.fin = maintenant;
   }
 
-  /** Fin de la lecture : le dernier groupe est confirmé, le papier s'arrête. */
+  /** Fin de la lecture : le papier s'arrête, après un dernier tour. */
   end(): void {
-    const maintenant = performance.now();
     if (this.ouverte) {
-      this.ouverte.fin = maintenant;
+      this.ouverte.fin = performance.now();
       this.ouverte = null;
     }
-    this.ferme(maintenant);
-    this.rangCourant = -1;
     // Le papier continue de défiler un instant : la dernière lettre doit avoir
     // le temps de passer sous le repère avant que tout ne s'arrête.
     window.setTimeout(() => {
@@ -205,14 +176,6 @@ export class SignalTrace {
     this.observateur?.disconnect();
     this.observateur = null;
     document.removeEventListener('visibilitychange', this.onVisibilite);
-  }
-
-  private ferme(maintenant: number): void {
-    const groupe = this.groupes[this.groupes.length - 1];
-    if (groupe && !groupe.close) {
-      groupe.close = true;
-      groupe.fin = Math.max(groupe.fin, maintenant);
-    }
   }
 
   // --- Dessin --------------------------------------------------------------
@@ -361,18 +324,6 @@ export class SignalTrace {
       pinceau.fill();
     }
 
-    // Les lettres, sous leur groupe, une fois le groupe confirmé fini.
-    pinceau.fillStyle = sourd;
-    pinceau.font = '500 13px ui-monospace, SFMono-Regular, Menlo, monospace';
-    pinceau.textAlign = 'center';
-    pinceau.textBaseline = 'top';
-    for (const groupe of this.groupes) {
-      if (!groupe.close || groupe.char === '' || groupe.char === ' ') continue;
-      const centre = (x(groupe.debut) + x(groupe.fin)) / 2;
-      if (centre < -30 || centre > L + 30) continue;
-      pinceau.fillText(groupe.char, centre, ligne + 8);
-    }
-
     this.oublie(maintenant);
   }
 
@@ -381,7 +332,6 @@ export class SignalTrace {
     const limite = maintenant - MEMOIRE_MS;
     if (this.marques.length > 0 && (this.marques[0] as Marque).debut < limite) {
       this.marques = this.marques.filter((marque) => marque.fin > limite);
-      this.groupes = this.groupes.filter((groupe) => groupe.fin > limite);
     }
   }
 }

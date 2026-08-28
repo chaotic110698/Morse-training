@@ -8,6 +8,7 @@
 
 import { h } from '../ui/dom.ts';
 import { SignalLamp } from '../ui/lamp.ts';
+import { createSignalTrace } from '../ui/trace.ts';
 import { MorsePlayer } from '../ui/player.ts';
 import { DIGITS, EXTENDED, LETTERS, PUNCTUATION, prettyCode, spokenCode } from '../core/morse.ts';
 import { elementsForCode } from '../core/timing.ts';
@@ -63,6 +64,7 @@ export function alphabetView(context: ViewContext): View {
   const { store } = context;
   const lamp = new SignalLamp('Lecture');
   const player = new MorsePlayer(store, lamp);
+  const ruban = createSignalTrace(store, player);
 
   let filter = '';
   let showSpoken = true;
@@ -187,11 +189,15 @@ export function alphabetView(context: ViewContext): View {
         "."),
     ),
     h('div', { class: 'toolbar' }, search, spokenToggle, lamp.element),
+    ruban.trace.element,
     container,
   );
 
   return {
     element,
-    destroy: () => player.stop(),
+    destroy: () => {
+      ruban.destroy();
+      player.stop();
+    },
   };
 }

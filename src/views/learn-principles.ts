@@ -2,6 +2,7 @@
 
 import { h } from '../ui/dom.ts';
 import { SignalLamp } from '../ui/lamp.ts';
+import { createSignalTrace } from '../ui/trace.ts';
 import { MorsePlayer } from '../ui/player.ts';
 import { resolveTiming } from '../core/timing.ts';
 import type { View, ViewContext } from '../ui/router.ts';
@@ -10,6 +11,7 @@ export function principlesView(context: ViewContext): View {
   const { store } = context;
   const lamp = new SignalLamp('Démonstration');
   const player = new MorsePlayer(store, lamp);
+  const ruban = createSignalTrace(store, player);
 
   const timingTable = h('tbody');
   const speedNote = h('p', { class: 'prose__note' });
@@ -126,6 +128,7 @@ export function principlesView(context: ViewContext): View {
       "vaut 240 ms. La vitesse change tout : un caractère émis lentement et le même émis vite ne sont pas " +
       "perçus par le cerveau comme le même objet."),
     h('div', { class: 'demo-row' }, demoButton, lamp.element),
+    ruban.trace.element,
 
     h('h2', { text: 'Farnsworth : la bonne façon de ralentir' }),
     h('p', {},
@@ -185,6 +188,7 @@ export function principlesView(context: ViewContext): View {
     element,
     destroy: () => {
       unsubscribe();
+      ruban.destroy();
       player.stop();
     },
   };

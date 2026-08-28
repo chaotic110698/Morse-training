@@ -627,7 +627,7 @@ export function settingsView(context: ViewContext): View {
             }),
             h('span', { text: 'Dessiner le signal pendant qu’il se joue' }),
           ),
-          'Le papier avance sous un repère fixe et le signal s’y inscrit, comme sur l’encreur de 1844 ; la lettre apparaît sous son groupe une fois le silence long passé. Il montre le rythme, ce qui aide beaucoup au début — et gêne ensuite, quand il s’agit justement de l’entendre sans le voir.',
+          'Le papier avance sous un repère fixe et le signal s’y inscrit, comme sur l’encreur de 1844. Il n’écrit jamais la lettre, et ne paraît que là où l’on sait déjà ce qui est envoyé : la table de l’alphabet, la page des principes, le traducteur et le récepteur du récit. Jamais dans les exercices de copie — y voir le rythme dispenserait de l’entendre, ce que la méthode Koch existe justement pour empêcher.',
         ),
         field(
           'Souffle du récepteur',

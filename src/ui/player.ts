@@ -131,7 +131,7 @@ export class MorsePlayer {
       {
       onToneStart: (element) => {
         this.lamp?.on(element.kind ?? null);
-        this.trace?.mark(true, element);
+        this.trace?.mark(true);
         lastSignalElement = element;
         options.onSignal?.(true, element);
         if (element.charIndex !== undefined && element.charIndex !== lastCharIndex) {
@@ -141,7 +141,7 @@ export class MorsePlayer {
       },
       onToneEnd: (element) => {
         this.lamp?.off();
-        this.trace?.mark(false, element);
+        this.trace?.mark(false);
         options.onSignal?.(false, element);
       },
       },
@@ -217,7 +217,7 @@ export class MorsePlayer {
           if (element) {
             if (transition.start) {
               this.lamp?.on(element.kind ?? null);
-              this.trace?.mark(true, element);
+              this.trace?.mark(true);
               lastElement = element;
               options.onSignal?.(true, element);
               if (element.charIndex !== undefined && element.charIndex !== lastCharIndex) {
@@ -226,7 +226,7 @@ export class MorsePlayer {
               }
             } else {
               this.lamp?.off();
-              this.trace?.mark(false, element);
+              this.trace?.mark(false);
               lastElement = null;
               options.onSignal?.(false, element);
             }
