@@ -23,6 +23,10 @@ const LIGHT_BLURB: Record<Exclude<LightSource, 'aucune'>, string> = {
   filament: 'L’ampoule est bien plus stable qu’une flamme, mais le réseau lui fait de loin en loin un petit creux.',
   tube: 'Un néon de bureau est parfaitement égal, sauf deux fois par minute.',
   neon: 'Deux enseignes de couleurs opposées, et l’une des deux bafouille par salves avant de se tenir tranquille.',
+  phare: 'Quatorze secondes d’obscurité pour deux de lumière : le pinceau du phare traverse la pièce, puis plus rien.',
+  orage: 'La pluie mange la lumière, et deux éclairs lointains passent coup sur coup — le second est toujours le plus fort.',
+  aube: 'La seule qui ne se répète pas : la pièce part du gris-bleu d’avant le jour et se réchauffe pendant trois minutes, une fois.',
+  braise: 'La seule qui éclaire par en dessous. Elle respire, et de loin en loin une bûche s’ouvre.',
 };
 
 export interface ThemePickerOptions {
@@ -194,7 +198,7 @@ export function createThemeOptions(store: AppStore): HTMLElement[] {
             }),
           ),
         ),
-        `${LIGHT_BLURB[theme.light]} Le vacillement s’arrête de lui-même si votre appareil demande moins d’animation.`,
+        `${LIGHT_BLURB[theme.light]} Le mouvement s’arrête de lui-même si votre appareil demande moins d’animation.`,
       ),
     );
   }

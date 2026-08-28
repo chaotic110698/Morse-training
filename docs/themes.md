@@ -15,7 +15,7 @@ Dans `src/data/themes.ts`, à sa place chronologique dans le tableau `THEMES` :
   lightness: 'sombre',        // sert au jumelage et à la barre du navigateur
   twin: 'etabli',             // facultatif — l'habit de l'autre clarté
   bar: '#141210',             // = swatch[0], la couleur de la barre du navigateur
-  light: 'filament',          // aucune | fenetre | bougie | filament | tube
+  light: 'filament',          // voir la liste des sources plus bas
   swatch: ['#141210', '#241f1a', '#c98a3c', '#eee2cf'],  // fond, surface, accent, texte
   period: true,               // appelle les empattements
   years: [1906, 1938],        // facultatif — pour le mode histoire
@@ -71,16 +71,44 @@ Le style s'accroche aux traits, jamais aux noms. Une règle écrite pour
 ceux qui n'existent pas encore. C'est ce qui fait qu'ajouter un habit ne demande
 que les deux étapes ci-dessus.
 
+## Les sources de lumière
+
+Neuf, et elles ne se ressemblent pas : une source n'est pas obligée de
+vaciller pour dire un lieu.
+
+| Source | Ce qu'elle fait | Cadence |
+| --- | --- | --- |
+| `fenetre` | le jour dérive, comme un ciel où passent des nuages | 46 s |
+| `bougie` | une flamme saute, et la lumière penche avec elle | 6,5 s |
+| `filament` | l'ampoule respire, le réseau lui fait un creux | 9 s |
+| `tube` | parfaitement égal, sauf deux papillotements brefs | 12 s |
+| `neon` | une enseigne bafouille par salves, puis se tient tranquille | 11 s |
+| `phare` | un pinceau traverse la pièce en biais, puis plus rien | 14 s |
+| `orage` | deux éclairs lointains coup sur coup, le second plus fort | 25 s |
+| `aube` | la pièce se réchauffe, **une seule fois**, sans revenir | 3 min |
+| `braise` | elle éclaire par en dessous, respire, et reprend | 13 s |
+
+Quatre d'entre elles ont besoin de deux nappes — une teinte qui reste, et un
+mouvement par-dessus. Elles se servent du pseudo-élément
+`.ambiance__lueur::after`, qui ne coûte rien aux autres : sans `content`, il
+n'existe pas. C'est ce qui évite d'ajouter un élément dans l'ossature pour
+quatre cas particuliers.
+
 ## Ajouter une source de lumière
 
 Plus rare, mais même principe. Un nom de plus dans `LightSource`, un bloc dans
 `ambiance.css` accroché à `[data-lumiere='...']`, et une phrase dans
-`LIGHT_BLURB` (`src/ui/theme-picker.ts`) qui dit ce qu'elle éclaire.
+`LIGHT_BLURB` (`src/ui/theme-picker.ts`) qui dit ce qu'elle éclaire. Le
+compilateur réclamera la phrase : `LIGHT_BLURB` est un `Record` complet sur le
+type, on ne peut pas oublier.
 
 Deux précautions valent d'être répétées, parce qu'elles se paient cher :
 
 - **Tout ce qui annule doit égaler la spécificité de ce qui allume.** Le piège
-  s'est refermé deux fois sur ce seul fichier : `.ambiance__lueur { animation:
+  s'est refermé deux fois sur ce seul fichier, et vaut aussi pour la seconde
+  nappe — `:root[data-lumiere] .ambiance__lueur::after` égale bien
+  `:root[data-lumiere='phare'] .ambiance__lueur::after`, un attribut valant un
+  attribut qu'il porte une valeur ou non. Les deux cas d'origine : `.ambiance__lueur { animation:
   none }` perd contre `:root[data-lumiere='x'] .ambiance__lueur`, et
   `:root[data-lumiere] … { will-change: auto }` perd contre
   `:root[data-lumiere][data-ambiance='discrete'] …`. Dans les deux cas la règle

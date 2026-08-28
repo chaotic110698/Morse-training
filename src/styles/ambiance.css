@@ -60,8 +60,25 @@
  * est allumée et que le système ne demande pas moins d'animation.
  */
 :root[data-lumiere][data-ambiance='discrete'] .ambiance__lueur,
-:root[data-lumiere][data-ambiance='marquee'] .ambiance__lueur {
+:root[data-lumiere][data-ambiance='marquee'] .ambiance__lueur,
+:root[data-lumiere][data-ambiance='discrete'] .ambiance__lueur::after,
+:root[data-lumiere][data-ambiance='marquee'] .ambiance__lueur::after {
   will-change: opacity, transform;
+}
+
+/*
+ * La seconde couche.
+ *
+ * Quatre des neuf sources ont besoin de deux nappes : une teinte qui reste, et
+ * un mouvement par-dessus — le pinceau du phare, l'éclair, la lumière chaude
+ * de l'aube. Plutôt que d'ajouter un élément dans l'ossature pour quatre cas,
+ * elles se servent d'un pseudo-élément, qui ne coûte rien aux cinq autres :
+ * sans `content`, il n'existe pas.
+ */
+.ambiance__lueur::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
 /* --- La fenêtre ------------------------------------------------------------
@@ -194,6 +211,137 @@
   100% { opacity: 0.92; }
 }
 
+
+/* --- Le phare --------------------------------------------------------------
+ *
+ * Quatorze secondes d'obscurité pour deux de lumière. Le balayage traverse en
+ * biais, comme un pinceau qui passe derrière une vitre, et le reste du temps
+ * il ne se passe absolument rien : c'est ce vide qui fait qu'on l'attend.
+ *
+ * Le mouvement est un déplacement, pas un clignotement — la luminance de
+ * chaque point de l'écran ne fait que monter puis redescendre en deux
+ * secondes, ce qui est aussi loin des seuils de photosensibilité qu'on
+ * puisse l'être.
+ */
+
+:root[data-lumiere='phare'] .ambiance__lueur {
+  background:
+    radial-gradient(125% 110% at 50% 125%, rgb(6 16 28 / 0.34), transparent 62%);
+}
+
+:root[data-lumiere='phare'] .ambiance__lueur::after {
+  content: '';
+  /* Débordant largement : le faisceau entre et sort sans qu'on voie son bord. */
+  inset: -35%;
+  background: linear-gradient(
+    101deg,
+    transparent 43%,
+    rgb(226 238 255 / 0.10) 48%,
+    rgb(255 249 226 / 0.20) 50.5%,
+    rgb(226 238 255 / 0.10) 53%,
+    transparent 58%
+  );
+  animation: ambiance-phare 14s linear infinite;
+}
+
+@keyframes ambiance-phare {
+  0%, 84% { transform: translate3d(-150%, 0, 0); }
+  100% { transform: translate3d(150%, 0, 0); }
+}
+
+/* --- L'orage ---------------------------------------------------------------
+ *
+ * La pluie mange la lumière, et deux éclairs lointains passent coup sur coup.
+ * Le second est le plus fort : c'est toujours celui-là qu'on voit vraiment.
+ *
+ * L'amplitude est tenue basse à dessein. Le pic du second éclair porte le
+ * dégradé à moins d'un cinquième d'opacité sur une partie de l'écran
+ * seulement ; un éclair franc n'aurait pas sa place sur un site qu'on regarde
+ * une heure d'affilée, et encore moins pour une personne photosensible.
+ */
+
+:root[data-lumiere='orage'] .ambiance__lueur {
+  background:
+    linear-gradient(180deg, rgb(150 172 186 / 0.10), transparent 45%),
+    radial-gradient(130% 120% at 50% 118%, rgb(8 14 18 / 0.30), transparent 64%);
+}
+
+:root[data-lumiere='orage'] .ambiance__lueur::after {
+  content: '';
+  background: radial-gradient(95% 75% at 64% -14%, rgb(214 232 255 / 0.46), transparent 60%);
+  opacity: 0;
+  animation: ambiance-orage 25s linear infinite;
+}
+
+@keyframes ambiance-orage {
+  0%, 95%, 100% { opacity: 0; }
+  95.3% { opacity: 0.30; }
+  95.6% { opacity: 0.02; }
+  96.0% { opacity: 0.42; }
+  96.7% { opacity: 0; }
+}
+
+/* --- L'aube ----------------------------------------------------------------
+ *
+ * La seule ambiance qui ne se répète pas.
+ *
+ * La pièce part du gris-bleu de la mer avant le jour et se réchauffe pendant
+ * les trois premières minutes, une fois, puis n'y touche plus — d'où
+ * `forwards` et l'absence de `infinite`. On ne surprend jamais cette lumière
+ * en train de bouger : on s'aperçoit seulement, au bout d'un moment, que ce
+ * n'est plus la même couleur qu'au début de la séance.
+ */
+
+:root[data-lumiere='aube'] .ambiance__lueur {
+  background:
+    linear-gradient(196deg, rgb(112 152 204 / 0.26), transparent 68%),
+    radial-gradient(120% 110% at 50% 120%, rgb(40 60 90 / 0.10), transparent 60%);
+  animation: ambiance-aube-froid 180s ease-in-out forwards;
+}
+
+:root[data-lumiere='aube'] .ambiance__lueur::after {
+  content: '';
+  background:
+    radial-gradient(110% 90% at 12% 104%, rgb(255 186 132 / 0.30), transparent 62%),
+    linear-gradient(8deg, rgb(255 214 176 / 0.16), transparent 54%);
+  opacity: 0;
+  animation: ambiance-aube-chaud 180s ease-in-out forwards;
+}
+
+@keyframes ambiance-aube-froid {
+  from { opacity: 1; }
+  to { opacity: 0.15; }
+}
+
+@keyframes ambiance-aube-chaud {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* --- La braise -------------------------------------------------------------
+ *
+ * La seule source qui éclaire par en dessous. Elle respire lentement, et de
+ * loin en loin une bûche s'ouvre — le petit sursaut au milieu du cycle, seul
+ * moment où la lumière monte franchement.
+ */
+
+:root[data-lumiere='braise'] .ambiance__lueur {
+  background:
+    radial-gradient(125% 78% at 50% 116%, rgb(255 138 52 / 0.30), transparent 62%),
+    radial-gradient(130% 120% at 50% -26%, rgb(10 4 0 / 0.38), transparent 66%);
+  animation: ambiance-braise 13s ease-in-out infinite;
+}
+
+@keyframes ambiance-braise {
+  0%, 100% { opacity: 0.86; transform: translate3d(0, 0, 0); }
+  17% { opacity: 0.94; }
+  32% { opacity: 0.81; }
+  47% { opacity: 1; transform: translate3d(0, -0.5%, 0); }
+  55% { opacity: 0.90; }
+  73% { opacity: 0.97; }
+  88% { opacity: 0.83; }
+}
+
 /* --- Quand on demande moins de mouvement -----------------------------------
  *
  * On garde la teinte, qui fait partie de l'habit, et on retire le vacillement,
@@ -211,12 +359,32 @@
     opacity: 1;
   }
 
+  /* Même règle pour la seconde nappe. La spécificité doit égaler celle qui
+     l'anime — `:root[data-lumiere='phare'] .ambiance__lueur::after` — et c'est
+     le cas : un attribut vaut un attribut, qu'il porte une valeur ou non.
+     Elle est ramenée à mi-course plutôt qu'éteinte : l'aube figée à zéro
+     laisserait une pièce froide qui ne se réchauffe jamais, et le faisceau du
+     phare disparaîtrait au lieu de se poser. */
+  :root[data-lumiere] .ambiance__lueur::after {
+    animation: none;
+    opacity: 0.5;
+    transform: none;
+  }
+
+  /* L'éclair, lui, n'a pas de position de repos : un orage sans éclair est un
+     ciel gris, ce qui est exactement ce qu'il faut montrer ici. */
+  :root[data-lumiere='orage'] .ambiance__lueur::after {
+    opacity: 0;
+  }
+
   /* Rien ne bouge plus : la couche de composition n'a plus lieu d'être. Il
      faut de nouveau égaler la spécificité des règles qui la réservent — deux
      attributs sur la racine — sinon la réservation tient. C'est le second
      piège du même fichier ; il est décrit dans docs/themes.md. */
   :root[data-lumiere][data-ambiance='discrete'] .ambiance__lueur,
-  :root[data-lumiere][data-ambiance='marquee'] .ambiance__lueur {
+  :root[data-lumiere][data-ambiance='marquee'] .ambiance__lueur,
+  :root[data-lumiere][data-ambiance='discrete'] .ambiance__lueur::after,
+  :root[data-lumiere][data-ambiance='marquee'] .ambiance__lueur::after {
     will-change: auto;
   }
 

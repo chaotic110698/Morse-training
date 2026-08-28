@@ -17,8 +17,22 @@
  * Ce qui éclaire la pièce. Sert à l'ambiance : la lumière du jour dérive
  * lentement, une flamme est irrégulière, un filament respire, un tube grésille,
  * et une enseigne au néon bafouille avant de se rallumer.
+ *
+ * Les quatre dernières ne battent pas : le phare passe, l'orage éclate, l'aube
+ * se réchauffe une fois pour toutes, et la braise éclaire par en dessous. Une
+ * source n'est pas obligée de vaciller pour dire un lieu.
  */
-export type LightSource = 'aucune' | 'fenetre' | 'bougie' | 'filament' | 'tube' | 'neon';
+export type LightSource =
+  | 'aucune'
+  | 'fenetre'
+  | 'bougie'
+  | 'filament'
+  | 'tube'
+  | 'neon'
+  | 'phare'
+  | 'orage'
+  | 'aube'
+  | 'braise';
 
 export interface ThemeDef {
   /** Identifiant stable : il part dans les réglages enregistrés. */
@@ -162,6 +176,50 @@ export const THEMES: ThemeDef[] = [
     period: false,
     // Et pas d'années : le mode histoire s'arrête en 1999, et un habit sans
     // intervalle ne lui sera jamais prêté.
+  },
+  {
+    id: 'salle',
+    name: 'Salle des cartes',
+    blurb: 'La salle des cartes d’un sémaphore, la nuit : bleu de nuit, laiton pâle, et le pinceau du phare qui passe.',
+    lightness: 'sombre',
+    bar: '#0a1118',
+    light: 'phare',
+    swatch: ['#0a1118', '#121e28', '#d9b45f', '#dce8f1'],
+    period: true,
+    // Sans années : les intervalles du récit sont pris, et un habit peut très
+    // bien n'être qu'un habit.
+  },
+  {
+    id: 'grain',
+    name: 'Le grain',
+    blurb: 'Le poste de veille pendant le grain : ardoise mouillée, verre de mer, et deux éclairs lointains coup sur coup.',
+    lightness: 'sombre',
+    twin: 'aurore',
+    bar: '#0d1214',
+    light: 'orage',
+    swatch: ['#0d1214', '#151d20', '#79b6c9', '#dfe7ea'],
+    period: false,
+  },
+  {
+    id: 'aurore',
+    name: 'Aurore',
+    blurb: 'La fin du quart de quatre heures : gris-bleu de mer, encre de nuit, et une lumière qui se réchauffe une seule fois.',
+    lightness: 'clair',
+    twin: 'grain',
+    bar: '#eef1f5',
+    light: 'aube',
+    swatch: ['#eef1f5', '#ffffff', '#b0512f', '#14202b'],
+    period: false,
+  },
+  {
+    id: 'braise',
+    name: 'Braise',
+    blurb: 'L’hiver au poste de montagne : le poêle éclaire par en dessous, respire lentement, et reprend quand une bûche s’ouvre.',
+    lightness: 'sombre',
+    bar: '#120e0c',
+    light: 'braise',
+    swatch: ['#120e0c', '#1c1613', '#e2793a', '#eddfd3'],
+    period: false,
   },
 ];
 
