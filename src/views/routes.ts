@@ -413,7 +413,7 @@ export const ROUTES: RouteDefinition[] = [
     path: '/reglages',
     label: 'Réglages',
     title: 'Réglages',
-    description: 'Vitesse, son, manipulateur, sorties, données.',
+    description: 'Tout ce qui se règle, rangé par catégorie.',
     icon: '⚙️',
     group: 'reglages',
     load: () => import('./settings.ts').then((m) => m.settingsView),

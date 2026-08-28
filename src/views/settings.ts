@@ -6,7 +6,7 @@
  * (Farnsworth, mode iambique, unité de temps) qu'on ne peut pas deviner.
  */
 
-import { h, field } from '../ui/dom.ts';
+import { h, field, setChildren } from '../ui/dom.ts';
 import { createThemeOptions, createThemePicker } from '../ui/theme-picker.ts';
 import { keepFocus, slider } from '../ui/controls.ts';
 import { keyLabel, resolveCode } from '../ui/keys.ts';
@@ -18,6 +18,59 @@ import { KOCH_ORDERS, kochMaxLevel } from '../core/koch.ts';
 import { buildSaveFile, downloadText, parseSaveFile, storageAvailable } from '../core/storage.ts';
 import { DEFAULT_SETTINGS } from '../core/settings.ts';
 import type { View, ViewContext } from '../ui/router.ts';
+
+/**
+ * Les catégories de réglages.
+ *
+ * Huit cartes à la file, c'était une liste où l'on descendait en cherchant.
+ * Les onglets rangent la même chose par question posée : ce que j'entends, ce
+ * que je manipule, ce que le site me renvoie, à quoi il ressemble, ce que
+ * j'apprends, ce que je garde.
+ *
+ * L'ordre n'est pas alphabétique mais celui de la fréquence d'usage : la
+ * vitesse se règle à chaque séance, les données une fois par an.
+ */
+const ONGLETS: { id: string; label: string; intro: string }[] = [
+  {
+    id: 'ecoute',
+    label: 'Écoute',
+    intro: 'La vitesse du code, le timbre de la note, et le bruit de bande.',
+  },
+  {
+    id: 'manipulateur',
+    label: 'Manipulateur',
+    intro: 'Le type de manip, ses tolérances, et les touches qui le commandent.',
+  },
+  {
+    id: 'retours',
+    label: 'Retours',
+    intro: 'Ce que le site fait voir, sentir et entendre quand vous agissez.',
+  },
+  {
+    id: 'apparence',
+    label: 'Apparence',
+    intro: 'L’habit du site, la lumière de sa pièce, et sa police.',
+  },
+  {
+    id: 'apprentissage',
+    label: 'Apprentissage',
+    intro: 'La méthode Koch, le seuil de passage et la longueur des séries.',
+  },
+  {
+    id: 'donnees',
+    label: 'Mes données',
+    intro: 'Sauvegarde, import, mise à jour et remise à zéro.',
+  },
+];
+
+const ONGLET_CLE = 'morse-training/reglages-onglet';
+
+/**
+ * Deux exemplaires de cette page coexistent : celle du menu et celle du
+ * panneau. Sans identifiants distincts, `aria-controls` désignerait le mauvais
+ * panneau et un lecteur d'écran annoncerait n'importe quoi.
+ */
+let compteurPanneau = 0;
 
 type BindingKey = 'keyStraight' | 'keyDit' | 'keyDah';
 
@@ -97,6 +150,146 @@ export function settingsView(context: ViewContext): View {
   // Le redessin attend la frame suivante. Deux raisons : quitter un champ
   // déclenche sa validation, donc une mise à jour, donc ce redessin — remplacer
   // le contenu au milieu du traitement du « blur » fait échouer le navigateur.
+
+  const uid = `reglages-${(compteurPanneau += 1)}`;
+
+  const ongletEnregistre = (): string => {
+    try {
+      const brut = window.localStorage.getItem(ONGLET_CLE);
+      return ONGLETS.some((o) => o.id === brut) ? (brut as string) : 'ecoute';
+    } catch {
+      return 'ecoute';
+    }
+  };
+
+  let onglet = ongletEnregistre();
+
+  /*
+   * La bande est construite une fois pour toutes, et seul le panneau est
+   * redessiné.
+   *
+   * Ce n'est pas qu'une économie : une page de réglages se redessine à chaque
+   * mouvement de curseur, et un trait recréé à chaque fois repartirait de zéro
+   * au lieu de glisser. Ce qui ne dépend pas des réglages ne doit pas dépendre
+   * du dessin.
+   */
+  const trait = h('span', { class: 'reglages__trait', attrs: { 'aria-hidden': 'true' } });
+
+  const panneau = h('div', {
+    class: 'reglages__panneau',
+    attrs: {
+      role: 'tabpanel',
+      id: `${uid}-panneau`,
+      tabindex: '0',
+    },
+  });
+
+  const boutons = new Map<string, HTMLButtonElement>();
+
+  /**
+   * Le trait suit l'onglet ouvert au lieu de sauter d'un point à l'autre. Il
+   * se replace après chaque changement, et quand la largeur de la fenêtre
+   * change : les libellés n'ont alors plus la même place.
+   */
+  const placeTrait = (): void => {
+    const actif = boutons.get(onglet);
+    if (!actif) return;
+    trait.style.width = `${actif.offsetWidth}px`;
+    trait.style.transform = `translateX(${actif.offsetLeft}px)`;
+  };
+
+  const choisir = (id: string): void => {
+    if (id === onglet) return;
+    onglet = id;
+    try {
+      window.localStorage.setItem(ONGLET_CLE, id);
+    } catch {
+      // Le dernier onglet ouvert n'est qu'un confort : on ignore l'échec.
+    }
+    draw();
+    const bouton = boutons.get(id);
+    bouton?.focus();
+    // Sur téléphone la bande défile : l'onglet choisi doit être visible.
+    bouton?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  };
+
+  /** Flèches, Origine et Fin, comme le veut le motif ARIA des onglets. */
+  const auClavier = (event: KeyboardEvent, id: string): void => {
+    const rang = ONGLETS.findIndex((o) => o.id === id);
+    let cible = -1;
+    if (event.key === 'ArrowRight') cible = (rang + 1) % ONGLETS.length;
+    else if (event.key === 'ArrowLeft') cible = (rang - 1 + ONGLETS.length) % ONGLETS.length;
+    else if (event.key === 'Home') cible = 0;
+    else if (event.key === 'End') cible = ONGLETS.length - 1;
+    if (cible < 0) return;
+    event.preventDefault();
+    choisir(ONGLETS[cible]?.id ?? 'ecoute');
+  };
+
+  const bande = h(
+    'div',
+    {
+      class: 'reglages__bande',
+      attrs: { role: 'tablist', 'aria-label': 'Catégories de réglages' },
+    },
+    ...ONGLETS.map((o) => {
+      const bouton = h('button', {
+        class: 'reglages__onglet',
+        type: 'button',
+        text: o.label,
+        data: { focusKey: `onglet-${o.id}` },
+        attrs: {
+          role: 'tab',
+          id: `${uid}-onglet-${o.id}`,
+          'aria-controls': `${uid}-panneau`,
+          'aria-selected': 'false',
+          // Un seul onglet dans l'ordre de tabulation : on entre dans la bande
+          // par celui qui est ouvert, et on circule aux flèches.
+          tabindex: '-1',
+        },
+        on: {
+          click: () => choisir(o.id),
+          keydown: (event) => auClavier(event, o.id),
+        },
+      }) as HTMLButtonElement;
+      boutons.set(o.id, bouton);
+      return bouton;
+    }),
+    trait,
+  );
+
+  container.append(bande, panneau);
+
+  const dessineOnglets = (cartes: Record<string, Array<() => HTMLElement>>): void => {
+    const actif = ONGLETS.find((o) => o.id === onglet) ?? (ONGLETS[0] as (typeof ONGLETS)[number]);
+
+    for (const [id, bouton] of boutons) {
+      const choisi = id === actif.id;
+      bouton.setAttribute('aria-selected', String(choisi));
+      bouton.tabIndex = choisi ? 0 : -1;
+    }
+    panneau.setAttribute('aria-labelledby', `${uid}-onglet-${actif.id}`);
+
+    setChildren(panneau, [
+      h('p', { class: 'reglages__intro', text: actif.intro }),
+      ...(cartes[actif.id] ?? []).map((fabrique) => fabrique()),
+    ]);
+
+    placeTrait();
+  };
+
+  /*
+   * Le trait ne peut pas se placer au premier dessin : la vue n'est pas encore
+   * dans le document, et un bouton hors du document n'a aucune largeur. On
+   * observe donc la bande — ce qui règle du même coup le redimensionnement de
+   * la fenêtre, qui change la place des libellés.
+   */
+  const observateur =
+    typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(() => placeTrait());
+  observateur?.observe(bande);
+  const surRedimensionnement = (): void => placeTrait();
+  if (!observateur) window.addEventListener('resize', surRedimensionnement);
+
   // Et pendant qu'on glisse un curseur, les dizaines d'appels se regroupent en
   // un seul dessin.
   let pending = 0;
@@ -113,8 +306,8 @@ export function settingsView(context: ViewContext): View {
     const timing = store.timing;
     const paddleMode = s.keyerMode !== 'straight';
 
-    container.replaceChildren(
-      // --- Vitesse ---
+    // --- Vitesse ---
+    const carteVitesse = (): HTMLElement =>
       h(
         'section',
         { class: 'card' },
@@ -166,9 +359,10 @@ export function settingsView(context: ViewContext): View {
           }),
           lamp.element,
         ),
-      ),
+      );
 
-      // --- Son ---
+    // --- Son ---
+    const carteSon = (): HTMLElement =>
       h(
         'section',
         { class: 'card' },
@@ -256,9 +450,10 @@ export function settingsView(context: ViewContext): View {
         ),
         h('p', { class: 'field__hint' },
           'Sur iPhone et iPad, le son du navigateur suit le bouton silencieux physique. Si vous n’entendez rien, vérifiez-le avant tout le reste.'),
-      ),
+      );
 
-      // --- Bruit de fond ---
+    // --- Bruit de fond ---
+    const carteBruit = (): HTMLElement =>
       h(
         'section',
         { class: 'card' },
@@ -299,13 +494,13 @@ export function settingsView(context: ViewContext): View {
           ),
           `Rapport signal sur bruit : ${s.noiseSnrDb} dB. ${presetForDb(s.noiseSnrDb).hint} Copier dans le bruit est la compétence qui compte vraiment sur l’air ; descendre d’un cran quand la copie devient facile vaut mieux que d’accélérer.`,
         ),
-      ),
+      );
 
-      // --- Manipulateur ---
+    // --- Manipulateur ---
+    const carteManipulateur = (): HTMLElement =>
       h(
         'section',
         { class: 'card' },
-        h('h2', { class: 'card__title', text: 'Manipulateur' }),
         field(
           'Type de manipulateur',
           h(
@@ -393,13 +588,13 @@ export function settingsView(context: ViewContext): View {
           ),
           'Le décodeur ajuste la frontière entre point et trait sur votre frappe plutôt que sur la vitesse annoncée. À laisser activé au manipulateur droit ; sans effet aux palettes, où les durées sont générées.',
         ),
-      ),
+      );
 
-      // --- Sorties ---
+    // --- Sorties ---
+    const carteRetours = (): HTMLElement =>
       h(
         'section',
         { class: 'card' },
-        h('h2', { class: 'card__title', text: 'Sorties visuelle et haptique' }),
         field(
           'Diode témoin',
           h(
@@ -449,7 +644,7 @@ export function settingsView(context: ViewContext): View {
             }),
             h('span', { text: 'Une houle très basse derrière le ruban' }),
           ),
-          'Le bruit de fond de la réception, dessiné : une ondulation de deux ou trois pixels sur laquelle le signal se détache. Purement visuelle — elle ne s’entend pas, et n’a rien à voir avec le bruit de bande réglé plus haut. Elle s’arrête d’elle-même si votre système demande moins d’animation.',
+          'Le bruit de fond de la réception, dessiné : une ondulation de deux ou trois pixels sur laquelle le signal se détache. Purement visuelle — elle ne s’entend pas, et n’a rien à voir avec le bruit de bande, qui se règle dans l’onglet Écoute. Elle s’arrête d’elle-même si votre système demande moins d’animation.',
         ),
         field(
           'Retour haptique',
@@ -486,13 +681,38 @@ export function settingsView(context: ViewContext): View {
             h('span', { text: 'Confirmation et erreur' }),
           ),
         ),
-      ),
+        field(
+          'D’une page à l’autre',
+          h(
+            'select',
+            {
+              class: 'select',
+              on: {
+                change: (event) =>
+                  store.updateSettings({
+                    pageMotion: (event.target as HTMLSelectElement).value as typeof s.pageMotion,
+                  }),
+              },
+            },
+            ...(
+              [
+                ['glissement', 'Glissement — la page entre par le côté, dans le sens du parcours'],
+                ['fondu', 'Fondu — un enchaînement court, presque invisible'],
+                ['aucun', 'Aucune — la page est remplacée d’un seul coup'],
+              ] as const
+            ).map(([value, label]) =>
+              h('option', { value, text: label, attrs: { selected: s.pageMotion === value } }),
+            ),
+          ),
+          'Le glissement dit le sens : on entre par la droite en descendant dans le site, par la gauche en remontant. Les trois restent sous les trois cents millisecondes — au-delà, une transition qu’on traverse cent fois par séance devient une attente. Si votre système demande moins d’animation, aucune n’est jouée.',
+        ),
+      );
 
-      // --- Apprentissage ---
+    // --- Apprentissage ---
+    const carteApprentissage = (): HTMLElement =>
       h(
         'section',
         { class: 'card' },
-        h('h2', { class: 'card__title', text: 'Apprentissage' }),
         field(
           'Ordre d’introduction des caractères',
           h(
@@ -575,51 +795,26 @@ export function settingsView(context: ViewContext): View {
           ),
           'Le niveau monte normalement tout seul à la fin d’une série réussie. Ce réglage sert à reprendre plus haut si vous connaissez déjà une partie du code.',
         ),
-      ),
+      );
 
-      // --- Apparence ---
+    // --- Apparence ---
+    const carteApparence = (): HTMLElement =>
       h(
         'section',
         { class: 'card' },
-        h('h2', { class: 'card__title', text: 'Apparence' }),
         field(
           'Habit',
           createThemePicker({ store }),
           'Chaque habit est une palette complète : couleurs, ombres, angles et police. Cinq d’entre eux portent des années, et le mode histoire s’en sert pour ouvrir chaque épisode dans l’habit de son époque ; les autres sont des lieux sans date. Ceux qui déclarent une source de lumière l’allument dans la pièce : une fenêtre, une bougie, un phare, un orage.',
         ),
         ...createThemeOptions(store),
-        field(
-          'D’une page à l’autre',
-          h(
-            'select',
-            {
-              class: 'select',
-              on: {
-                change: (event) =>
-                  store.updateSettings({
-                    pageMotion: (event.target as HTMLSelectElement).value as typeof s.pageMotion,
-                  }),
-              },
-            },
-            ...(
-              [
-                ['glissement', 'Glissement — la page entre par le côté, dans le sens du parcours'],
-                ['fondu', 'Fondu — un enchaînement court, presque invisible'],
-                ['aucun', 'Aucune — la page est remplacée d’un seul coup'],
-              ] as const
-            ).map(([value, label]) =>
-              h('option', { value, text: label, attrs: { selected: s.pageMotion === value } }),
-            ),
-          ),
-          'Le glissement dit le sens : on entre par la droite en descendant dans le site, par la gauche en remontant. Les trois restent sous les trois cents millisecondes — au-delà, une transition qu’on traverse cent fois par séance devient une attente. Si votre système demande moins d’animation, aucune n’est jouée.',
-        ),
-      ),
+      );
 
-      // --- Données ---
+    // --- Données ---
+    const carteDonnees = (): HTMLElement =>
       h(
         'section',
         { class: 'card' },
-        h('h2', { class: 'card__title', text: 'Mes données' }),
         h('p', { class: 'field__hint' },
           `Version installée : ${__BUILD_STAMP__}. « Forcer la mise à jour » vide le cache hors ligne et recharge le site, ` +
           "à utiliser si une correction annoncée ne semble pas appliquée. Votre progression n’est pas touchée."),
@@ -687,8 +882,18 @@ export function settingsView(context: ViewContext): View {
             },
           }),
         ),
-      ),
-    );
+      );
+
+    const CARTES: Record<string, Array<() => HTMLElement>> = {
+      ecoute: [carteVitesse, carteSon, carteBruit],
+      manipulateur: [carteManipulateur],
+      retours: [carteRetours],
+      apparence: [carteApparence],
+      apprentissage: [carteApprentissage],
+      donnees: [carteDonnees],
+    };
+
+    dessineOnglets(CARTES);
   };
 
   draw();
@@ -699,6 +904,8 @@ export function settingsView(context: ViewContext): View {
     destroy: () => {
       if (pending) window.cancelAnimationFrame(pending);
       window.removeEventListener('keydown', onCaptureKey, true);
+      observateur?.disconnect();
+      window.removeEventListener('resize', surRedimensionnement);
       unsubscribe();
       player.stop();
     },

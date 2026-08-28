@@ -290,7 +290,15 @@
   from { opacity: 0; transform: translateX(calc(var(--sens, 1) * 14%)); }
 }
 
-/* Le trait du menu suit le lien actif au lieu de sauter d'un point à l'autre. */
+/* Le trait des onglets de réglages suit celui qui est ouvert. La bande n'est
+   construite qu'une fois — sans quoi le trait repartirait de zéro à chaque
+   redessin au lieu de glisser. */
+.reglages__trait {
+  transition:
+    transform 320ms cubic-bezier(0.25, 1, 0.35, 1),
+    width 320ms cubic-bezier(0.25, 1, 0.35, 1);
+}
+
 .nav__link {
   transition:
     background var(--transition),
@@ -341,6 +349,8 @@
   }
 
   .lamp__bulb.is-lit { transform: none; }
+
+  .reglages__trait { transition-duration: 1ms; }
 
   /* Une page sortante qui ne s'anime plus n'a plus de fin d'animation pour la
      retirer : le routeur la retire au bout de son minuteur, mais elle ne doit

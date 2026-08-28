@@ -173,7 +173,13 @@
 
 .select {
   cursor: pointer;
+  /* Une liste déroulante se dimensionne sur sa plus longue option, et le
+     `width: 100%` partagé plus haut l'en empêchait. Mais sans plafond relatif,
+     un libellé comme « Sinusoïde — pure, la plus proche d'un récepteur radio »
+     élargit la page entière sur un téléphone : d'où les deux plafonds, celui
+     du confort de lecture et celui du conteneur. */
   width: auto;
+  max-width: min(26rem, 100%);
 }
 
 .input--answer {
@@ -741,6 +747,91 @@
   letter-spacing: 0.2em;
   color: var(--accent);
   white-space: nowrap;
+}
+
+
+/* --- Les onglets des réglages ---
+ *
+ * Huit cartes à la file faisaient une liste où l'on descendait en cherchant.
+ * La bande range la même chose par question posée, et le panneau ne montre
+ * qu'une catégorie à la fois — c'est ce qui rend chacune lisible d'un coup
+ * d'œil plutôt que d'un défilement.
+ */
+
+.reglages__bande {
+  position: relative;
+  display: flex;
+  gap: var(--space-1);
+  /* Six libellés ne tiennent pas sur un téléphone : la bande défile, sans
+     barre visible, et l'onglet choisi est amené dans le champ. */
+  overflow-x: auto;
+  /* Sans quoi la bande, élément flexible, refuse de descendre sous la largeur
+     de son contenu et pousse la page entière vers la droite. */
+  min-width: 0;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--border);
+}
+
+.reglages__bande::-webkit-scrollbar {
+  display: none;
+}
+
+.reglages__onglet {
+  flex: none;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  padding: 0.6rem 0.9rem;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  cursor: pointer;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  transition: color var(--transition), background var(--transition);
+}
+
+.reglages__onglet:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+.reglages__onglet[aria-selected='true'] {
+  color: var(--accent);
+}
+
+/* Le trait est posé sur la bordure de la bande, et se déplace avec le
+   défilement puisqu'il en est un enfant positionné. */
+.reglages__trait {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 2px;
+  width: 0;
+  background: var(--accent);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.reglages__panneau {
+  /* Une colonne flexible, comme `.stack`, et non une grille : les éléments
+     d'une grille ont une largeur minimale automatique, et le plus long libellé
+     d'une liste déroulante suffisait alors à élargir toute la page. */
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.reglages__panneau:focus {
+  outline: none;
+}
+
+.reglages__intro {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  max-width: 60ch;
 }
 
 /* --- Bilans --- */
