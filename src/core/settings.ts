@@ -66,6 +66,11 @@ export interface Settings {
   signalWaves: boolean;
   /** Retour haptique quand le matériel le permet. */
   haptics: boolean;
+  /**
+   * Ouvrir le tiroir de navigation en glissant le doigt vers la droite, le
+   * refermer vers la gauche. Sans effet à la souris ni sur écran large.
+   */
+  swipeMenu: boolean;
   /** Sons de confirmation et d'erreur de l'interface. */
   uiSounds: boolean;
   /** Bruit de fond de réception pendant les séances. */
@@ -140,6 +145,7 @@ export const DEFAULT_SETTINGS: Settings = {
   signalTrace: true,
   signalWaves: true,
   haptics: true,
+  swipeMenu: true,
   uiSounds: true,
   noiseEnabled: true,
   noiseSnrDb: 20,

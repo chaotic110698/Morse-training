@@ -14,10 +14,16 @@
  *    c'est un corrigé — et sur un exercice de reconnaissance, il donne la
  *    réponse avant qu'on l'ait cherchée.
  *  - **Il ne paraît que là où l'on sait déjà ce qui est envoyé** : la table de
- *    l'alphabet, la page des principes, le traducteur, et le récepteur du
- *    récit, où le code s'écrit de toute façon à côté. Dans les exercices de
- *    copie, voir le rythme remplace l'entendre, ce qui est exactement ce que
- *    la méthode Koch existe pour empêcher.
+ *    l'alphabet, la page des principes, le traducteur, le récepteur du récit
+ *    — où le code s'écrit de toute façon à côté — et les deux pages où c'est
+ *    la main qui produit le signal, l'émission et l'enregistreur. Dans les
+ *    exercices de copie, voir le rythme remplace l'entendre, ce qui est
+ *    exactement ce que la méthode Koch existe pour empêcher.
+ *
+ * Deux sources le nourrissent donc : le lecteur, aux mêmes instants que la
+ * diode, et le manipulateur, par `key`. Sous la main, c'est votre propre
+ * poignet qui s'inscrit — la longueur réelle de vos points, la tenue de vos
+ * silences.
  *
  * Derrière le signal, le souffle du récepteur : une houle très basse qui
  * vacille, sur laquelle le trait se détache. Purement décorative, celle-là —
@@ -40,7 +46,13 @@ const PX_PAR_MS = 0.155;
 /** Le repère « maintenant », en fraction de la largeur. */
 const REPERE = 0.76;
 
-const HAUTEUR = 84;
+/*
+ * Hauteur du papier. Généreuse au départ — quatre-vingt-quatre pixels — elle a
+ * été ramenée là : la marque en fait quinze et la houle trois, le reste était
+ * du vide. Sur la page d'émission, où le manipulateur est déjà bas, chaque
+ * dizaine de pixels rendue compte.
+ */
+const HAUTEUR = 64;
 
 /** Ce qui reste à l'écran : au-delà, la marque est oubliée. */
 const MEMOIRE_MS = 30_000;
@@ -72,6 +84,7 @@ export class SignalTrace {
   private vagues = true;
   private boucle = 0;
   private minuteur = 0;
+  private repos = 0;
   private largeur = 0;
   private observateur: ResizeObserver | null = null;
 
@@ -143,6 +156,8 @@ export class SignalTrace {
     const maintenant = performance.now();
 
     if (on) {
+      window.clearTimeout(this.repos);
+      this.repos = 0;
       this.ouverte = { debut: maintenant, fin: Number.POSITIVE_INFINITY };
       this.marques.push(this.ouverte);
       this.actif = true;
@@ -155,23 +170,51 @@ export class SignalTrace {
       this.ouverte.fin = maintenant;
       this.ouverte = null;
     }
+    // Sous la main, on ne sait jamais si c'est fini : le papier continue de
+    // défiler un instant après chaque relâchement, et ne s'arrête que si rien
+    // ne vient. Une lecture, elle, sait qu'elle se termine et raccourcit ce
+    // délai en appelant `end`.
+    this.auRepos(2200);
   }
 
-  /** Fin de la lecture : le papier s'arrête, après un dernier tour. */
+  /**
+   * Le manipulateur ouvre et ferme le contact.
+   *
+   * C'est le même geste que `mark`, mais il vaut d'avoir son nom : ici le
+   * ruban ne montre plus ce que la machine envoie, il montre **votre frappe**
+   * — la longueur réelle de vos points, la tenue de vos silences. C'est le
+   * seul endroit du site où l'on voit son propre poignet.
+   */
+  key(on: boolean): void {
+    this.mark(on);
+  }
+
+  /** Fin d'une lecture : le papier s'arrête plus tôt, puisqu'on sait. */
   end(): void {
     if (this.ouverte) {
       this.ouverte.fin = performance.now();
       this.ouverte = null;
     }
-    // Le papier continue de défiler un instant : la dernière lettre doit avoir
-    // le temps de passer sous le repère avant que tout ne s'arrête.
-    window.setTimeout(() => {
+    this.auRepos(1200);
+  }
+
+  /**
+   * Le papier défile encore un instant, puis s'arrête : la dernière marque
+   * doit avoir le temps de passer sous le repère. Un seul minuteur pour les
+   * deux sources — sans quoi une frappe pendant l'extinction d'une lecture
+   * verrait le papier ralentir sous elle.
+   */
+  private auRepos(delaiMs: number): void {
+    window.clearTimeout(this.repos);
+    this.repos = window.setTimeout(() => {
+      this.repos = 0;
       this.actif = false;
       this.relance();
-    }, 1200);
+    }, delaiMs);
   }
 
   destroy(): void {
+    window.clearTimeout(this.repos);
     this.arreteBoucle();
     this.observateur?.disconnect();
     this.observateur = null;
@@ -343,7 +386,7 @@ export class SignalTrace {
  */
 export function createSignalTrace(
   store: AppStore,
-  player: MorsePlayer,
+  player: MorsePlayer | null,
   label = 'Ruban',
 ): { trace: SignalTrace; destroy: () => void } {
   const trace = new SignalTrace(label);
@@ -353,13 +396,14 @@ export function createSignalTrace(
   };
   applique();
   const unsubscribe = store.subscribe(applique);
-  player.setTrace(trace);
+  // L'enregistreur n'a pas de lecteur : son ruban n'est nourri que par la main.
+  player?.setTrace(trace);
 
   return {
     trace,
     destroy: () => {
       unsubscribe();
-      player.setTrace(null);
+      player?.setTrace(null);
       trace.destroy();
     },
   };

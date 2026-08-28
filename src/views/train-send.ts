@@ -10,6 +10,7 @@
 import { h } from '../ui/dom.ts';
 import { SignalLamp } from '../ui/lamp.ts';
 import { MorsePlayer } from '../ui/player.ts';
+import { createSignalTrace } from '../ui/trace.ts';
 import { KeyPad } from '../ui/keypad.ts';
 import { SessionTracker } from '../ui/session.ts';
 import { Keyer } from '../core/keyer.ts';
@@ -44,6 +45,7 @@ export function sendView(context: ViewContext): View {
   const { store } = context;
   const lamp = new SignalLamp('Manipulateur');
   const player = new MorsePlayer(store, lamp);
+  const ruban = createSignalTrace(store, player, 'Votre frappe');
 
   let drill: Drill = 'chars';
   let target = '';
@@ -84,6 +86,7 @@ export function sendView(context: ViewContext): View {
         void store.audio.unlock();
         store.audio.startSidetone();
         lamp.on(kind);
+        ruban.trace.key(true);
         if (kind) store.haptics.pulse((kind === 'dit' ? store.timing.dit : store.timing.dah) * 1000);
         else store.haptics.hold();
         keypad.setActive(kind ?? null);
@@ -91,6 +94,7 @@ export function sendView(context: ViewContext): View {
       onKeyUp: () => {
         store.audio.stopSidetone();
         lamp.off();
+        ruban.trace.key(false);
         if (keyer.mode === 'straight') store.haptics.release();
         keypad.setActive(null);
       },
@@ -497,6 +501,7 @@ export function sendView(context: ViewContext): View {
     h('p', { class: 'trainer__hint', text: DRILLS.find((entry) => entry.id === drill)?.hint ?? '' }),
     h('div', { class: 'progress' }, progressBar, progressLabel),
     h('div', { class: 'trainer__stage' }, display, lamp.element),
+    ruban.trace.element,
     h('div', { class: 'tape-wrap' }, tape, buffer),
     keypad.element,
     h('div', { class: 'actions' }, nextButton, listenButton, clearButton),
@@ -544,6 +549,7 @@ export function sendView(context: ViewContext): View {
       unsubscribe();
       keypad.destroy();
       keyer.dispose();
+      ruban.destroy();
       player.stop();
       store.audio.stopSidetone();
       store.audio.stopNoise();

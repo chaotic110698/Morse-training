@@ -11,6 +11,7 @@ import { h } from './dom.ts';
 import { createSettingsPanel, type SettingsPanel } from './settings-panel.ts';
 import { createGlossaryPanel, type GlossaryPanel } from './glossary-panel.ts';
 import { createGlossaryMarker } from './glossary-mark.ts';
+import { attachDrawerSwipe } from './swipe.ts';
 import { createSearchPanel, type SearchPanel } from './search-panel.ts';
 import { createSavePanel, type SavePanel } from './save-panel.ts';
 import { NAV_GROUPS, ROUTES } from '../views/routes.ts';
@@ -165,6 +166,19 @@ export function createShell(root: HTMLElement, store: AppStore): Shell {
   );
 
   overlay.addEventListener('click', closeDrawer);
+
+  // Le tiroir s'ouvre aussi au doigt. La requête média est la même que celle
+  // qui fait du bandeau un tiroir dans `layout.css` : au-delà, il est
+  // simplement là, et le geste n'aurait rien à ouvrir.
+  const etroit = window.matchMedia('(max-width: 900px)');
+  attachDrawerSwipe({
+    isOpen: () => document.body.classList.contains('drawer-open'),
+    open: openDrawer,
+    close: closeDrawer,
+    enabled: () => store.settings.swipeMenu,
+    applicable: () => etroit.matches,
+  });
+
   nav.addEventListener('click', (event) => {
     if ((event.target as HTMLElement).closest('a')) closeDrawer();
   });

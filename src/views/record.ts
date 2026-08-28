@@ -14,6 +14,7 @@
 
 import { h, formatNumber } from '../ui/dom.ts';
 import { SignalLamp } from '../ui/lamp.ts';
+import { createSignalTrace } from '../ui/trace.ts';
 import { KeyPad } from '../ui/keypad.ts';
 import { Keyer } from '../core/keyer.ts';
 import { prettyCode } from '../core/morse.ts';
@@ -38,6 +39,9 @@ const MODE_LABELS: Record<string, string> = {
 export function recordView(context: ViewContext): View {
   const { store } = context;
   const lamp = new SignalLamp('Manipulateur');
+  // Pas de lecteur ici : l'outil n'émet rien, il enregistre. Le ruban n'est
+  // donc nourri que par la main.
+  const ruban = createSignalTrace(store, null, 'Votre frappe');
 
   let recording = false;
   let marks: Mark[] = [];
@@ -151,6 +155,7 @@ export function recordView(context: ViewContext): View {
         void store.audio.unlock();
         store.audio.startSidetone();
         lamp.on(kind);
+        ruban.trace.key(true);
         if (kind) store.haptics.pulse((kind === 'dit' ? store.timing.dit : store.timing.dah) * 1000);
         else store.haptics.hold();
       },
@@ -159,6 +164,7 @@ export function recordView(context: ViewContext): View {
         marks.push({ at: performance.now(), on: false });
         store.audio.stopSidetone();
         lamp.off();
+        ruban.trace.key(false);
         if (keyer.mode === 'straight') store.haptics.release();
         renderStatus();
       },
@@ -396,6 +402,7 @@ export function recordView(context: ViewContext): View {
         morseOut),
       lamp.element),
     h('div', { class: 'tape-wrap' }, timeline, buffer),
+    ruban.trace.element,
     keypad.element,
     h('div', { class: 'actions' }, recordButton, clearButton),
     h('div', { class: 'actions' }, wavButton, exportNoiseToggle, textButton, copyButton),
@@ -425,6 +432,7 @@ export function recordView(context: ViewContext): View {
     destroy: () => {
       unsubscribe();
       keypad.destroy();
+      ruban.destroy();
       keyer.dispose();
       store.audio.stopSidetone();
       store.audio.stopNoise();

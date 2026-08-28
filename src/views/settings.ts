@@ -44,7 +44,7 @@ const ONGLETS: { id: string; label: string; intro: string }[] = [
   {
     id: 'retours',
     label: 'Retours',
-    intro: 'Ce que le site fait voir, sentir et entendre quand vous agissez.',
+    intro: 'Ce que le site fait voir, sentir et entendre quand vous agissez — et ce qu’il comprend du doigt.',
   },
   {
     id: 'apparence',
@@ -705,6 +705,23 @@ export function settingsView(context: ViewContext): View {
             ),
           ),
           'Le glissement dit le sens : on entre par la droite en descendant dans le site, par la gauche en remontant. Les trois restent sous les trois cents millisecondes — au-delà, une transition qu’on traverse cent fois par séance devient une attente. Si votre système demande moins d’animation, aucune n’est jouée.',
+        ),
+        field(
+          'Ouvrir le menu au doigt',
+          h(
+            'label',
+            { class: 'switch' },
+            h('input', {
+              type: 'checkbox',
+              attrs: { checked: s.swipeMenu },
+              on: {
+                change: (event) =>
+                  store.updateSettings({ swipeMenu: (event.target as HTMLInputElement).checked }),
+              },
+            }),
+            h('span', { text: 'Glisser vers la droite pour ouvrir le menu' }),
+          ),
+          'Sur téléphone, le bouton du menu est dans le coin le plus difficile à atteindre d’une main. Un glissement vers la droite depuis la moitié gauche de l’écran ouvre le tiroir, un glissement vers la gauche le referme. Le geste est ignoré à la souris, sur écran large, et partout où le doigt sert déjà à autre chose : un manipulateur, un curseur, ou une zone qui défile latéralement.',
         ),
       );
 
