@@ -1,141 +1,104 @@
-/** Page d'accueil : point d'entrée et état des lieux en un coup d'œil. */
+/**
+ * Page d'accueil.
+ *
+ * Elle ne répète pas le menu. Le bandeau latéral porte déjà les vingt pages du
+ * site, et les seize raccourcis qui vivaient ici n'étaient qu'un second menu,
+ * plus long et moins fiable — il fallait penser à l'y ajouter. L'accueil dit
+ * donc trois choses, et rien d'autre : ce qu'est ce site, où vous en êtes, et
+ * par où reprendre.
+ */
 
-import { h, formatNumber } from '../ui/dom.ts';
+import { h } from '../ui/dom.ts';
 import { formatDuration, formatPercent, overallAccuracy } from '../core/progress.ts';
-import { kochCharset, kochMaxLevel } from '../core/koch.ts';
 import { evaluateAchievements } from '../core/achievements.ts';
+import { encodeChar } from '../core/morse.ts';
 import type { View, ViewContext } from '../ui/router.ts';
 
-interface Shortcut {
-  path: string;
-  icon: string;
-  title: string;
-  text: string;
-}
+/**
+ * L'appel général, en haut de la page.
+ *
+ * `CQ` est ce qu'un opérateur envoie quand il ne s'adresse à personne en
+ * particulier : « à tous ceux qui écoutent ». C'est l'invitation même, et
+ * c'est aussi ce que fait ce site. La ligne n'est pas une décoration : les
+ * largeurs et les instants sont ceux du vrai code, à quinze mots par minute,
+ * si bien que la lumière parcourt un authentique message.
+ */
+const APPEL = 'CQ';
+/** Durée d'une unité, en millisecondes. Ces valeurs sont reprises telles quelles dans `components.css`. */
+const UNITE_MS = 90;
+/** Longueur du cycle : l'appel, puis le silence avant qu'il ne reparte. */
+const CYCLE_MS = 6000;
+/** Largeur d'une unité, en pixels. */
+const UNITE_PX = 7;
 
-const SHORTCUTS: Shortcut[] = [
-  {
-    path: '/entrainement/ecoute',
-    icon: '🎧',
-    title: 'Écoute — méthode Koch',
-    text: "L’exercice central. Deux caractères pour commencer, à pleine vitesse, puis un de plus dès que vous êtes fiable.",
-  },
-  {
-    path: '/entrainement/emission',
-    icon: '🔑',
-    title: 'Émission au manipulateur',
-    text: 'Manipulateur droit ou palettes iambiques, au doigt sur téléphone ou au clavier sur ordinateur.',
-  },
-  {
-    path: '/entrainement/mots',
-    icon: '📡',
-    title: 'Mots, codes Q et indicatifs',
-    text: 'Passer du caractère isolé au groupe, avec le vrai vocabulaire du trafic télégraphique.',
-  },
-  {
-    path: '/entrainement/lecture',
-    icon: '👁️',
-    title: 'Lecture visuelle',
-    text: 'Sans son, pour réviser partout. Un complément, jamais un substitut à l’écoute.',
-  },
-  {
-    path: '/outils/traducteur',
-    icon: '🔁',
-    title: 'Traducteur texte et morse',
-    text: "Traduire dans les deux sens, écouter le résultat, et émettre en lumière avec la lampe du téléphone.",
-  },
-  {
-    path: '/outils/enregistreur',
-    icon: '🎙️',
-    title: 'Enregistreur d’émission',
-    text: "Manipuler librement et récupérer sa frappe en fichier audio et en texte, sans note ni consigne.",
-  },
-  {
-    path: '/apprendre/principes',
-    icon: '📐',
-    title: 'Comprendre le morse',
-    text: 'Les cinq règles de durée, la vitesse en mots par minute, Farnsworth et Koch expliqués.',
-  },
-  {
-    path: '/apprendre/alphabet-otan',
-    icon: '🗣️',
-    title: 'Alphabet OTAN',
-    text: "Alfa, Bravo, Charlie… l’épellation à la voix, avec un outil pour dicter et un exercice.",
-  },
-  {
-    path: '/apprendre/histoire',
-    icon: '📜',
-    title: 'Histoire du morse',
-    text: 'De Chappe au GMDSS : pourquoi le code a exactement cette forme, et pourquoi il survit.',
-  },
-  {
-    path: '/apprendre/alphabet',
-    icon: '🔤',
-    title: 'Alphabet et lexique',
-    text: 'Lettres, chiffres, ponctuation et accents, rangés par catégorie. Chaque ligne est écoutable.',
-  },
-  {
-    path: '/apprendre/communication',
-    icon: '💬',
-    title: 'Communiquer en morse',
-    text: 'Signaux de procédure, codes Q, abréviations et indicatifs, avec un générateur d’indicatif fictif.',
-  },
-  {
-    path: '/apprendre/radio',
-    icon: '📻',
-    title: 'Comprendre la radio',
-    text: 'Ce qu’est une onde, comment elle voyage, à quoi servent les bandes et comment les choisir.',
-  },
-  {
-    path: '/licence/examen',
-    icon: '🎓',
-    title: 'Le certificat d’opérateur',
-    text: 'Émettre demande une licence : ce qu’elle autorise, comment se passe l’examen, et par où commencer.',
-  },
-  {
-    path: '/licence/bandes',
-    icon: '🎚️',
-    title: 'Bandes et puissances',
-    text: 'Les vingt-cinq bandes de la région 1, leur statut réglementaire, et de quoi situer une fréquence.',
-  },
-  {
-    path: '/licence/formulaire',
-    icon: '📄',
-    title: 'Formulaire de l’examen',
-    text: 'Toutes les formules exigibles, avec leurs unités. Filtrable, et imprimable pour réviser hors écran.',
-  },
-  {
-    path: '/progression/statistiques',
-    icon: '📊',
-    title: 'Statistiques',
-    text: 'Précision par caractère, points faibles du moment, historique des séries.',
-  },
-];
+function ligneDAppel(): HTMLElement {
+  const segments: { on: boolean; unites: number }[] = [];
+  const lettres = [...APPEL];
+
+  lettres.forEach((lettre, rang) => {
+    const code = encodeChar(lettre) ?? '';
+    [...code].forEach((signe, position) => {
+      if (position > 0) segments.push({ on: false, unites: 1 });
+      segments.push({ on: true, unites: signe === '-' ? 3 : 1 });
+    });
+    if (rang < lettres.length - 1) segments.push({ on: false, unites: 3 });
+  });
+
+  let curseur = 0;
+  const marques = segments.map((segment) => {
+    const debut = curseur;
+    curseur += segment.unites;
+    if (!segment.on) {
+      return h('span', { class: 'appel__silence', style: { width: `${segment.unites * UNITE_PX}px` } });
+    }
+    return h('span', {
+      class: `appel__signe appel__signe--${segment.unites === 3 ? 'long' : 'court'}`,
+      style: {
+        width: `${segment.unites * UNITE_PX}px`,
+        animationDelay: `${debut * UNITE_MS}ms`,
+        animationDuration: `${CYCLE_MS}ms`,
+      },
+    });
+  });
+
+  return h('div', { class: 'appel', attrs: { 'aria-hidden': 'true' } }, ...marques);
+}
 
 export function homeView(context: ViewContext): View {
   const { store } = context;
   const container = h('div', { class: 'stack' });
 
   const render = (): void => {
-    const { progress, settings } = store;
+    const { progress } = store;
     const started = progress.totals.sessions > 0;
-    const charset = kochCharset(settings.kochOrder, progress.kochLevel);
     const unlocked = evaluateAchievements(progress).filter((status) => status.unlocked).length;
+
+    /** Une mesure du bandeau de progression : un chiffre, un mot. */
+    const mesure = (valeur: string, libelle: string): HTMLElement =>
+      h('span', { class: 'bilan__item' },
+        h('b', { class: 'bilan__valeur', text: valeur }),
+        h('span', { class: 'bilan__libelle', text: libelle }));
 
     container.replaceChildren(
       h(
         'div',
         { class: 'hero' },
-        h('div', { class: 'hero__body' },
+        h(
+          'div',
+          { class: 'hero__body' },
+          ligneDAppel(),
+          h('p', { class: 'appel__legende' },
+            h('strong', { text: 'CQ' }),
+            ' — l’appel général : à tous ceux qui écoutent.'),
           h('h2', { class: 'hero__title', text: started ? 'Reprenons' : 'Apprendre le morse, vraiment' }),
           h('p', { class: 'hero__text' },
-            started
-              ? `Vous travaillez ${charset.length} caractères sur ${kochMaxLevel(settings.kochOrder)}, ` +
-                `avec ${formatPercent(overallAccuracy(progress))} de précision sur ` +
-                `${formatNumber(progress.totals.attempts)} réponses. Continuez là où vous en étiez.`
-              : "Ce site vous apprend à reconnaître le morse à l’oreille, pas à déchiffrer des points et " +
-                'des traits sur une feuille. La différence est énorme, et elle se joue dès la première séance : ' +
-                'on commence tout de suite à vitesse réelle, avec deux caractères seulement.'),
+            'Pendant cent cinquante ans, le morse s’est appris à l’oreille, dans les écoles de ' +
+            'télégraphistes, avec un instructeur en face. Ce site est là pour que cet apprentissage ne ' +
+            'dépende plus de personne : la méthode Koch complète, les exercices, le manipulateur et le ' +
+            'cours, gratuitement, dans un navigateur.'),
+          h('p', { class: 'hero__text' },
+            'Aucun compte, aucun serveur, rien qui sorte de votre appareil — et tout fonctionne hors ' +
+            'ligne, une fois la page visitée.'),
           h(
             'div',
             { class: 'actions' },
@@ -155,23 +118,14 @@ export function homeView(context: ViewContext): View {
 
       started
         ? h(
-            'div',
-            { class: 'metrics' },
-            h('div', { class: 'metric metric--card' },
-              h('span', { class: 'metric__value', text: `${progress.kochLevel}` }),
-              h('span', { class: 'metric__label', text: 'Niveau Koch' })),
-            h('div', { class: 'metric metric--card' },
-              h('span', { class: 'metric__value', text: formatPercent(overallAccuracy(progress)) }),
-              h('span', { class: 'metric__label', text: 'Précision' })),
-            h('div', { class: 'metric metric--card' },
-              h('span', { class: 'metric__value', text: `${progress.streak.current} j` }),
-              h('span', { class: 'metric__label', text: 'Série en cours' })),
-            h('div', { class: 'metric metric--card' },
-              h('span', { class: 'metric__value', text: formatDuration(progress.totals.trainingMs) }),
-              h('span', { class: 'metric__label', text: 'Temps cumulé' })),
-            h('div', { class: 'metric metric--card' },
-              h('span', { class: 'metric__value', text: `${unlocked}` }),
-              h('span', { class: 'metric__label', text: 'Succès obtenus' })),
+            'a',
+            { class: 'bilan', href: '#/progression/statistiques' },
+            mesure(String(progress.kochLevel), 'niveau'),
+            mesure(formatPercent(overallAccuracy(progress)), 'précision'),
+            mesure(`${progress.streak.current} j`, 'de suite'),
+            mesure(formatDuration(progress.totals.trainingMs), 'cumulées'),
+            mesure(String(unlocked), 'succès'),
+            h('span', { class: 'bilan__suite', text: 'Tout voir →' }),
           )
         : h(
             'section',
@@ -193,28 +147,10 @@ export function homeView(context: ViewContext): View {
           ),
 
       h(
-        'div',
-        { class: 'shortcuts' },
-        ...SHORTCUTS.map((shortcut) =>
-          h(
-            'a',
-            { class: 'shortcut', href: `#${shortcut.path}` },
-            h('span', { class: 'shortcut__icon', text: shortcut.icon, attrs: { 'aria-hidden': 'true' } }),
-            h('span', { class: 'shortcut__title', text: shortcut.title }),
-            h('span', { class: 'shortcut__text', text: shortcut.text }),
-          ),
-        ),
-      ),
-
-      h(
-        'section',
-        { class: 'card card--muted' },
-        h('h2', { class: 'card__title', text: 'Ce site fonctionne hors ligne' }),
-        h('p', {},
-          "Tout tourne dans votre navigateur : aucun compte, aucun serveur, aucune donnée qui sort de " +
-          "l’appareil. Une fois la page visitée, elle reste disponible sans réseau, et vous pouvez " +
-          "l’installer sur l’écran d’accueil de votre téléphone comme une application. Votre progression " +
-          "s’exporte en JSON depuis la page Succès ou les Réglages."),
+        'p',
+        { class: 'accueil__pied' },
+        'Le site s’installe sur l’écran d’accueil d’un téléphone comme une application, et votre ' +
+        'progression s’exporte en JSON depuis les réglages. Tout le reste est dans le menu.',
       ),
     );
   };

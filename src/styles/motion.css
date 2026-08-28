@@ -243,6 +243,38 @@
   100% { opacity: 0; transform: translateX(60%); }
 }
 
+/* --- L'appel de l'accueil --------------------------------------------------
+ *
+ * Deux jeux d'images, un par longueur de signe. Les pourcentages sont le
+ * rapport de la durée du signe au cycle entier : à quatre-vingt-dix
+ * millisecondes l'unité et six secondes le cycle, un point fait 1,5 % et un
+ * trait 4,5 %. Changer l'un des deux dans `home.ts` demande de refaire ce
+ * calcul — c'est le seul endroit du site où un nombre est ainsi partagé entre
+ * le style et le code, et il est écrit des deux côtés.
+ *
+ * Le retard de chaque marque la place dans le cycle ; sans `fill-mode`, elle
+ * reste éteinte tant que son tour n'est pas venu, ce qui est exactement ce
+ * qu'on veut.
+ */
+
+.appel__signe--court {
+  animation: appel-court 6000ms linear infinite;
+}
+
+.appel__signe--long {
+  animation: appel-long 6000ms linear infinite;
+}
+
+@keyframes appel-court {
+  0%, 1.5% { opacity: 1; box-shadow: 0 0 6px 1px var(--accent-soft); }
+  2.3%, 100% { opacity: 0.18; box-shadow: none; }
+}
+
+@keyframes appel-long {
+  0%, 4.5% { opacity: 1; box-shadow: 0 0 6px 1px var(--accent-soft); }
+  5.3%, 100% { opacity: 0.18; box-shadow: none; }
+}
+
 /* --- D'une page à l'autre --------------------------------------------------
  *
  * Le routeur pose `data-transition` sur la zone de contenu et les classes
@@ -349,6 +381,14 @@
   }
 
   .lamp__bulb.is-lit { transform: none; }
+
+  /* L'appel cesse de se transmettre, mais reste lisible : les marques
+     s'allument toutes, et `CQ` se lit comme une forme au lieu de passer. */
+  .appel__signe--court,
+  .appel__signe--long {
+    animation: none;
+    opacity: 0.8;
+  }
 
   .reglages__trait { transition-duration: 1ms; }
 
