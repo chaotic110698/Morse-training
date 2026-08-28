@@ -2877,6 +2877,77 @@
   color: var(--text-muted);
 }
 
+/* --- Le signal qui tombe tout seul --- */
+
+/* Le seul moment du mode où rien n'est proposé : on lit, et on attend sans le
+   savoir. Le bloc respire donc un peu plus que les autres. */
+.recit-irruption {
+  gap: var(--space-4);
+}
+
+/* `display` sur une classe l'emporte sur l'attribut `hidden`, qui ne tient que
+   d'une règle de l'agent utilisateur. Les deux éléments qui n'apparaissent
+   qu'à l'arrivée du signal doivent donc se le voir rendre explicitement. */
+.recit-irruption__marque[hidden],
+.recit-irruption__bouton[hidden] {
+  display: none;
+}
+
+.recit-irruption__marque {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  animation: irruption-entree 420ms ease both;
+}
+
+/* Le voyant reprend la lueur de l'habit : c'est le même signal que celui du
+   manipulateur, il n'a pas de raison d'avoir une autre couleur. */
+.recit-irruption__marque::before {
+  content: '';
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: var(--lamp-glow);
+  flex: none;
+  animation: irruption-voyant 1.4s ease-in-out infinite;
+}
+
+.recit-irruption__bouton {
+  align-self: flex-start;
+  animation: irruption-entree 420ms 160ms ease both;
+}
+
+@keyframes irruption-entree {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes irruption-voyant {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Même spécificité que les règles qui animent, sinon l'arrêt ne prend pas. */
+  .recit-irruption__marque,
+  .recit-irruption__bouton,
+  .recit-irruption__marque::before {
+    animation: none;
+  }
+}
+
+/* La note d'explication arrive avec le verdict : elle se détache du relevé. */
+.recit-note {
+  display: block;
+  margin-top: var(--space-3);
+}
+
 /* --- Galerie des habits --- */
 
 /* Les vignettes se rangent d'elles-mêmes : la galerie ne connaît pas le nombre

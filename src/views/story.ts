@@ -25,7 +25,7 @@ import {
   sineOf,
   type StoryContext,
 } from '../core/story.ts';
-import { EPISODES, LINEAGE, type Beat, type Episode } from '../data/story.ts';
+import { EPISODES, LINEAGE, type Beat, type Episode, type Irruption } from '../data/story.ts';
 import { themeForYear } from '../data/themes.ts';
 import { borrowTheme } from '../core/theme-stage.ts';
 import type { ToneVoice } from '../core/audio.ts';
@@ -240,6 +240,10 @@ export function storyView(context: ViewContext): View {
     const era = themeForYear(episode.year);
     borrowTheme(store.settings.storyTheme && era ? era.id : null);
 
+    // On n'allume pas la radio pour écouter un message : on est assis devant
+    // depuis des heures. Le souffle de la bande commence donc avec l'épisode.
+    if (episode.receiverOpen) startNoise(episode.sound.snrDb);
+
     const ctx = storyContext(episode);
     const record = store.progress.story.episodes[episode.id];
     const resume = record && !record.completed ? record.beat : 0;
@@ -278,9 +282,32 @@ export function storyView(context: ViewContext): View {
       clock = 0;
     };
 
-    const stop = (): void => {
+    /**
+     * L'irruption : le délai avant que le signal ne se fasse entendre, puis la
+     * boucle qui le répète. Les deux doivent pouvoir être coupés — on peut
+     * quitter le temps, ou l'épisode, pendant l'attente, et un appel qui
+     * continuerait de tourner dans le vide serait plus qu'une gêne.
+     */
+    let irruptionTimer = 0;
+    let looping = false;
+    const stopIrruption = (): void => {
+      if (irruptionTimer) window.clearTimeout(irruptionTimer);
+      irruptionTimer = 0;
+      looping = false;
+    };
+
+    /**
+     * Coupe ce qui est en cours.
+     *
+     * `keepAir` sert au passage d'un temps au suivant dans un épisode où le
+     * récepteur reste ouvert : le souffle de la bande n'est pas un effet de
+     * lecture, c'est la pièce, et il n'a aucune raison de s'interrompre parce
+     * qu'on tourne la page.
+     */
+    const stop = (keepAir = false): void => {
       player.stop();
-      stopNoise();
+      stopIrruption();
+      if (!keepAir || !episode.receiverOpen) stopNoise();
       stopClock();
       board?.destroy();
       board = null;
@@ -293,7 +320,7 @@ export function storyView(context: ViewContext): View {
     };
 
     const advance = (): void => {
-      stop();
+      stop(true);
       if (index < episode.beats.length - 1) {
         index += 1;
         persist();
@@ -362,8 +389,89 @@ export function storyView(context: ViewContext): View {
         );
       }
 
-      if (beat.kind === 'receive') return renderReceive(beat, lines[0] ?? '');
+      if (beat.kind === 'receive') {
+        const text = lines[0] ?? '';
+        return beat.irruption
+          ? renderIrruption(beat, text, beat.irruption)
+          : renderReceive(beat, text);
+      }
       return renderSend(beat, lines[0] ?? '');
+    };
+
+    // --- Irruption ---
+
+    /**
+     * Le temps d'avant : on lit, il ne se passe rien, et puis si.
+     *
+     * Aucun bouton n'est proposé pendant ce temps-là. C'est le seul moment du
+     * mode où le joueur n'a rien à faire, et c'est précisément ce qui donne au
+     * signal sa brutalité quand il tombe.
+     */
+    const renderIrruption = (
+      beat: Extract<Beat, { kind: 'receive' }>,
+      text: string,
+      irruption: Irruption,
+    ): HTMLElement => {
+      const wpm = beat.wpm ?? 16;
+      const voice = voiceOf(episode);
+      const snrDb = beat.sound?.snrDb ?? episode.sound.snrDb;
+
+      const bouton = h('button', {
+        class: 'btn btn--primary recit-irruption__bouton',
+        type: 'button',
+        text: irruption.label ?? 'Décoder le signal',
+        attrs: { hidden: true },
+        on: {
+          click: () => {
+            stopIrruption();
+            player.stop();
+            setChildren(stage, [renderReceive(beat, text)]);
+          },
+        },
+      }) as HTMLButtonElement;
+
+      const marque = h('p', {
+        class: 'recit-irruption__marque',
+        attrs: { role: 'status', hidden: true },
+      });
+
+      /**
+       * Un appel de détresse se répète. On laisse donc le silence qui sépare
+       * deux envois plutôt que d'enchaîner sans reprendre son souffle, et on
+       * reprogramme au lieu d'attendre dans une promesse : une promesse laissée
+       * pendante quand on quitte le temps garderait sa fermeture en vie.
+       */
+      const rejouer = (): void => {
+        if (!looping) return;
+        void playAt(text, wpm, voice).then(() => {
+          if (!looping) return;
+          irruptionTimer = window.setTimeout(rejouer, 2600);
+        });
+      };
+
+      stopIrruption();
+      irruptionTimer = window.setTimeout(
+        () => {
+          irruptionTimer = 0;
+          startNoise(snrDb);
+          looping = true;
+          marque.textContent = 'Quelque chose se répète sur la bande.';
+          marque.hidden = false;
+          bouton.hidden = false;
+          rejouer();
+        },
+        Math.max(0, irruption.after) * 1000,
+      );
+
+      return h(
+        'div',
+        { class: 'recit-bloc recit-irruption' },
+        ...irruption.text.map((ligne) =>
+          h('p', { class: 'recit-texte', text: interpolate(ligne, ctx, episode.year) }),
+        ),
+        marque,
+        bouton,
+      );
     };
 
     // --- Réception ---
@@ -549,6 +657,9 @@ export function storyView(context: ViewContext): View {
             return h('span', { class: 'is-trop', text: mark.typed });
           }),
           h('span', { class: 'recit-verdict__compte', text: ` ${result.correct} sur ${result.total}` }),
+          // La note explique le message : la donner avant la comparaison, c'est
+          // donner la réponse. Elle arrive avec le verdict, pas avant.
+          beat.note ? h('p', { class: 'card__hint recit-note', text: beat.note }) : null,
         ]);
         suivant.disabled = false;
       };
@@ -571,7 +682,6 @@ export function storyView(context: ViewContext): View {
           suivant,
         ),
         verdict,
-        beat.note ? h('p', { class: 'card__hint', text: beat.note }) : null,
       );
     };
 
@@ -651,7 +761,7 @@ export function storyView(context: ViewContext): View {
     };
 
     const restart = (): void => {
-      stop();
+      stop(true);
       index = 0;
       persist();
       drawBeat();

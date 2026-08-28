@@ -33,7 +33,20 @@ export type Beat =
   /** Narration ou dialogue affiché en clair. Coût pour le joueur : la lecture. */
   | { kind: 'recit'; text: string[]; speaker?: string }
   /** Un message à copier. C'est un des rares moments réellement coûteux. */
-  | { kind: 'receive'; text: string; from?: string; wpm?: number; sound?: Partial<EraSound>; note?: string }
+  | {
+      kind: 'receive';
+      text: string;
+      from?: string;
+      wpm?: number;
+      sound?: Partial<EraSound>;
+      /**
+       * Ce qu'il faut savoir pour comprendre le message. Affiche apres la
+       * comparaison seulement : avant, c'est la reponse qu'on donne.
+       */
+      note?: string;
+      /** Le signal tombe de lui-meme, au milieu d'autre chose. */
+      irruption?: Irruption;
+    }
   /**
    * Un message à émettre, avec le retour vert et rouge.
    *
@@ -47,6 +60,24 @@ export type Beat =
   /** Ce qui s'est réellement passé, et la part inventée. */
   | { kind: 'epilogue'; text: string[] };
 
+/**
+ * Un signal qui arrive de lui-meme.
+ *
+ * Le joueur ne demande rien : il lit, et au bout de quelques secondes la bande
+ * se met a porter quelque chose. C'est la seule facon de faire sentir ce
+ * qu'est une veille — on n'appuie pas sur « Ecouter », on est la quand ca
+ * tombe. Le signal tourne en boucle, comme tourne un appel de detresse, tant
+ * qu'on ne s'est pas decide a le dechiffrer.
+ */
+export interface Irruption {
+  /** Ce qu'on lit pendant que rien ne se passe encore. */
+  text: string[];
+  /** Secondes avant que le signal ne se fasse entendre. */
+  after: number;
+  /** Ce que dit le bouton qui apparait alors. */
+  label?: string;
+}
+
 export interface Episode {
   id: string;
   /** Rang de la génération, de 1 à 5. */
@@ -58,6 +89,14 @@ export interface Episode {
   summary: string;
   /** Vrai pour les épisodes « Entre les ondes » : du récit, aucun enjeu. */
   optional?: boolean;
+  /**
+   * Le récepteur reste ouvert d'un bout à l'autre.
+   *
+   * Le souffle de la bande accompagne alors tout l'épisode au lieu de n'exister
+   * que pendant les lectures. C'est ce qui fait une veille : on n'allume pas la
+   * radio pour écouter un message, on est assis devant depuis des heures.
+   */
+  receiverOpen?: boolean;
   sound: EraSound;
   beats: Beat[];
 }
@@ -1167,6 +1206,7 @@ const MGY: Episode = {
   title: 'MGY',
   summary: 'La nuit du 14 avril, une routine qui se brise.',
   sound: { timbre: 'etincelle', snrDb: 6 },
+  receiverOpen: true,
   beats: [
     {
       kind: 'recit',
@@ -1213,17 +1253,26 @@ const MGY: Episode = {
       text: 'La bande ne porte plus que le souffle de l’Atlantique.',
     },
     {
-      kind: 'recit',
-      text: [
-        'À vingt-trois heures cinquante, le grésillement change de nature.',
-      ],
-    },
-    {
       kind: 'receive',
       text: 'CQD DE MGY POSITION 41.44 N 50.24 W',
       from: 'MGY',
       wpm: 14,
       note: 'CQD est l’appel de détresse d’avant SOS. Les deux coexistent en 1912.',
+      irruption: {
+        after: 5,
+        label: 'Décoder le signal',
+        text: [
+          'Vous vous levez pour vous dégourdir les jambes, et vous passez un coup de ' +
+            'balai sous la table. Il y a trois semaines que vous vous dites qu’il ' +
+            'faudrait le faire.',
+          'Le grésillement du récepteur remplit la cabine. C’est un bruit qu’on cesse ' +
+            'd’entendre au bout de quelques jours et qui manque terriblement quand il ' +
+            's’arrête ; ce soir il est presque confortable. Vos pensées partent ' +
+            'ailleurs — la liste de passagers, Cape Race, la lettre que vous n’avez ' +
+            'toujours pas écrite.',
+          'À vingt-trois heures cinquante, le grésillement change de nature.',
+        ],
+      },
     },
     {
       kind: 'recit',

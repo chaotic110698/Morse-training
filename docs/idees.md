@@ -274,6 +274,15 @@ détresse entendu parce que la bande était vide, la dernière émission d'une
 station côtière française le 31 janvier 1997, et l'extinction mondiale du
 1er février 1999.
 
+**Le signal qui tombe tout seul.** Un temps de réception peut porter une
+`irruption` : un passage de récit pendant lequel rien n'est proposé, puis, au
+bout de quelques secondes, le signal qui se met à tourner en boucle et un
+bouton pour aller le déchiffrer. C'est le seul moment du mode où le joueur n'a
+rien à faire, et c'est précisément ce qui donne au signal sa brutalité. Un
+épisode peut par ailleurs déclarer `receiverOpen` : le souffle de la bande
+court alors du premier temps au dernier au lieu de n'exister que pendant les
+lectures. MGY s'en sert des deux.
+
 **Reste à faire, plus petit.**
 
 - Les faits listés plus haut sous « À vérifier avant d'écrire » ne sont pas
