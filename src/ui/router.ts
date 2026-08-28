@@ -142,20 +142,29 @@ export class Router {
    * imperceptible.
    */
   private mount(view: View): void {
-    const sortante = this.outlet.firstElementChild;
+    // La page qui s'en va est celle de la vue courante, et non le premier
+    // enfant : pendant une transition, le premier enfant est la *précédente*
+    // sortante, encore là pour deux cents millisecondes. Les confondre laissait
+    // la vraie page en place et en abandonnait une par navigation rapide.
+    const sortante = this.current?.element ?? null;
     this.current?.destroy?.();
     this.current = view;
 
     const mode = this.context.store.settings.pageMotion;
     const anime =
-      mode !== 'aucun' && sortante instanceof HTMLElement && !this.moinsDeMouvement.matches;
+      mode !== 'aucun' &&
+      sortante !== null &&
+      sortante.isConnected &&
+      !this.moinsDeMouvement.matches;
 
     if (!anime) {
       this.outlet.replaceChildren(view.element);
     } else {
-      // Une transition précédente peut ne pas s'être achevée — un aller-retour
-      // rapide dans l'historique suffit. On ne laisse jamais deux sortantes.
-      for (const reste of this.outlet.querySelectorAll('.outlet__sortante')) reste.remove();
+      // Tout ce qui reste d'une transition précédente s'en va maintenant : la
+      // zone ne contient jamais que la sortante et l'entrante.
+      for (const reste of [...this.outlet.children]) {
+        if (reste !== sortante) reste.remove();
+      }
 
       this.outlet.dataset['transition'] = mode;
       this.outlet.style.setProperty('--sens', String(this.sens));
