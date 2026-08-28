@@ -18,9 +18,11 @@
  * lentement, une flamme est irrégulière, un filament respire, un tube grésille,
  * et une enseigne au néon bafouille avant de se rallumer.
  *
- * Les quatre dernières ne battent pas : le phare passe, l'orage éclate, l'aube
- * se réchauffe une fois pour toutes, et la braise éclaire par en dessous. Une
- * source n'est pas obligée de vaciller pour dire un lieu.
+ * Une source n'est pas obligée de vaciller pour dire un lieu : le phare passe,
+ * l'orage éclate, l'aube se réchauffe une fois pour toutes, la braise éclaire
+ * par en dessous, la veilleuse ne bouge presque pas, le tube intensificateur
+ * grésille, la frontale suit la tête, le phosphore descend, l'aurore ondule et
+ * le cadran chauffe puis se tient.
  */
 export type LightSource =
   | 'aucune'
@@ -32,7 +34,13 @@ export type LightSource =
   | 'phare'
   | 'orage'
   | 'aube'
-  | 'braise';
+  | 'braise'
+  | 'veilleuse'
+  | 'intensificateur'
+  | 'frontale'
+  | 'phosphore'
+  | 'boreale'
+  | 'cadran';
 
 export interface ThemeDef {
   /** Identifiant stable : il part dans les réglages enregistrés. */
@@ -219,6 +227,66 @@ export const THEMES: ThemeDef[] = [
     bar: '#120e0c',
     light: 'braise',
     swatch: ['#120e0c', '#1c1613', '#e2793a', '#eddfd3'],
+    period: false,
+  },
+  {
+    id: 'quart-rouge',
+    name: 'Quart rouge',
+    blurb: 'L’éclairage de veille d’un central opérations la nuit : tout est rouge, et l’œil garde sa vision nocturne.',
+    lightness: 'sombre',
+    bar: '#100809',
+    light: 'veilleuse',
+    swatch: ['#100809', '#1b1011', '#d9a05e', '#f0dcd8'],
+    period: false,
+  },
+  {
+    id: 'nocturne',
+    name: 'Vision nocturne',
+    blurb: 'Le tube intensificateur : un monde vert, granuleux au bord, où la moindre lumière fait un halo.',
+    lightness: 'sombre',
+    bar: '#040907',
+    light: 'intensificateur',
+    swatch: ['#040907', '#081310', '#45d98a', '#bff5d4'],
+    period: false,
+  },
+  {
+    id: 'abri',
+    name: 'Abri',
+    blurb: 'Le coin radio d’un repli : toile, rouille et laiton oxydé, sous une frontale qui suit la tête.',
+    lightness: 'sombre',
+    bar: '#12100d',
+    light: 'frontale',
+    swatch: ['#12100d', '#1c1813', '#b8862f', '#e6ded0'],
+    period: false,
+  },
+  {
+    id: 'terminal',
+    name: 'Terminal',
+    blurb: 'Le tube à phosphore : noir absolu, lignes de balayage, et la rémanence qui traîne derrière le curseur.',
+    lightness: 'sombre',
+    bar: '#000000',
+    light: 'phosphore',
+    swatch: ['#000000', '#060a07', '#4cf0d0', '#5ce87f'],
+    period: false,
+  },
+  {
+    id: 'polaire',
+    name: 'Base polaire',
+    blurb: 'La station sur la glace : bleu de nuit, acier, et les rideaux de l’aurore qui ondulent au-dessus.',
+    lightness: 'sombre',
+    bar: '#070c14',
+    light: 'boreale',
+    swatch: ['#070c14', '#0e1724', '#6fd6e8', '#dce8f5'],
+    period: false,
+  },
+  {
+    id: 'station-1975',
+    name: 'Station 1975',
+    blurb: 'Le shack du radioamateur : placage noyer, façades crème, et la lampe du cadran qui chauffe en s’allumant.',
+    lightness: 'sombre',
+    bar: '#1c1310',
+    light: 'cadran',
+    swatch: ['#1c1310', '#291d17', '#ff9f43', '#f0e2cc'],
     period: false,
   },
 ];

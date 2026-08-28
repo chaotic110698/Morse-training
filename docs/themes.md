@@ -73,8 +73,9 @@ que les deux étapes ci-dessus.
 
 ## Les sources de lumière
 
-Neuf, et elles ne se ressemblent pas : une source n'est pas obligée de
-vaciller pour dire un lieu.
+Quinze, et elles ne se ressemblent pas : une source n'est pas obligée de
+vaciller pour dire un lieu. Elle peut passer, éclater, se réchauffer une fois
+pour toutes, éclairer par en dessous, descendre l'écran ou suivre la tête.
 
 | Source | Ce qu'elle fait | Cadence |
 | --- | --- | --- |
@@ -87,8 +88,14 @@ vaciller pour dire un lieu.
 | `orage` | deux éclairs lointains coup sur coup, le second plus fort | 25 s |
 | `aube` | la pièce se réchauffe, **une seule fois**, sans revenir | 3 min |
 | `braise` | elle éclaire par en dessous, respire, et reprend | 13 s |
+| `veilleuse` | l'éclairage rouge de veille, immobile sauf un creux | 20 s |
+| `intensificateur` | le grain d'un tube de vision nocturne, et son vignettage | 1,2 s |
+| `frontale` | un cône froid qui suit la tête, et papillote | 17 s |
+| `phosphore` | les lignes de balayage, et la barre de retour qui descend | 7 s |
+| `boreale` | les rideaux de l'aurore, deux nappes de vitesses différentes | 40 s |
+| `cadran` | la lampe chauffe vingt secondes, une fois, puis se tient | 20 s |
 
-Quatre d'entre elles ont besoin de deux nappes — une teinte qui reste, et un
+Sept d'entre elles ont besoin de deux nappes — une teinte qui reste, et un
 mouvement par-dessus. Elles se servent du pseudo-élément
 `.ambiance__lueur::after`, qui ne coûte rien aux autres : sans `content`, il
 n'existe pas. C'est ce qui évite d'ajouter un élément dans l'ossature pour

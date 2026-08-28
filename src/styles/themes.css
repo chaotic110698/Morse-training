@@ -529,6 +529,252 @@
   --radius-lg: 14px;
 }
 
+
+/* --- Quart rouge — l'éclairage de veille ----------------------------------
+ *
+ * Un central opérations la nuit est rouge d'un bout à l'autre, pour préserver
+ * la vision nocturne de ceux qui y travaillent.
+ *
+ * Une palette entièrement rouge rendrait pourtant le juste et le faux
+ * indiscernables, ce que le site ne peut pas se permettre. C'est donc la
+ * *lumière* qui est rouge — l'ambiance `veilleuse` — et la palette reste
+ * lisible dessous. C'est aussi ce qui se passe réellement : un filtre rouge
+ * posé sur un panneau éclairé ne change pas les couleurs du panneau, il les
+ * recouvre.
+ */
+
+:root[data-theme='quart-rouge'] {
+  --bg: #100809;
+  --bg-elevated: #180d0e;
+  --surface: #1b1011;
+  --surface-2: #261416;
+  --surface-3: #331a1c;
+  --border: #3a1e21;
+  --border-strong: #562c3080;
+
+  --text: #f0dcd8;
+  --text-muted: #b78d88;
+  --text-faint: #a9807b;
+
+  --accent: #d9a05e;
+  --accent-soft: #d9a05e1f;
+  --accent-text: #1a1005;
+
+  --ok: #8ec46a;
+  --ok-soft: #8ec46a1f;
+  --error: #f2666e;
+  --error-soft: #f2666e1f;
+
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.55), 0 10px 30px rgb(18 2 0 / 0.45);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.5);
+  --lamp-glow: 0 0 8px 2px var(--accent), 0 0 26px 7px #d9a05e4d;
+
+  /* Du matériel militaire : rien n'y est arrondi pour le plaisir. */
+  --radius-sm: 2px;
+  --radius: 3px;
+  --radius-lg: 4px;
+}
+
+/* --- Vision nocturne — le tube intensificateur -----------------------------
+ *
+ * Un monde vert, et rien d'autre. Le noir n'y est jamais neutre : il tire vers
+ * le vert, parce qu'un intensificateur n'a qu'un phosphore.
+ *
+ * Les trois couleurs de signal doivent malgré tout se distinguer. L'accent est
+ * un vert moyen, le juste un vert-jaune franc, et la faute un ambre — c'est la
+ * couleur des alarmes sur ce genre de matériel, et la seule qui se voie dans
+ * un tube vert.
+ */
+
+:root[data-theme='nocturne'] {
+  --bg: #040907;
+  --bg-elevated: #06100c;
+  --surface: #081310;
+  --surface-2: #0c1b16;
+  --surface-3: #12281f;
+  --border: #16342a;
+  --border-strong: #1f4a3a80;
+
+  --text: #bff5d4;
+  --text-muted: #71b78f;
+  --text-faint: #63a681;
+
+  --accent: #45d98a;
+  --accent-soft: #45d98a1f;
+  --accent-text: #02150c;
+
+  --ok: #b6ff7a;
+  --ok-soft: #b6ff7a1f;
+  --error: #ff8a5c;
+  --error-soft: #ff8a5c1f;
+
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.6), 0 10px 30px rgb(0 12 6 / 0.5);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.55);
+  --lamp-glow: 0 0 10px 3px var(--accent), 0 0 30px 10px #45d98a59;
+
+  --radius-sm: 2px;
+  --radius: 3px;
+  --radius-lg: 4px;
+}
+
+/* --- Abri — le coin radio d'un repli ---------------------------------------
+ *
+ * Toile, rouille et laiton oxydé. Tout y a été boulonné, scotché et réparé :
+ * les angles restent francs, et aucune couleur n'est neuve.
+ */
+
+:root[data-theme='abri'] {
+  --bg: #12100d;
+  --bg-elevated: #191510;
+  --surface: #1c1813;
+  --surface-2: #272119;
+  --surface-3: #332b20;
+  --border: #38301f;
+  --border-strong: #55492f80;
+
+  --text: #e6ded0;
+  --text-muted: #a89a84;
+  --text-faint: #9a8c76;
+
+  --accent: #b8862f;
+  --accent-soft: #b8862f1f;
+  --accent-text: #150d02;
+
+  /* Le laiton de l'accent est jaune-brun : la faute est poussée franchement
+     vers le rouge pour qu'on ne puisse pas les confondre du coin de l'œil. */
+  --ok: #8fb256;
+  --ok-soft: #8fb2561f;
+  --error: #e0513a;
+  --error-soft: #e0513a1f;
+
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.55), 0 10px 28px rgb(12 8 0 / 0.45);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.5);
+  --lamp-glow: 0 0 8px 2px var(--accent), 0 0 24px 6px #b8862f4d;
+
+  --radius-sm: 2px;
+  --radius: 3px;
+  --radius-lg: 5px;
+}
+
+/* --- Terminal — le tube à phosphore ----------------------------------------
+ *
+ * Noir absolu et vert de phosphore. Un vrai terminal était rigoureusement
+ * monochrome et distinguait par la vidéo inverse, ce que le site ne sait pas
+ * faire : la faute passe donc à l'ambre — l'autre phosphore de l'époque — et
+ * l'accent au cyan du curseur. Trois teintes qui tiennent sur un écran de
+ * 1978, et qui restent distinguables.
+ */
+
+:root[data-theme='terminal'] {
+  --bg: #000000;
+  --bg-elevated: #040704;
+  --surface: #060a07;
+  --surface-2: #0a120c;
+  --surface-3: #101a12;
+  --border: #17281a;
+  --border-strong: #22402880;
+
+  --text: #5ce87f;
+  --text-muted: #2f9a52;
+  --text-faint: #2a8c4a;
+
+  --accent: #4cf0d0;
+  --accent-soft: #4cf0d01f;
+  --accent-text: #001410;
+
+  --ok: #8dff77;
+  --ok-soft: #8dff771f;
+  --error: #ff7a5c;
+  --error-soft: #ff7a5c1f;
+
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.8), 0 10px 30px rgb(0 0 0 / 0.7);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.7);
+  --lamp-glow: 0 0 10px 3px var(--accent), 0 0 32px 10px #4cf0d059;
+
+  /* Un terminal n'a pas de coins arrondis. Pas un. */
+  --radius-sm: 0;
+  --radius: 0;
+  --radius-lg: 0;
+}
+
+/* --- Base polaire — la station sur la glace --------------------------------
+ *
+ * Bleu de nuit et acier, sous un ciel qui ne tient pas en place. C'est
+ * l'ambiance qui fait l'habit : la palette est volontairement sobre pour lui
+ * laisser toute la place.
+ */
+
+:root[data-theme='polaire'] {
+  --bg: #070c14;
+  --bg-elevated: #0b131e;
+  --surface: #0e1724;
+  --surface-2: #14202f;
+  --surface-3: #1c2b3d;
+  --border: #1f3145;
+  --border-strong: #2e486380;
+
+  --text: #dce8f5;
+  --text-muted: #8fa6bd;
+  --text-faint: #8098b0;
+
+  --accent: #6fd6e8;
+  --accent-soft: #6fd6e81f;
+  --accent-text: #041318;
+
+  /* L'accent est un cyan : le juste s'en écarte vers le vert franc, sans quoi
+     les deux se confondraient sous l'aurore, qui est elle-même verte. */
+  --ok: #7fd96a;
+  --ok-soft: #7fd96a1f;
+  --error: #ff7a92;
+  --error-soft: #ff7a921f;
+
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 10px 30px rgb(0 6 16 / 0.45);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.45);
+  --lamp-glow: 0 0 8px 2px var(--accent), 0 0 26px 8px #6fd6e84d;
+
+  --radius-sm: 4px;
+  --radius: 6px;
+  --radius-lg: 8px;
+}
+
+/* --- Station 1975 — le shack du radioamateur -------------------------------
+ *
+ * Placage noyer, façades crème, et l'orange du cadran. Les postes de ces
+ * années-là ont des coins nettement arrondis et des boutons qu'on a envie de
+ * tourner : c'est le seul habit du lot dont les rayons soient généreux.
+ */
+
+:root[data-theme='station-1975'] {
+  --bg: #1c1310;
+  --bg-elevated: #241a15;
+  --surface: #291d17;
+  --surface-2: #35261d;
+  --surface-3: #432f24;
+  --border: #483326;
+  --border-strong: #6b4a3580;
+
+  --text: #f0e2cc;
+  --text-muted: #b8a488;
+  --text-faint: #a9967c;
+
+  --accent: #ff9f43;
+  --accent-soft: #ff9f431f;
+  --accent-text: #1a0d02;
+
+  --ok: #93c46a;
+  --ok-soft: #93c46a1f;
+  --error: #ef6a5a;
+  --error-soft: #ef6a5a1f;
+
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 10px 30px rgb(20 8 0 / 0.42);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.45);
+  --lamp-glow: 0 0 8px 2px var(--accent), 0 0 28px 8px #ff9f434d;
+
+  --radius-sm: 5px;
+  --radius: 10px;
+  --radius-lg: 14px;
+}
+
 /* --- Traits partagés -------------------------------------------------------
  *
  * Ces règles s'accrochent aux attributs de trait, pas aux noms d'habits : elles

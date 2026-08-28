@@ -27,6 +27,12 @@ const LIGHT_BLURB: Record<Exclude<LightSource, 'aucune'>, string> = {
   orage: 'La pluie mange la lumière, et deux éclairs lointains passent coup sur coup — le second est toujours le plus fort.',
   aube: 'La seule qui ne se répète pas : la pièce part du gris-bleu d’avant le jour et se réchauffe pendant trois minutes, une fois.',
   braise: 'La seule qui éclaire par en dessous. Elle respire, et de loin en loin une bûche s’ouvre.',
+  veilleuse: 'L’éclairage de veille ne bouge presque pas — c’est son métier — sauf le creux d’une charge qui s’enclenche, toutes les vingt secondes.',
+  intensificateur: 'Un tube intensificateur grésille en permanence : un grain très fin, et les bords qui s’assombrissent.',
+  frontale: 'La lampe est sur votre tête : elle dérive quand vous bougez, et papillote quand le contact est mauvais.',
+  phosphore: 'Les lignes de balayage, et la barre de retour qui redescend l’écran toutes les sept secondes.',
+  boreale: 'Les rideaux de l’aurore ondulent au-dessus de la station, sans jamais repasser deux fois au même endroit.',
+  cadran: 'La lampe du cadran chauffe pendant vingt secondes en s’allumant, puis se tient, avec le souffle du secteur.',
 };
 
 export interface ThemePickerOptions {
