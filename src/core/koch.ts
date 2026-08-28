@@ -94,6 +94,65 @@ export interface CharRecord {
   attempts: number;
   /** Part de bonnes réponses, entre 0 et 1. */
   accuracy: number;
+  /** Horodatage du dernier passage. Zéro si le caractère n'a jamais été vu. */
+  lastSeen: number;
+}
+
+/**
+ * L'oubli.
+ *
+ * Un caractère su et jamais revu se perd, et le jour où il revient on ne le
+ * reconnaît plus. Le poids d'un caractère monte donc avec le temps écoulé
+ * depuis son dernier passage : au bout de trois jours il compte double, au
+ * bout de neuf il compte quadruple.
+ *
+ * Le plafond n'est pas une précaution technique. Sans lui, un caractère laissé
+ * de côté un an écraserait toute la série à son retour, et l'on ne travaillerait
+ * plus que lui.
+ */
+const OUBLI_JOURS = 3;
+const OUBLI_MAX = 3;
+const JOUR_MS = 24 * 60 * 60 * 1000;
+
+export function facteurOubli(record: CharRecord | null, now = Date.now()): number {
+  if (!record || record.lastSeen <= 0) return 1;
+  const jours = Math.max(0, (now - record.lastSeen) / JOUR_MS);
+  return 1 + Math.min(OUBLI_MAX, jours / OUBLI_JOURS);
+}
+
+/**
+ * Le rappel.
+ *
+ * Pondérer ne suffit pas. Sur quarante caractères et une série de vingt-cinq,
+ * la plupart ne sortent tout simplement pas : une lettre maîtrisée peut rester
+ * des semaines sans revenir, quel que soit son poids. Au-delà de ce silence,
+ * elle entre donc **d'office** dans la série suivante — c'est une garantie, pas
+ * une probabilité.
+ */
+export const RAPPEL_JOURS = 10;
+
+/** Part maximale d'une série que les rappels peuvent occuper. */
+const RAPPEL_PART = 1 / 3;
+
+/**
+ * Les caractères à faire revenir d'office, du plus anciennement vu au moins
+ * ancien. Un caractère jamais rencontré n'en fait pas partie : il n'y a rien à
+ * y rappeler, et le tirage le sert déjà en premier.
+ */
+export function charsARappeler(
+  charset: string[],
+  recordOf: (char: string) => CharRecord | null,
+  count: number,
+  now = Date.now(),
+): string[] {
+  const limite = now - RAPPEL_JOURS * JOUR_MS;
+  const oublies = charset
+    .map((char) => ({ char, record: recordOf(char) }))
+    .filter((entry) => entry.record !== null && entry.record.lastSeen > 0 && entry.record.lastSeen < limite)
+    .sort((a, b) => (a.record as CharRecord).lastSeen - (b.record as CharRecord).lastSeen)
+    .map((entry) => entry.char);
+
+  return oublies.slice(0, Math.max(1, Math.floor(count * RAPPEL_PART)));
 }
 
 export interface DrawOptions {
@@ -110,6 +169,12 @@ export interface DrawOptions {
    * confond avec un autre caractère. Il faut l'avoir rencontré pour le passer.
    */
   traps?: number;
+  /**
+   * Caractères à faire figurer coûte que coûte. Ils sont substitués après le
+   * tirage, à des positions qui ne créent pas de doublon involontaire : la
+   * longueur de la série ne change pas, et l'espacement reste celui du tirage.
+   */
+  forced?: string[];
   rng?: () => number;
 }
 
@@ -166,6 +231,8 @@ export function drawChars(charset: string[], count: number, options: DrawOptions
     while (recent.length > avoid) recent.shift();
   }
 
+  placeRappels(out, options.forced ?? [], rng);
+
   if (traps === 0) return out;
 
   // Les pièges se posent après coup : on choisit des positions distinctes et
@@ -183,6 +250,49 @@ export function drawChars(charset: string[], count: number, options: DrawOptions
   }
   for (const at of positions) out[at] = out[at - 1] as string;
   return out;
+}
+
+/**
+ * Impose les rappels dans une série déjà tirée.
+ *
+ * On ne les ajoute pas, on les substitue : la série garde sa longueur, et le
+ * caractère remplacé était de toute façon un caractère de plus au hasard. Les
+ * positions retenues évitent de coller deux fois le même signe, ce que le
+ * tirage lui-même s'interdit.
+ */
+function placeRappels(out: string[], forced: string[], rng: () => number): void {
+  if (forced.length === 0 || out.length === 0) return;
+
+  /*
+   * Les positions à ne pas écraser. Elle contient d'emblée celles où un rappel
+   * figure déjà naturellement — sans quoi la substitution du second rappel peut
+   * tomber sur le premier et le faire disparaître. Le défaut s'est produit
+   * trois fois sur mille tirages, ce qui est exactement le genre de chose qu'un
+   * essai attrape et qu'un regard ne voit pas.
+   */
+  const proteges = new Set<number>();
+  const aPlacer: string[] = [];
+
+  for (const char of forced.slice(0, out.length)) {
+    const deja = out.indexOf(char);
+    if (deja >= 0) proteges.add(deja);
+    else aPlacer.push(char);
+  }
+
+  for (const char of aPlacer) {
+    let guard = 0;
+    while (guard < out.length * 4) {
+      guard += 1;
+      const at = Math.floor(rng() * out.length);
+      if (proteges.has(at)) continue;
+      // Le tirage s'interdit déjà les doublons collés : la substitution ne
+      // doit pas en introduire.
+      if (out[at - 1] === char || out[at + 1] === char) continue;
+      out[at] = char;
+      proteges.add(at);
+      break;
+    }
+  }
 }
 
 /**
@@ -209,11 +319,16 @@ export function drawKochChars(
  * descend jamais sous un, il ne fait que monter si le caractère est raté.
  * Au-delà du seuil seulement, la réussite allège — sans jamais faire taire.
  */
-export function weakWeight(record: CharRecord | null): number {
+export function weakWeight(record: CharRecord | null, now = Date.now()): number {
   if (!record || record.attempts === 0) return 2;
   const struggle = 1 - Math.min(1, Math.max(0, record.accuracy));
-  if (record.attempts < MASTERY_ATTEMPTS) return 1 + struggle * 4;
-  return MASTERED_WEIGHT + struggle * (5 - MASTERED_WEIGHT);
+  const base =
+    record.attempts < MASTERY_ATTEMPTS
+      ? 1 + struggle * 4
+      : MASTERED_WEIGHT + struggle * (5 - MASTERED_WEIGHT);
+  // Le temps écoulé multiplie la difficulté ressentie : c'est le même
+  // caractère, mais on ne l'a plus en main.
+  return base * facteurOubli(record, now);
 }
 
 /**
@@ -225,5 +340,10 @@ export function drawWeakestFirst(
   recordOf: (char: string) => CharRecord | null,
   options: DrawOptions = {},
 ): string[] {
-  return drawChars(charset, count, { ...options, weights: charset.map((char) => weakWeight(recordOf(char))) });
+  const now = Date.now();
+  return drawChars(charset, count, {
+    ...options,
+    weights: charset.map((char) => weakWeight(recordOf(char), now)),
+    forced: options.forced ?? charsARappeler(charset, recordOf, count, now),
+  });
 }

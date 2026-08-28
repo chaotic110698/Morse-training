@@ -16,6 +16,7 @@ import { kochCharset, kochMaxLevel } from '../core/koch.ts';
 import { formatPercent } from '../core/progress.ts';
 import { MorsePlayer } from '../ui/player.ts';
 import { SignalLamp } from '../ui/lamp.ts';
+import { createAnnonce } from '../ui/annonce.ts';
 import type { View, ViewContext } from '../ui/router.ts';
 
 type Direction = 'code-to-char' | 'char-to-code';
@@ -24,6 +25,7 @@ export function readView(context: ViewContext): View {
   const { store } = context;
   const lamp = new SignalLamp('Signal');
   const player = new MorsePlayer(store, lamp);
+  const annonce = createAnnonce();
 
   let direction: Direction = 'code-to-char';
   let useFullSet = false;
@@ -180,6 +182,9 @@ export function readView(context: ViewContext): View {
 
     if (store.settings.uiSounds) store.audio.feedback(correct ? 'ok' : 'error');
     store.haptics.feedback(correct ? 'ok' : 'error');
+    annonce.dire(
+      correct ? `Juste, ${expected}.` : `Faux. C’était ${expected}, vous avez répondu ${answer}.`,
+    );
 
     // Le son du caractère est joué même dans ce mode visuel : c'est le meilleur
     // moyen de faire glisser progressivement l'apprentissage vers l'oreille.
@@ -240,6 +245,7 @@ export function readView(context: ViewContext): View {
   const element = h(
     'div',
     { class: 'trainer' },
+    annonce.element,
     h('div', { class: 'toolbar' }, directionToggle, fullSetToggle),
     h('div', { class: 'progress' }, progressBar, progressLabel),
     h('div', { class: 'trainer__stage' }, display, lamp.element),
@@ -266,6 +272,7 @@ export function readView(context: ViewContext): View {
       window.clearTimeout(advanceTimer);
       window.removeEventListener('keydown', onKeyDown);
       unsubscribe();
+      annonce.destroy();
       player.stop();
       tracker.commit(null);
     },

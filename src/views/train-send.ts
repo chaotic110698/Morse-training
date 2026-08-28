@@ -11,6 +11,7 @@ import { h } from '../ui/dom.ts';
 import { SignalLamp } from '../ui/lamp.ts';
 import { MorsePlayer } from '../ui/player.ts';
 import { createSignalTrace } from '../ui/trace.ts';
+import { createAnnonce } from '../ui/annonce.ts';
 import { KeyPad } from '../ui/keypad.ts';
 import { SessionTracker } from '../ui/session.ts';
 import { Keyer } from '../core/keyer.ts';
@@ -46,6 +47,7 @@ export function sendView(context: ViewContext): View {
   const lamp = new SignalLamp('Manipulateur');
   const player = new MorsePlayer(store, lamp);
   const ruban = createSignalTrace(store, player, 'Votre frappe');
+  const annonce = createAnnonce();
 
   let drill: Drill = 'chars';
   let target = '';
@@ -321,6 +323,7 @@ export function sendView(context: ViewContext): View {
     promptHint.textContent = clean
       ? 'Émission conforme.'
       : `${attemptErrors} caractère(s) hors consigne. Réessayez ou passez au suivant.`;
+    annonce.dire(promptHint.textContent);
     renderProgress();
     if (tracker.finished) finishSession();
     else window.setTimeout(() => nextPrompt(), 900);
@@ -379,6 +382,7 @@ export function sendView(context: ViewContext): View {
     renderPromptCode('');
     display.className = 'display display--error';
     promptHint.textContent = `Cet élément ne fait pas partie du code de ${char}. Reprenez ce caractère.`;
+    annonce.dire(promptHint.textContent);
   };
 
   const handleCharacter = (code: string, char: string | null): void => {
@@ -495,6 +499,7 @@ export function sendView(context: ViewContext): View {
   const element = h(
     'div',
     { class: 'trainer' },
+    annonce.element,
     h('div', { class: 'toolbar' }, modeSelect, swapToggle, forgivingToggle),
     modeNote,
     drillSelect,
@@ -549,6 +554,7 @@ export function sendView(context: ViewContext): View {
       unsubscribe();
       keypad.destroy();
       keyer.dispose();
+      annonce.destroy();
       ruban.destroy();
       player.stop();
       store.audio.stopSidetone();

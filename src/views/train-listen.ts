@@ -13,15 +13,18 @@ import { SignalLamp } from '../ui/lamp.ts';
 import { MorsePlayer } from '../ui/player.ts';
 import { SessionTracker } from '../ui/session.ts';
 import { monte } from '../ui/compteur.ts';
+import { createAnnonce } from '../ui/annonce.ts';
 import { isSpaceKey, isTypingTarget } from '../ui/keys.ts';
 import { prettyCode, encodeChar } from '../core/morse.ts';
 import {
+  charsARappeler,
   drawKochChars,
   drawWeakestFirst,
   kochCharset,
   kochMaxLevel,
   getKochOrder,
   MASTERY_ATTEMPTS,
+  type CharRecord,
 } from '../core/koch.ts';
 import { charRecord, longSession, SESSION_LENGTHS } from '../core/training.ts';
 import { formatPercent } from '../core/progress.ts';
@@ -43,6 +46,7 @@ export function listenView(context: ViewContext): View {
   const { store } = context;
   const lamp = new SignalLamp('Signal');
   const player = new MorsePlayer(store, lamp);
+  const annonce = createAnnonce();
 
   let phase: Phase = 'idle';
   let queue: string[] = [];
@@ -271,9 +275,13 @@ export function listenView(context: ViewContext): View {
     const draw = longSession(length)
       ? { avoid: 3, traps: Math.round(length / 12) }
       : { avoid: 1, traps: 0 };
+    // Les rappels valent dans les deux modes : une lettre laissée dix jours
+    // revient d'office, qu'on insiste ou non sur les points faibles.
+    const releve = (char: string): CharRecord | null => charRecord(store.progress, char);
+    const forced = charsARappeler(set, releve, length);
     queue = reviewMode
-      ? drawWeakestFirst(set, length, (char) => charRecord(store.progress, char), draw)
-      : drawKochChars(set, length, 2.5, draw);
+      ? drawWeakestFirst(set, length, releve, { ...draw, forced })
+      : drawKochChars(set, length, 2.5, { ...draw, forced });
     phase = 'running';
     // Le bruit de bande accompagne la série entière : il campe l'ambiance et
     // maintient la sortie audio active, ce qui supprime le craquement
@@ -345,6 +353,13 @@ export function listenView(context: ViewContext): View {
 
     if (store.settings.uiSounds) store.audio.feedback(correct ? 'ok' : 'error');
     store.haptics.feedback(correct ? 'ok' : 'error');
+    annonce.dire(
+      correct
+        ? `Juste, ${expected}.`
+        : answer
+          ? `Faux. C’était ${expected}, vous avez répondu ${answer}.`
+          : `Faux. C’était ${expected}.`,
+    );
 
     // Sur erreur, on rejoue le caractère attendu : réentendre le bon son juste
     // après s'être trompé est ce qui corrige le plus vite l'association.
@@ -375,6 +390,10 @@ export function listenView(context: ViewContext): View {
     renderProgress();
     renderDisplay();
     renderSummary();
+    annonce.dire(
+      `Série terminée : ${tracker.correct} bonnes réponses sur ${tracker.count}, ` +
+      `soit ${formatPercent(tracker.accuracy)}.`,
+    );
   };
 
   /**
@@ -530,6 +549,7 @@ export function listenView(context: ViewContext): View {
   const element = h(
     'div',
     { class: 'trainer' },
+    annonce.element,
     h(
       'div',
       { class: 'trainer__header' },
@@ -566,6 +586,7 @@ export function listenView(context: ViewContext): View {
       window.clearTimeout(advanceTimer);
       window.removeEventListener('keydown', onKeyDown);
       unsubscribe();
+      annonce.destroy();
       player.stop();
       store.audio.stopNoise();
       tracker.commit(level());

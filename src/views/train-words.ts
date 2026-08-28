@@ -9,6 +9,7 @@
 
 import { h, setChildren } from '../ui/dom.ts';
 import { SignalLamp } from '../ui/lamp.ts';
+import { createAnnonce } from '../ui/annonce.ts';
 import { MorsePlayer } from '../ui/player.ts';
 import { SessionTracker } from '../ui/session.ts';
 import { drawVocabulary, VOCABULARY_SETS, type VocabularyEntry } from '../data/vocabulary.ts';
@@ -20,6 +21,7 @@ export function wordsView(context: ViewContext): View {
   const { store } = context;
   const lamp = new SignalLamp('Signal');
   const player = new MorsePlayer(store, lamp);
+  const annonce = createAnnonce();
 
   let setId = 'abbreviations';
   let entry: VocabularyEntry | null = null;
@@ -166,6 +168,9 @@ export function wordsView(context: ViewContext): View {
     tracker.record(entry.text, answer || null, correct, responseMs);
     if (store.settings.uiSounds) store.audio.feedback(correct ? 'ok' : 'error');
     store.haptics.feedback(correct ? 'ok' : 'error');
+    // On épelle le groupe : « QRZ » prononcé d'un trait n'est pas contrôlable.
+    const epele = [...entry.text.toUpperCase()].join(' ');
+    annonce.dire(correct ? `Juste : ${epele}.` : `Faux. C’était ${epele}.`);
     showResult(correct);
     input.disabled = true;
     validateButton.textContent = tracker.finished ? 'Voir le bilan' : 'Suivant';
@@ -239,6 +244,7 @@ export function wordsView(context: ViewContext): View {
   const element = h(
     'div',
     { class: 'trainer' },
+    annonce.element,
     h('div', { class: 'toolbar' }, setSelect),
     setHint,
     h('div', { class: 'progress' }, progressBar, progressLabel),
@@ -266,6 +272,7 @@ export function wordsView(context: ViewContext): View {
   return {
     element,
     destroy: () => {
+      annonce.destroy();
       player.stop();
       store.audio.stopNoise();
       tracker.commit(null);

@@ -38,5 +38,9 @@ export function longSession(length: number): boolean {
 export function charRecord(progress: Progress, char: string): CharRecord | null {
   const stat = progress.chars[char];
   if (!stat || stat.attempts === 0) return null;
-  return { attempts: stat.attempts, accuracy: stat.correct / stat.attempts };
+  return {
+    attempts: stat.attempts,
+    accuracy: stat.correct / stat.attempts,
+    lastSeen: stat.lastSeen,
+  };
 }
