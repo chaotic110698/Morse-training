@@ -12,6 +12,8 @@
  */
 
 import { CHAR_TO_MORSE } from './morse.ts';
+import type { StoryMode } from './progress.ts';
+import { STORY_CATALOGUE } from '../data/story-catalogue.ts';
 import {
   EPISODES,
   KEYER_ERAS,
@@ -78,6 +80,71 @@ export function tokensOf(text: string): string[] {
 // --- Manipulateurs d'époque ---
 
 /** Les manipulateurs qui existent à cette date. */
+/**
+ * Ce que le niveau autorise.
+ *
+ * Le mode histoire offre par défaut toutes les aides du site : une table de
+ * déchiffrage dépliable, la réécoute à volonté, le ralentissement, la lecture
+ * lettre par lettre et n'importe quel manipulateur. Aucun opérateur n'a jamais
+ * eu tout cela, et c'est là-dessus que porte la difficulté — on retire des
+ * béquilles, on ne pose pas de mur.
+ *
+ * L'échec ne bloque donc toujours pas : même sans avoir rien entendu, on écrit
+ * ce qu'on veut, on compare, et l'épisode continue.
+ */
+export interface StoryRules {
+  /**
+   * Les manipulateurs que l'époque connaissait. La même liste dans les deux
+   * niveaux : elle sert à marquer les anachronismes, ce qui est une
+   * information et non une contrainte.
+   */
+  keyers: KeyerKind[];
+  /** Vrai pour s'y tenir vraiment, au lieu de simplement les signaler. */
+  restrictKeyers: boolean;
+  /** La table de déchiffrage est-elle dépliable ? */
+  table: boolean;
+  /** La lecture caractère par caractère est-elle offerte ? */
+  step: boolean;
+  /** Peut-on demander plus lent ? */
+  qrs: boolean;
+  /**
+   * Combien de fois on peut redemander le message, la première écoute mise à
+   * part. Un opérateur qui répète trop se fait remarquer, et surtout perd le
+   * fil du trafic.
+   */
+  repeats: number;
+  /** Peut-on réécouter une fois la copie comparée ? */
+  listenAfterCheck: boolean;
+}
+
+/** Le nombre de répétitions accordées en conditions d'opérateur. */
+export const OPERATOR_REPEATS = 2;
+
+export function rulesFor(mode: StoryMode, year: number): StoryRules {
+  if (mode !== 'operateur') {
+    return {
+      keyers: keyersFor(year),
+      restrictKeyers: false,
+      table: true,
+      step: true,
+      qrs: true,
+      repeats: Number.POSITIVE_INFINITY,
+      listenAfterCheck: true,
+    };
+  }
+  return {
+    keyers: keyersFor(year),
+    restrictKeyers: true,
+    table: false,
+    step: false,
+    qrs: false,
+    repeats: OPERATOR_REPEATS,
+    // Une fois le corrigé sous les yeux, réécouter n'apprend plus rien : on
+    // ne copie plus, on recopie.
+    listenAfterCheck: false,
+  };
+}
+
 export function keyersFor(year: number): KeyerKind[] {
   return KEYER_ERAS.filter((era) => year >= era.from).map((era) => era.kind);
 }
@@ -421,6 +488,32 @@ export function validateStory(episodes: Episode[] = EPISODES, lineage?: Lineage)
     if (keyersFor(episode.year).length === 0) {
       problems.push(`Aucun manipulateur disponible en ${episode.year} : ${episode.id}`);
     }
+  }
+
+  // Le catalogue recopie l'identifiant, la génération et le caractère
+  // facultatif de chaque épisode, pour que les succès puissent les compter
+  // sans charger cent kilo-octets de prose. C'est la seule recopie du dépôt :
+  // elle se paie d'une vérification, sans quoi ajouter un épisode ferait
+  // dériver les objectifs en silence.
+  const catalogued = new Map(STORY_CATALOGUE.map((entry) => [entry.id, entry]));
+  for (const episode of episodes) {
+    const entry = catalogued.get(episode.id);
+    if (!entry) {
+      problems.push(`Absent du catalogue : ${episode.id} (voir data/story-catalogue.ts)`);
+      continue;
+    }
+    catalogued.delete(episode.id);
+    if (entry.generation !== episode.generation) {
+      problems.push(
+        `Catalogue : ${episode.id} est en génération ${entry.generation}, l’épisode dit ${episode.generation}`,
+      );
+    }
+    if (entry.optional !== (episode.optional === true)) {
+      problems.push(`Catalogue : ${episode.id} n’a pas le même caractère facultatif`);
+    }
+  }
+  for (const orphan of catalogued.keys()) {
+    problems.push(`Catalogue : ${orphan} ne correspond à aucun épisode`);
   }
 
   if (lineage) {

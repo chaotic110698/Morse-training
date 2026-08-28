@@ -183,7 +183,15 @@ de sommaire.
 - **Le son de chaque époque** : retenu. Relais et silence pour le filaire,
   éclateur râpeux pour 1901-1912, brouillage pour la guerre, calme pour 1970.
 - **Deux niveaux** : *Récit* et *Opérateur*. Ce sont les deux difficultés du
-  mode.
+  mode. **Fait** : le niveau se choisit épisode par épisode, dans l'entête, et
+  le changer reprend l'épisode au début — sans quoi on passerait les temps
+  difficiles en récit avant de basculer pour le dernier, et la mention
+  « terminé en opérateur » ne voudrait plus rien dire. *Opérateur* retire la
+  table de déchiffrage, la lecture lettre par lettre, le ralentissement `QRS`,
+  limite les répétitions à deux, ferme l'écoute une fois le corrigé sous les
+  yeux, et s'en tient aux manipulateurs de l'année. L'échec ne bloque toujours
+  pas : sans avoir rien entendu, on écrit ce qu'on veut, on compare, et
+  l'épisode continue.
 - **L'échec ne bloque jamais** ; on doit toujours pouvoir se corriger.
 - **Progression propre au mode**, indépendante des paliers Koch : un
   apprentissage rude, mais par le jeu plutôt que par la série mécanique.
@@ -282,6 +290,13 @@ rien à faire, et c'est précisément ce qui donne au signal sa brutalité. Un
 épisode peut par ailleurs déclarer `receiverOpen` : le souffle de la bande
 court alors du premier temps au dernier au lieu de n'exister que pendant les
 lectures. MGY s'en sert des deux.
+
+**Les succès du récit.** Une section « Mode histoire » dans les succès du
+site, avec neuf entrées : le premier épisode, une génération sur cinq, les
+facultatifs, le récit entier, un épisode sans la table, un sans une seule
+erreur de manipulation, un en conditions d'opérateur, cinq en conditions
+d'opérateur, et une copie sans un caractère manqué. Les deux mesures qui
+dormaient depuis le début — `withoutTable` et le niveau — servent enfin.
 
 **Reste à faire, plus petit.**
 

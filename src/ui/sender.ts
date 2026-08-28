@@ -58,8 +58,14 @@ export interface SenderOptions {
   store: AppStore;
   /** Joue le code d'un caractère au clavier, ou le signal d'erreur. */
   play: (code: string) => void;
-  /** Les manipulateurs que l'époque connaît. Les autres restent proposés. */
+  /** Les manipulateurs que l'époque connaît. */
   available: KeyerKind[];
+  /**
+   * Vrai pour s'en tenir strictement à eux : les autres restent visibles, mais
+   * ne se choisissent plus. C'est ce que demande le niveau opérateur — on ne
+   * manipule pas en 1912 sur un clavier de 1960.
+   */
+  restrict?: boolean;
   year: number;
   /** Le grain de l'époque, que le retour local doit rendre sous la main. */
   voice: ToneVoice;
@@ -83,7 +89,17 @@ export interface Sender {
 export function createSender(options: SenderOptions): Sender {
   const { store } = options;
   let state = startSend('');
-  let mode: SenderMode = options.initialMode ?? 'clavier';
+  const playable = (candidate: SenderMode): boolean => {
+    if (options.restrict !== true) return true;
+    const entry = MODES.find((item) => item.mode === candidate);
+    return entry ? options.available.includes(entry.era) : false;
+  };
+  const fallback: SenderMode =
+    MODES.find((entry) => playable(entry.mode))?.mode ?? 'straight';
+  const wanted = options.initialMode ?? 'clavier';
+  // Sous contrainte d'époque, on ouvre sur le manipulateur le plus récent que
+  // l'année connaisse plutôt que sur un clavier qui n'existe pas encore.
+  let mode: SenderMode = playable(wanted) ? wanted : fallback;
   let touched = false;
 
   const firstGesture = (): void => {
@@ -283,17 +299,21 @@ export function createSender(options: SenderOptions): Sender {
 
   for (const entry of MODES) {
     const existed = options.available.includes(entry.era);
+    const barre = options.restrict === true && !existed;
     chips.append(
       h('button', {
         class: `segmented__item manip__mode${existed ? '' : ' is-anachronique'}`,
         type: 'button',
         text: entry.label,
         data: { mode: entry.mode },
+        disabled: barre,
         attrs: {
           'aria-pressed': String(entry.mode === mode),
           title: existed
             ? `${entry.nom} — en service en ${options.year}`
-            : `${entry.nom} — n’existe pas encore en ${options.year}, à vous de voir`,
+            : barre
+              ? `${entry.nom} — n’existe pas en ${options.year}, et le niveau opérateur s’en tient à l’époque`
+              : `${entry.nom} — n’existe pas encore en ${options.year}, à vous de voir`,
         },
         on: { click: () => setMode(entry.mode) },
       }),
@@ -313,8 +333,11 @@ export function createSender(options: SenderOptions): Sender {
     text:
       missing === 0
         ? `En ${options.year}, ces manipulateurs existent tous.`
-        : `En ${options.year} : ${known.map((entry) => entry.label.toLowerCase()).join(', ')}.` +
-          ` Les autres (∗) ne sont pas encore nés — libre à vous.`,
+        : options.restrict === true
+          ? `En ${options.year} : ${known.map((entry) => entry.label.toLowerCase()).join(', ')}.` +
+            ` Les autres (∗) n’existent pas encore, et le niveau opérateur s’en tient à l’époque.`
+          : `En ${options.year} : ${known.map((entry) => entry.label.toLowerCase()).join(', ')}.` +
+            ` Les autres (∗) ne sont pas encore nés — libre à vous.`,
   });
 
   const eraseButton = h(

@@ -7,7 +7,13 @@
  * qu'un export JSON conserve l'historique.
  */
 
-import type { Progress } from './progress.ts';
+import type { Progress, StoryEpisodeRecord } from './progress.ts';
+import {
+  STORY_CATALOGUE,
+  STORY_GENERATIONS,
+  STORY_LORE,
+  STORY_REQUIRED,
+} from '../data/story-catalogue.ts';
 
 export type AchievementTier = 'bronze' | 'argent' | 'or';
 
@@ -17,7 +23,7 @@ export interface Achievement {
   description: string;
   icon: string;
   tier: AchievementTier;
-  group: 'assiduite' | 'ecoute' | 'emission' | 'maitrise';
+  group: 'assiduite' | 'ecoute' | 'emission' | 'maitrise' | 'histoire';
   goal: number;
   /** Valeur atteinte, dans la même unité que `goal`. */
   value: (progress: Progress) => number;
@@ -58,6 +64,30 @@ const averageResponseMs = (progress: Progress): number => {
 };
 
 const hours = (ms: number): number => ms / 3_600_000;
+
+/**
+ * Le mode histoire compte ses épisodes menés à leur terme, jamais ceux qu'on a
+ * seulement entamés. On passe par le catalogue plutôt que par les épisodes :
+ * ceux-ci pèsent une centaine de kilo-octets de prose, chargés à la demande, et
+ * les succès sont évalués au démarrage.
+ */
+const finished = (progress: Progress): StoryEpisodeRecord[] =>
+  STORY_CATALOGUE.map((entry) => progress.story.episodes[entry.id]).filter(
+    (record): record is StoryEpisodeRecord => record?.completed === true,
+  );
+
+/** Combien de générations comptent au moins un épisode terminé. */
+const generationsTouched = (progress: Progress): number =>
+  new Set(
+    STORY_CATALOGUE.filter((entry) => progress.story.episodes[entry.id]?.completed).map(
+      (entry) => entry.generation,
+    ),
+  ).size;
+
+const cleared = (progress: Progress, optional: boolean): number =>
+  STORY_CATALOGUE.filter(
+    (entry) => entry.optional === optional && progress.story.episodes[entry.id]?.completed,
+  ).length;
 
 export const ACHIEVEMENTS: Achievement[] = [
   // --- Assiduité ---
@@ -353,6 +383,98 @@ export const ACHIEVEMENTS: Achievement[] = [
     goal: 1,
     value: (p) => (p.flags['history-read'] ? 1 : 0),
   },
+
+  // --- Mode histoire ---
+  {
+    id: 'story-first',
+    name: 'Premier quart',
+    description: 'Mener un premier épisode du mode histoire à son terme.',
+    icon: '📻',
+    tier: 'bronze',
+    group: 'histoire',
+    goal: 1,
+    value: (p) => finished(p).length,
+  },
+  {
+    id: 'story-generations',
+    name: 'La lignée',
+    description: 'Terminer au moins un épisode de chacune des cinq générations.',
+    icon: '🧬',
+    tier: 'argent',
+    group: 'histoire',
+    goal: STORY_GENERATIONS,
+    value: generationsTouched,
+  },
+  {
+    id: 'story-lore',
+    name: 'Entre les ondes',
+    description: 'Terminer tous les épisodes facultatifs, ceux qui ne racontent que la famille.',
+    icon: '📖',
+    tier: 'argent',
+    group: 'histoire',
+    goal: STORY_LORE,
+    value: (p) => cleared(p, true),
+  },
+  {
+    id: 'story-all',
+    name: 'Cent cinquante-cinq ans',
+    description: 'Terminer tous les épisodes du récit, de 1844 à 1999.',
+    icon: '🏛️',
+    tier: 'or',
+    group: 'histoire',
+    goal: STORY_REQUIRED,
+    value: (p) => cleared(p, false),
+  },
+  {
+    id: 'story-no-table',
+    name: 'De mémoire',
+    description: 'Terminer un épisode sans jamais déplier la table de déchiffrage.',
+    icon: '🧠',
+    tier: 'argent',
+    group: 'histoire',
+    goal: 1,
+    value: (p) => finished(p).filter((record) => record.withoutTable).length,
+  },
+  {
+    id: 'story-clean-hand',
+    name: 'Main sûre',
+    description: 'Terminer un épisode sans une seule erreur de manipulation.',
+    icon: '🤚',
+    tier: 'argent',
+    group: 'histoire',
+    goal: 1,
+    value: (p) => finished(p).filter((record) => record.errors === 0).length,
+  },
+  {
+    id: 'story-operator',
+    name: 'Conditions réelles',
+    description: 'Terminer un épisode en niveau opérateur, sans les aides du site.',
+    icon: '🎚️',
+    tier: 'argent',
+    group: 'histoire',
+    goal: 1,
+    value: (p) => finished(p).filter((record) => record.operatorClear).length,
+  },
+  {
+    id: 'story-operator-5',
+    name: 'Le métier',
+    description: 'Terminer cinq épisodes en niveau opérateur.',
+    icon: '⚓',
+    tier: 'or',
+    group: 'histoire',
+    goal: 5,
+    value: (p) => finished(p).filter((record) => record.operatorClear).length,
+  },
+  {
+    id: 'story-perfect-copy',
+    name: 'Copie parfaite',
+    description: 'Relever un message du récit sans en manquer un seul caractère.',
+    icon: '✍️',
+    tier: 'or',
+    group: 'histoire',
+    goal: 1,
+    value: (p) => finished(p).filter((record) => record.bestCopy >= 1).length,
+  },
 ];
 
 export const ACHIEVEMENT_GROUPS: Array<{ id: Achievement['group']; label: string }> = [
@@ -360,6 +482,7 @@ export const ACHIEVEMENT_GROUPS: Array<{ id: Achievement['group']; label: string
   { id: 'ecoute', label: 'Écoute' },
   { id: 'emission', label: 'Émission' },
   { id: 'maitrise', label: 'Maîtrise' },
+  { id: 'histoire', label: 'Mode histoire' },
 ];
 
 export interface AchievementStatus {

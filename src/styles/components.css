@@ -2868,6 +2868,18 @@
   color: var(--text-faint);
 }
 
+/* Le niveau de la partie, dans l'entête de l'épisode. Compact : il voisine
+   avec deux boutons et trois mentions, sur une ligne qui passe déjà à la
+   ligne sur téléphone. */
+.recit-entete__niveau {
+  padding: 2px;
+}
+
+.recit-entete__niveau .segmented__item {
+  padding: 0.28rem 0.7rem;
+  font-size: 0.8rem;
+}
+
 /* L'habit emprunté à l'époque, annoncé à côté du grain sonore. */
 .recit-entete__habit {
   padding: 0.15rem 0.6rem;

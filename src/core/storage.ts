@@ -106,6 +106,8 @@ function normalizeStory(input: Partial<StoryProgress> | null | undefined): Story
       errors: count(raw.errors),
       bestCopy: Math.min(1, Math.max(0, Number(raw.bestCopy) || 0)),
       withoutTable: raw.withoutTable !== false,
+      mode: raw.mode === 'operateur' ? 'operateur' : 'recit',
+      operatorClear: raw.operatorClear === true,
       updatedAt: count(raw.updatedAt),
     };
   }

@@ -15,13 +15,13 @@ import { createMorseTable } from '../ui/morse-table.ts';
 import { MorsePlayer } from '../ui/player.ts';
 import { buildSequence, elementsForCode, resolveTiming } from '../core/timing.ts';
 import { compactCode, encodeChar } from '../core/morse.ts';
-import { recordEpisode } from '../core/progress.ts';
+import { recordEpisode, type StoryMode } from '../core/progress.ts';
 import {
   beatText,
+  rulesFor,
   compareCopy,
   episodeProgress,
   interpolate,
-  keyersFor,
   sineOf,
   type StoryContext,
 } from '../core/story.ts';
@@ -247,6 +247,13 @@ export function storyView(context: ViewContext): View {
     const ctx = storyContext(episode);
     const record = store.progress.story.episodes[episode.id];
     const resume = record && !record.completed ? record.beat : 0;
+    /**
+     * Le niveau de cette partie. On reprend celui d'une partie en cours ;
+     * sinon on propose le dernier choisi, parce que personne n'a envie de le
+     * rechoisir dix-huit fois.
+     */
+    let mode: StoryMode = record && !record.completed ? record.mode : store.progress.story.mode;
+    let rules = rulesFor(mode, episode.year);
     let index = fromStart ? 0 : Math.min(resume, episode.beats.length - 1);
     let errors = 0;
     let bestCopy = record?.bestCopy ?? 0;
@@ -265,13 +272,23 @@ export function storyView(context: ViewContext): View {
     const meter = h('p', { class: 'recit-mesure' });
 
     const persist = (extra: Partial<{ completed: boolean }> = {}): void => {
-      recordEpisode(store.progress, episode.id, {
-        beat: index,
-        errors,
-        bestCopy,
-        withoutTable: !table.consulted(),
-        ...extra,
-      });
+      // Passer par le magasin plutôt que muter la progression en direct : c'est
+      // lui qui débloque les succès, et les succès du mode histoire ne se
+      // seraient jamais déclenchés autrement. En silence, parce qu'un
+      // rafraîchissement à chaque temps n'apporterait rien.
+      store.mutateProgress(
+        (progress) => {
+          recordEpisode(progress, episode.id, {
+            beat: index,
+            errors,
+            bestCopy,
+            withoutTable: !table.consulted(),
+            mode,
+            ...extra,
+          });
+        },
+        { silent: true },
+      );
       errors = 0;
       store.saveNow();
     };
@@ -589,16 +606,39 @@ export function storyView(context: ViewContext): View {
         class: 'btn btn--code',
         type: 'button',
         text: 'AGN',
-        on: { click: () => void again() },
+        on: {
+          click: () => {
+            if (repeats <= 0) return;
+            repeats -= 1;
+            refresh();
+            void again();
+          },
+        },
       }) as HTMLButtonElement;
 
       /** Remet les commandes en accord avec le mode et l'avancement. */
+      /**
+       * Ce qu'il reste de répétitions. En récit, c'est sans fin ; en
+       * opérateur, on redemande deux fois et pas davantage — au-delà, un
+       * opérateur perd le fil du trafic, et c'est bien le sujet.
+       */
+      let repeats = rules.repeats;
+      let compared = false;
+
       const refresh = (): void => {
         const done = step >= text.length;
+        const closed = compared && !rules.listenAfterCheck;
         mainButton.textContent = stepMode ? (done ? 'Message terminé' : 'Lettre suivante') : 'Écouter';
-        mainButton.disabled = stepMode && done;
-        againButton.title = stepMode ? 'Répétez le dernier caractère' : 'Répétez le message';
-        againButton.disabled = stepMode && lastChar === '';
+        mainButton.disabled = (stepMode && done) || closed;
+        againButton.title = closed
+          ? 'Le corrigé est sous vos yeux : réécouter ne vous apprendrait plus rien'
+          : Number.isFinite(repeats)
+            ? `Répétez le message — ${repeats} demande${repeats > 1 ? 's' : ''} restante${repeats > 1 ? 's' : ''}`
+            : stepMode
+              ? 'Répétez le dernier caractère'
+              : 'Répétez le message';
+        againButton.textContent = Number.isFinite(repeats) ? `AGN ${repeats}` : 'AGN';
+        againButton.disabled = closed || repeats <= 0 || (stepMode && lastChar === '');
       };
 
       const stepToggle = h(
@@ -626,21 +666,23 @@ export function storyView(context: ViewContext): View {
         'div',
         { class: 'recit-controles' },
         mainButton,
-        h('button', {
-          class: 'btn btn--code',
-          type: 'button',
-          title: 'Transmettez plus lentement',
-          text: 'QRS',
-          on: {
-            click: () => {
-              wpm = Math.max(5, wpm - 3);
-              wpmLabel.textContent = `${wpm} WPM`;
-            },
-          },
-        }),
+        rules.qrs
+          ? h('button', {
+              class: 'btn btn--code',
+              type: 'button',
+              title: 'Transmettez plus lentement',
+              text: 'QRS',
+              on: {
+                click: () => {
+                  wpm = Math.max(5, wpm - 3);
+                  wpmLabel.textContent = `${wpm} WPM`;
+                },
+              },
+            })
+          : null,
         againButton,
         wpmLabel,
-        stepToggle,
+        rules.step ? stepToggle : null,
       );
 
       refresh();
@@ -661,6 +703,8 @@ export function storyView(context: ViewContext): View {
           // donner la réponse. Elle arrive avec le verdict, pas avant.
           beat.note ? h('p', { class: 'card__hint recit-note', text: beat.note }) : null,
         ]);
+        compared = true;
+        refresh();
         suivant.disabled = false;
       };
 
@@ -672,7 +716,7 @@ export function storyView(context: ViewContext): View {
           beat.from ? h('span', { class: 'recit-source__qui', text: beat.from }) : null),
         tape,
         controls,
-        table.element,
+        rules.table ? table.element : null,
         h('label', { class: 'recit-notes__label', text: 'Vos notes' }),
         notes,
         h(
@@ -729,7 +773,8 @@ export function storyView(context: ViewContext): View {
       board = createSender({
         store: context.store,
         play: (code) => playCode(code, SEND_WPM, voiceOf(episode)),
-        available: keyersFor(episode.year),
+        available: rules.keyers,
+        restrict: rules.restrictKeyers,
         year: episode.year,
         voice: voiceOf(episode),
         initialMode: senderMode,
@@ -760,6 +805,64 @@ export function storyView(context: ViewContext): View {
       );
     };
 
+    /**
+     * Le choix du niveau, dans l'entête.
+     *
+     * Il reprend l'épisode au début : autrement on pourrait passer les temps
+     * difficiles en récit et basculer en opérateur pour le dernier, et la
+     * mention « terminé en opérateur » ne voudrait plus rien dire.
+     */
+    const niveau = (): HTMLElement => {
+      const puces = (
+        [
+          ['recit', 'Récit', 'Toutes les aides du site : la table de déchiffrage, la réécoute à volonté, le ralentissement.'],
+          ['operateur', 'Opérateur', 'Ce dont on disposait cette année-là, et rien de plus. Reprend l’épisode au début.'],
+        ] as Array<[StoryMode, string, string]>
+      ).map(([value, label, quoi]) =>
+        h('button', {
+          class: 'segmented__item',
+          type: 'button',
+          text: label,
+          data: { niveau: value },
+          attrs: { title: quoi },
+          on: {
+            click: () => {
+              if (mode === value) return;
+              mode = value;
+              rules = rulesFor(mode, episode.year);
+              // Le dernier niveau choisi devient celui qu'on proposera.
+              store.mutateProgress(
+                (progress) => {
+                  progress.story.mode = value;
+                },
+                { silent: true },
+              );
+              marquer();
+              restart();
+            },
+          },
+        }),
+      );
+
+      // L'entête n'est pas redessinée quand on reprend l'épisode : les puces
+      // se remettent donc à jour elles-mêmes, sinon la marque resterait sur le
+      // niveau qu'on vient de quitter.
+      const marquer = (): void => {
+        for (const puce of puces) {
+          const actif = puce.dataset['niveau'] === mode;
+          puce.classList.toggle('is-active', actif);
+          puce.setAttribute('aria-pressed', String(actif));
+        }
+      };
+      marquer();
+
+      return h(
+        'div',
+        { class: 'segmented recit-entete__niveau', attrs: { role: 'group', 'aria-label': 'Niveau' } },
+        ...puces,
+      );
+    };
+
     const restart = (): void => {
       stop(true);
       index = 0;
@@ -780,6 +883,7 @@ export function storyView(context: ViewContext): View {
           attrs: { title: 'Reprendre l’épisode à son premier temps' },
           on: { click: restart },
         }),
+        niveau(),
         h('span', { class: 'recit-entete__annee', text: String(episode.year) }),
         h('span', {
           class: 'recit-entete__qui',

@@ -89,6 +89,20 @@ export interface QuizProgress {
  * dans un récit, et l'on doit pouvoir reprendre un épisode au temps où on
  * l'avait laissé.
  */
+/**
+ * Le niveau de jeu d'un épisode.
+ *
+ * `recit` offre toutes les aides du site : la table de déchiffrage, la
+ * réécoute à volonté, le ralentissement, la lecture lettre par lettre, et tous
+ * les manipulateurs. `operateur` les retire et s'en tient à ce dont disposait
+ * quelqu'un assis devant le poste cette année-là.
+ *
+ * Ce que le niveau ne change jamais : l'échec ne bloque pas. On se corrige
+ * toujours, on recommence toujours, un épisode ne se referme pas sur une
+ * faute.
+ */
+export type StoryMode = 'recit' | 'operateur';
+
 export interface StoryEpisodeRecord {
   /**
    * Marque-page, et non plus haut fait : c'est là qu'on reprendra. Il peut
@@ -102,13 +116,21 @@ export interface StoryEpisodeRecord {
   bestCopy: number;
   /** Vrai si l'épisode a été mené sans ouvrir la table de déchiffrage. */
   withoutTable: boolean;
+  /** Le niveau de la partie en cours : on le retrouve en reprenant. */
+  mode: StoryMode;
+  /** Vrai si l'épisode a été mené à son terme en conditions d'opérateur. */
+  operatorClear: boolean;
   updatedAt: number;
 }
 
 export interface StoryProgress {
   episodes: Record<string, StoryEpisodeRecord>;
-  /** Niveau de lecture : le récit d'abord, ou les conditions réelles. */
-  mode: 'recit' | 'operateur';
+  /**
+   * Le dernier niveau choisi. Il n'impose rien — le niveau se décide épisode
+   * par épisode — mais c'est celui qu'on propose d'office, parce que personne
+   * n'a envie de le rechoisir dix-huit fois.
+   */
+  mode: StoryMode;
 }
 
 export function emptyStoryProgress(): StoryProgress {
@@ -116,7 +138,16 @@ export function emptyStoryProgress(): StoryProgress {
 }
 
 export function emptyEpisodeRecord(): StoryEpisodeRecord {
-  return { beat: 0, completed: false, errors: 0, bestCopy: 0, withoutTable: true, updatedAt: 0 };
+  return {
+    beat: 0,
+    completed: false,
+    errors: 0,
+    bestCopy: 0,
+    withoutTable: true,
+    mode: 'recit',
+    operatorClear: false,
+    updatedAt: 0,
+  };
 }
 
 /**
@@ -131,12 +162,19 @@ export function recordEpisode(
   now = Date.now(),
 ): void {
   const previous = progress.story.episodes[id] ?? emptyEpisodeRecord();
+  const mode = update.mode ?? previous.mode;
+  const completed = previous.completed || (update.completed ?? false);
   progress.story.episodes[id] = {
     beat: update.beat ?? previous.beat,
-    completed: previous.completed || (update.completed ?? false),
+    completed,
     errors: previous.errors + (update.errors ?? 0),
     bestCopy: Math.max(previous.bestCopy, update.bestCopy ?? 0),
     withoutTable: previous.withoutTable && (update.withoutTable ?? true),
+    mode,
+    // Un fait d'armes ne se perd pas : avoir terminé une fois en opérateur
+    // reste acquis, même si l'on rejoue ensuite tranquillement en récit.
+    operatorClear:
+      previous.operatorClear || ((update.completed ?? false) && mode === 'operateur'),
     updatedAt: now,
   };
 }
@@ -144,6 +182,20 @@ export function recordEpisode(
 /** Nombre d'épisodes menés à leur terme. */
 export function storyCompleted(progress: Progress): number {
   return Object.values(progress.story.episodes).filter((record) => record.completed).length;
+}
+
+/**
+ * Les épisodes terminés qui satisfont une condition. Sert aux succès du mode
+ * histoire, qui comptent tous des épisodes menés à leur terme d'une certaine
+ * façon — jamais des épisodes seulement entamés.
+ */
+export function storyCleared(
+  progress: Progress,
+  keep: (record: StoryEpisodeRecord, id: string) => boolean,
+): string[] {
+  return Object.entries(progress.story.episodes)
+    .filter(([id, record]) => record.completed && keep(record, id))
+    .map(([id]) => id);
 }
 
 export interface Progress {
