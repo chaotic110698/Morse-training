@@ -585,7 +585,7 @@ export function settingsView(context: ViewContext): View {
         field(
           'Habit',
           createThemePicker({ store }),
-          'Chaque habit est une palette complète : couleurs, ombres, angles et police. Les cinq derniers suivent le siècle et demi du télégraphe, et le mode histoire s’en sert pour ouvrir chaque épisode dans l’habit de son époque.',
+          'Chaque habit est une palette complète : couleurs, ombres, angles et police. Cinq d’entre eux portent des années, et le mode histoire s’en sert pour ouvrir chaque épisode dans l’habit de son époque ; les autres sont des lieux sans date. Ceux qui déclarent une source de lumière l’allument dans la pièce : une fenêtre, une bougie, un phare, un orage.',
         ),
         ...createThemeOptions(store),
         field(
