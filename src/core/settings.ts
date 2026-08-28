@@ -15,6 +15,11 @@ export type KochOrderId = 'lcwo' | 'classic' | 'alphabetical';
  * effet sur les habits qui n'ont pas de source.
  */
 export type Ambience = 'aucune' | 'discrete' | 'marquee';
+/**
+ * Ce qui se passe entre deux pages. Le glissement dit le sens : on entre par
+ * la droite en descendant dans le site, par la gauche en remontant.
+ */
+export type PageMotion = 'aucun' | 'fondu' | 'glissement';
 
 export interface Settings {
   /** Vitesse des caractères, en mots par minute. */
@@ -48,6 +53,17 @@ export interface Settings {
 
   /** Diode témoin synchronisée sur le son. */
   visualSignal: boolean;
+  /**
+   * Le ruban : le signal dessiné pendant qu'il se joue, comme l'encreur de
+   * 1844. Il montre le rythme — ce qui aide à apprendre, et ce qu'on voudra
+   * retirer une fois qu'on n'en a plus besoin.
+   */
+  signalTrace: boolean;
+  /**
+   * Le souffle du récepteur derrière le ruban : une houle très basse qui
+   * vacille, sur laquelle le signal se détache. Purement visuel.
+   */
+  signalWaves: boolean;
   /** Retour haptique quand le matériel le permet. */
   haptics: boolean;
   /** Sons de confirmation et d'erreur de l'interface. */
@@ -78,6 +94,8 @@ export interface Settings {
   periodFont: boolean;
   /** Force de la lumière de la pièce. */
   ambience: Ambience;
+  /** La transition d'une page à l'autre. */
+  pageMotion: PageMotion;
   /**
    * Ouvrir chaque épisode du mode histoire dans l'habit de son époque, comme
    * il choisit déjà son grain sonore. L'emprunt est rendu en sortant.
@@ -119,6 +137,8 @@ export const DEFAULT_SETTINGS: Settings = {
   keyDah: 'ArrowRight',
 
   visualSignal: true,
+  signalTrace: true,
+  signalWaves: true,
   haptics: true,
   uiSounds: true,
   noiseEnabled: true,
@@ -129,6 +149,7 @@ export const DEFAULT_SETTINGS: Settings = {
   themeFollowsSystem: false,
   periodFont: true,
   ambience: 'discrete',
+  pageMotion: 'glissement',
   storyTheme: true,
   callsign: '',
   kochOrder: 'lcwo',
@@ -140,6 +161,7 @@ export const DEFAULT_SETTINGS: Settings = {
 const WAVEFORMS: Waveform[] = ['sine', 'square', 'triangle', 'sawtooth'];
 const ORDERS: KochOrderId[] = ['lcwo', 'classic', 'alphabetical'];
 const AMBIENCES: Ambience[] = ['aucune', 'discrete', 'marquee'];
+const PAGE_MOTIONS: PageMotion[] = ['aucun', 'fondu', 'glissement'];
 
 const clamp = (value: number, min: number, max: number): number =>
   Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : min;
@@ -196,6 +218,7 @@ export function normalizeSettings(input: Partial<Settings> | null | undefined): 
     // suivi du système plutôt que de laisser la racine sans palette.
     theme: raw.theme === 'auto' || isKnownTheme(raw.theme) ? raw.theme : 'auto',
     ambience: AMBIENCES.includes(raw.ambience) ? raw.ambience : 'discrete',
+    pageMotion: PAGE_MOTIONS.includes(raw.pageMotion) ? raw.pageMotion : 'glissement',
     kochOrder: ORDERS.includes(raw.kochOrder) ? raw.kochOrder : 'lcwo',
     kochThreshold: clamp(raw.kochThreshold, 0.6, 1),
     sessionLength: Math.round(clamp(raw.sessionLength, 5, 100)),

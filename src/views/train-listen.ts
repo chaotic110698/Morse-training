@@ -10,8 +10,10 @@
 
 import { h, formatNumber, setChildren } from '../ui/dom.ts';
 import { SignalLamp } from '../ui/lamp.ts';
+import { createSignalTrace } from '../ui/trace.ts';
 import { MorsePlayer } from '../ui/player.ts';
 import { SessionTracker } from '../ui/session.ts';
+import { monte } from '../ui/compteur.ts';
 import { isSpaceKey, isTypingTarget } from '../ui/keys.ts';
 import { prettyCode, encodeChar } from '../core/morse.ts';
 import {
@@ -42,6 +44,7 @@ export function listenView(context: ViewContext): View {
   const { store } = context;
   const lamp = new SignalLamp('Signal');
   const player = new MorsePlayer(store, lamp);
+  const ruban = createSignalTrace(store, player);
 
   let phase: Phase = 'idle';
   let queue: string[] = [];
@@ -376,6 +379,33 @@ export function listenView(context: ViewContext): View {
     renderSummary();
   };
 
+  /**
+   * Le palier franchi.
+   *
+   * C'est le seul moment du site où l'on a le droit d'être un peu
+   * démonstratif : il arrive une fois par heure de travail, et jamais deux
+   * fois de suite. La carte porte `role="status"` — elle remplace le message
+   * fugitif qui annonçait le caractère, et le dit mieux, puisqu'elle reste
+   * jusqu'à la série suivante. Le signe se joue par-dessus : la première chose
+   * à savoir d'un caractère, c'est son bruit.
+   */
+  const franchirPalier = (char: string): void => {
+    setChildren(summary, [
+      h(
+        'div',
+        { class: 'palier', attrs: { role: 'status' } },
+        h('span', { class: 'palier__titre', text: 'Nouveau caractère débloqué' }),
+        h('span', { class: 'palier__lettre', text: char }),
+        h('span', { class: 'palier__code', text: prettyCode(encodeChar(char) ?? '') }),
+        h('p', {
+          class: 'palier__suite',
+          text: 'Il entre dans le tirage dès la prochaine série.',
+        }),
+      ),
+    ]);
+    void player.play(char);
+  };
+
   const renderSummary = (): void => {
     const accuracy = tracker.accuracy;
     if (accuracy === null) {
@@ -393,23 +423,29 @@ export function listenView(context: ViewContext): View {
     }
     const missList = [...misses.entries()].sort((a, b) => b[1] - a[1]);
 
+    // Les trois mesures montent depuis zéro : un bilan se découvre, il ne
+    // s'affiche pas. Les nœuds sont gardés pour lancer la montée une fois
+    // qu'ils sont dans le document.
+    const valPrecision = h('span', { class: 'metric__value', text: formatPercent(0) });
+    const valJustes = h('span', { class: 'metric__value', text: `0/${tracker.count}` });
+    const moyenne = tracker.averageResponseMs;
+    const valTemps = h('span', {
+      class: 'metric__value',
+      text: moyenne === null ? '—' : '0,0 s',
+    });
+
     setChildren(summary, [
       h(
         'div',
         { class: 'summary__scores' },
         h('div', { class: 'metric' },
-          h('span', { class: 'metric__value', text: formatPercent(accuracy) }),
+          valPrecision,
           h('span', { class: 'metric__label', text: 'Précision' })),
         h('div', { class: 'metric' },
-          h('span', { class: 'metric__value', text: `${tracker.correct}/${tracker.count}` }),
+          valJustes,
           h('span', { class: 'metric__label', text: 'Réponses justes' })),
         h('div', { class: 'metric' },
-          h('span', {
-            class: 'metric__value',
-            text: tracker.averageResponseMs === null
-              ? '—'
-              : `${(tracker.averageResponseMs / 1000).toFixed(1)} s`,
-          }),
+          valTemps,
           h('span', { class: 'metric__label', text: 'Temps de réaction' })),
       ),
       missList.length > 0
@@ -439,10 +475,9 @@ export function listenView(context: ViewContext): View {
                   store.mutateProgress((progress) => {
                     progress.kochLevel = Math.min(maxLevel, progress.kochLevel + 1);
                   });
-                  context.toast(`Nouveau caractère : ${nextChar}`, 'success');
                   renderHeader();
                   renderGrid();
-                  summary.replaceChildren();
+                  franchirPalier(nextChar);
                 },
               },
             }),
@@ -453,6 +488,14 @@ export function listenView(context: ViewContext): View {
               'Refaites une série : la régularité compte plus que la performance ponctuelle.')
           : null,
     ]);
+
+    monte(valPrecision, accuracy, { format: (value) => formatPercent(value) });
+    monte(valJustes, tracker.correct, {
+      format: (value) => `${Math.round(value)}/${tracker.count}`,
+    });
+    if (moyenne !== null) {
+      monte(valTemps, moyenne / 1000, { format: (value) => `${value.toFixed(1)} s` });
+    }
   };
 
   // --- Clavier physique ---
@@ -497,6 +540,7 @@ export function listenView(context: ViewContext): View {
     ),
     h('div', { class: 'progress' }, progressBar, progressLabel),
     h('div', { class: 'trainer__stage' }, display, lamp.element),
+    ruban.trace.element,
     grid,
     actions,
     optionHint,
@@ -525,6 +569,7 @@ export function listenView(context: ViewContext): View {
       window.clearTimeout(advanceTimer);
       window.removeEventListener('keydown', onKeyDown);
       unsubscribe();
+      ruban.destroy();
       player.stop();
       store.audio.stopNoise();
       tracker.commit(level());

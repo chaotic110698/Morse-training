@@ -66,6 +66,14 @@ export class Router {
    * par-dessus celle d'une navigation plus récente.
    */
   private generation = 0;
+  /**
+   * Le rang de la page dans la table des routes — c'est-à-dire l'ordre du
+   * menu, le seul ordre que le site déclare. Il donne son sens au glissement :
+   * on descend dans le site, ou on en remonte.
+   */
+  private rang = -1;
+  private sens = 1;
+  private readonly moinsDeMouvement = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   constructor(options: {
     routes: RouteDefinition[];
@@ -101,6 +109,10 @@ export class Router {
 
     const token = (this.generation += 1);
 
+    const rang = this.routes.indexOf(route);
+    this.sens = this.rang < 0 || rang >= this.rang ? 1 : -1;
+    this.rang = rang;
+
     // Le titre et le menu suivent immédiatement : ils se lisent dans la table
     // des routes, qui n'a rien à charger. Seul le contenu attend son module.
     this.currentPath = route.path;
@@ -130,9 +142,38 @@ export class Router {
    * imperceptible.
    */
   private mount(view: View): void {
+    const sortante = this.outlet.firstElementChild;
     this.current?.destroy?.();
     this.current = view;
-    this.outlet.replaceChildren(view.element);
+
+    const mode = this.context.store.settings.pageMotion;
+    const anime =
+      mode !== 'aucun' && sortante instanceof HTMLElement && !this.moinsDeMouvement.matches;
+
+    if (!anime) {
+      this.outlet.replaceChildren(view.element);
+    } else {
+      // Une transition précédente peut ne pas s'être achevée — un aller-retour
+      // rapide dans l'historique suffit. On ne laisse jamais deux sortantes.
+      for (const reste of this.outlet.querySelectorAll('.outlet__sortante')) reste.remove();
+
+      this.outlet.dataset['transition'] = mode;
+      this.outlet.style.setProperty('--sens', String(this.sens));
+      sortante.classList.add('outlet__sortante');
+      view.element.classList.add('outlet__entrante');
+      this.outlet.append(view.element);
+
+      const retirer = (): void => {
+        sortante.remove();
+        view.element.classList.remove('outlet__entrante');
+      };
+      sortante.addEventListener('animationend', retirer, { once: true });
+      // Filet : une animation peut ne jamais se terminer si l'onglet passe en
+      // arrière-plan pendant la transition, et la sortante resterait alors
+      // posée par-dessus la page en position absolue.
+      window.setTimeout(retirer, 500);
+    }
+
     // Le focus part en tête de page pour que la navigation au clavier et les
     // lecteurs d'écran suivent le changement de contenu.
     this.outlet.scrollTo({ top: 0 });

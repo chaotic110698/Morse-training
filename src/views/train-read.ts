@@ -16,6 +16,7 @@ import { kochCharset, kochMaxLevel } from '../core/koch.ts';
 import { formatPercent } from '../core/progress.ts';
 import { MorsePlayer } from '../ui/player.ts';
 import { SignalLamp } from '../ui/lamp.ts';
+import { createSignalTrace } from '../ui/trace.ts';
 import type { View, ViewContext } from '../ui/router.ts';
 
 type Direction = 'code-to-char' | 'char-to-code';
@@ -24,6 +25,7 @@ export function readView(context: ViewContext): View {
   const { store } = context;
   const lamp = new SignalLamp('Signal');
   const player = new MorsePlayer(store, lamp);
+  const ruban = createSignalTrace(store, player);
 
   let direction: Direction = 'code-to-char';
   let useFullSet = false;
@@ -243,6 +245,7 @@ export function readView(context: ViewContext): View {
     h('div', { class: 'toolbar' }, directionToggle, fullSetToggle),
     h('div', { class: 'progress' }, progressBar, progressLabel),
     h('div', { class: 'trainer__stage' }, display, lamp.element),
+    ruban.trace.element,
     grid,
     summary,
     h(
@@ -266,6 +269,7 @@ export function readView(context: ViewContext): View {
       window.clearTimeout(advanceTimer);
       window.removeEventListener('keydown', onKeyDown);
       unsubscribe();
+      ruban.destroy();
       player.stop();
       tracker.commit(null);
     },

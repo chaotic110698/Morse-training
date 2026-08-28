@@ -505,6 +505,47 @@
   font-weight: 700;
 }
 
+/* --- Le ruban du signal ---
+ *
+ * Le papier de l'encreur : le signal s'y inscrit pendant qu'il se joue. La
+ * toile occupe toute la largeur ; sa hauteur est fixée par le composant, qui
+ * a besoin de la connaître pour dessiner.
+ */
+
+.ruban {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.ruban__toile {
+  display: block;
+  width: 100%;
+}
+
+.ruban__vide {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 0 var(--space-4);
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-faint);
+  /* Sans fond : la houle du récepteur passe derrière le message, et c'est
+     elle qui dit que le ruban est en veille plutôt qu'éteint. */
+  pointer-events: none;
+}
+
+/* `display` sur une classe l'emporte sur l'attribut `hidden` : la garde est
+   obligatoire, et c'est la cinquième fois que ce piège se présente. */
+.ruban__vide[hidden] {
+  display: none;
+}
+
 /* --- Grille de réponse --- */
 
 .answer-grid {
@@ -759,6 +800,34 @@
   border-color: var(--border);
   color: var(--text-muted);
   font-size: 0.92rem;
+}
+
+/*
+ * Le palier franchi : ce que `.levelup` devient quand on a cliqué. Le
+ * mouvement qui l'accompagne est dans `motion.css` ; ici, seulement la carte.
+ */
+.palier {
+  padding: var(--space-5) var(--space-4);
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: var(--radius);
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  text-align: center;
+}
+
+.palier__titre {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.palier__suite {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  max-width: 34rem;
 }
 
 .metrics {

@@ -1,0 +1,349 @@
+/*
+ * Le mouvement : ce qui répond sous le doigt.
+ *
+ * Le site savait déjà se faire entendre — un son et une vibration à chaque
+ * réponse — mais il ne se voyait presque pas bouger. Ce fichier ne change
+ * aucune couleur et n'ajoute aucun élément : il donne du mouvement à des
+ * états qui existaient déjà (`.is-active`, `.is-ok`, `.display--error`) et
+ * dessine l'onde d'un appui.
+ *
+ * Trois principes tiennent tout le fichier :
+ *
+ *  - **Une touche s'enfonce sec et remonte par son ressort.** La descente est
+ *    quasi instantanée, la remontée amortie. L'inverse se sent mou.
+ *  - **Rien ne dure plus de trois cents millisecondes**, sauf le palier, qui
+ *    n'arrive qu'une fois par heure de travail.
+ *  - **Ce qui bouge ne déplace rien d'autre.** Uniquement `transform` et
+ *    `opacity` : aucune de ces animations ne provoque de recalcul de mise en
+ *    page, et toutes se composent sur le processeur graphique.
+ *
+ * Le bloc de fin annule l'ensemble quand le système demande moins de
+ * mouvement. Il doit rester le dernier : il désarme par sélecteur identique,
+ * pas par `!important`.
+ */
+
+/* --- L'onde d'un appui -----------------------------------------------------
+ *
+ * Un cercle qui s'ouvre depuis le point exact où l'on a touché. Sur téléphone
+ * le doigt cache la touche mais pas le cercle qui s'en échappe : c'est la
+ * seule confirmation visible d'un appui tactile.
+ *
+ * L'élément est créé et recyclé par `src/ui/ripple.ts`, un seul par touche.
+ */
+
+.keypad__key,
+.manip__touche,
+.answer-grid__key,
+.btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.onde {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  opacity: 0;
+  pointer-events: none;
+  /* Au-dessus du fond de la touche, sous son étiquette : l'onde passe
+     derrière le texte, comme une lumière et non comme un objet. */
+  z-index: 0;
+}
+
+.onde.is-running {
+  animation: onde 420ms cubic-bezier(0.15, 0.6, 0.3, 1);
+}
+
+@keyframes onde {
+  from { opacity: 0.55; transform: scale(1); }
+  to { opacity: 0; transform: scale(var(--onde-portee, 9)); }
+}
+
+/* --- Le manipulateur -------------------------------------------------------
+ *
+ * Trois pixels de course au lieu de deux, l'ombre qui bascule à l'intérieur,
+ * et surtout les deux durées : quarante millisecondes pour descendre, cent
+ * quatre-vingts pour remonter.
+ */
+
+.keypad__key {
+  box-shadow: 0 2px 0 var(--border), 0 3px 8px rgb(0 0 0 / 0.18);
+  transition:
+    background 60ms linear,
+    border-color 60ms linear,
+    transform 180ms cubic-bezier(0.2, 1.15, 0.4, 1),
+    box-shadow 180ms ease;
+}
+
+.keypad__key.is-active,
+.keypad__key.is-emitting {
+  transform: translateY(3px);
+  box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.28), 0 0 0 1px var(--accent-soft);
+  transition-duration: 60ms, 60ms, 40ms, 40ms;
+}
+
+.manip__touche {
+  transition:
+    background var(--transition),
+    border-color var(--transition),
+    transform 160ms cubic-bezier(0.2, 1.15, 0.4, 1);
+}
+
+.manip__touche:active,
+.manip__touche.is-down {
+  transform: translateY(2px);
+  transition-duration: var(--transition), var(--transition), 40ms;
+}
+
+/* --- La diode --------------------------------------------------------------
+ *
+ * Elle s'allume plus vite qu'elle ne s'éteint : c'est ce décalage qui la fait
+ * lire comme une lampe et non comme une pastille de couleur.
+ */
+
+.lamp__bulb {
+  transition: background 40ms linear, box-shadow 120ms ease-out, transform 120ms ease-out;
+}
+
+.lamp__bulb.is-lit {
+  transform: scale(1.06);
+  transition-duration: 40ms, 50ms, 50ms;
+}
+
+/* --- Le juste et le faux ---------------------------------------------------
+ *
+ * Le son et la vibration disent déjà la réponse ; l'écran doit la dire au
+ * même instant. Les deux animations portent sur des éléments que la vue
+ * reconstruit à chaque réponse, si bien qu'elles rejouent d'elles-mêmes sans
+ * qu'on ait à retirer puis remettre une classe.
+ */
+
+.display--ok .display__char {
+  animation: reponse-juste 320ms cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+@keyframes reponse-juste {
+  0% { transform: translateY(0) scale(1); }
+  38% { transform: translateY(-5px) scale(1.04); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/*
+ * Trois oscillations de quatre pixels en deux cent vingt millisecondes :
+ * assez pour dire non, trop court pour faire la leçon.
+ */
+.display--error .display__char {
+  animation: reponse-fausse 220ms ease-in-out;
+}
+
+@keyframes reponse-fausse {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  45% { transform: translateX(4px); }
+  70% { transform: translateX(-2px); }
+}
+
+/* La touche de la grille reçoit le même verdict, en plus discret : c'est là
+   que le doigt se trouve, et deux animations de même ampleur au même instant
+   se gênent. */
+.answer-grid__key.is-ok {
+  animation: touche-juste 300ms cubic-bezier(0.2, 1.3, 0.4, 1);
+}
+
+@keyframes touche-juste {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.07); }
+  100% { transform: scale(1); }
+}
+
+.answer-grid__key.is-error {
+  animation: touche-fausse 200ms ease-in-out;
+}
+
+@keyframes touche-fausse {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  60% { transform: translateX(3px); }
+}
+
+/* --- Ce qui monte ----------------------------------------------------------
+ *
+ * Un chiffre qui saute de 40 à 45 n'est pas lu : il est déjà remplacé quand
+ * l'œil arrive. Les nombres sont comptés en JavaScript (`src/ui/compteur.ts`) ;
+ * les barres, elles, n'ont besoin que d'une transition.
+ */
+
+.progress__fill {
+  transition: width 620ms cubic-bezier(0.3, 0.8, 0.3, 1);
+}
+
+.metric__value,
+.stat__value {
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Le palier franchi -----------------------------------------------------
+ *
+ * Le seul endroit où l'on a le droit d'être un peu démonstratif : il arrive
+ * une fois par heure de travail, et jamais deux fois de suite. Sept cents
+ * millisecondes en tout, après quoi tout redevient calme.
+ */
+
+/* La carte elle-même est dans `components.css` ; le confinement du balayage,
+   lui, n'existe que pour l'animation. */
+.palier {
+  position: relative;
+  overflow: hidden;
+}
+
+.palier__lettre {
+  font-family: var(--font-mono);
+  font-size: clamp(2.6rem, 2rem + 5vw, 3.6rem);
+  line-height: 1;
+  color: var(--accent);
+  animation: palier-lettre 520ms cubic-bezier(0.15, 1.2, 0.35, 1) 120ms backwards;
+}
+
+.palier__code {
+  font-family: var(--font-mono);
+  letter-spacing: 0.24em;
+  color: var(--text-muted);
+}
+
+@keyframes palier-lettre {
+  from { opacity: 0; transform: translateY(16px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Le trait de lumière qui traverse la carte. Il part d'un pseudo-élément :
+   rien à créer, rien à retirer. */
+.palier::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 38%,
+    var(--accent-soft) 47%,
+    rgb(255 255 255 / 0.10) 50%,
+    var(--accent-soft) 53%,
+    transparent 62%
+  );
+  opacity: 0;
+  animation: palier-balayage 720ms ease-out;
+}
+
+@keyframes palier-balayage {
+  0% { opacity: 0; transform: translateX(-60%); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(60%); }
+}
+
+/* --- D'une page à l'autre --------------------------------------------------
+ *
+ * Le routeur pose `data-transition` sur la zone de contenu et les classes
+ * ci-dessous sur les deux pages. La sortante est retirée du flux : sans cela
+ * la hauteur de la page doublerait le temps de la transition.
+ *
+ * Le sens est une donnée, pas une décoration : `--sens` vaut 1 quand on
+ * descend dans le site et -1 quand on remonte.
+ */
+
+.outlet {
+  position: relative;
+}
+
+.outlet__sortante {
+  position: absolute;
+  inset: 0 0 auto 0;
+  pointer-events: none;
+}
+
+.outlet[data-transition='fondu'] > .outlet__sortante {
+  animation: page-fondu-sortie 110ms ease-in forwards;
+}
+
+.outlet[data-transition='fondu'] > .outlet__entrante {
+  animation: page-fondu-entree 190ms ease-out 50ms backwards;
+}
+
+@keyframes page-fondu-sortie { to { opacity: 0; } }
+@keyframes page-fondu-entree { from { opacity: 0; } }
+
+.outlet[data-transition='glissement'] > .outlet__sortante {
+  animation: page-glisse-sortie 180ms cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.outlet[data-transition='glissement'] > .outlet__entrante {
+  animation: page-glisse-entree 280ms cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+@keyframes page-glisse-sortie {
+  to { opacity: 0; transform: translateX(calc(var(--sens, 1) * -6%)); }
+}
+
+@keyframes page-glisse-entree {
+  from { opacity: 0; transform: translateX(calc(var(--sens, 1) * 14%)); }
+}
+
+/* Le trait du menu suit le lien actif au lieu de sauter d'un point à l'autre. */
+.nav__link {
+  transition:
+    background var(--transition),
+    color var(--transition),
+    border-color var(--transition);
+}
+
+/* --- Quand on demande moins de mouvement -----------------------------------
+ *
+ * On garde tous les états — la couleur, la bordure, le verdict — et on retire
+ * le déplacement. Chaque règle égale la spécificité de celle qu'elle annule ;
+ * c'est la seule façon d'être sûr que l'arrêt prend, et le fichier
+ * `ambiance.css` porte la trace de deux fois où l'on s'en est passé.
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  .onde.is-running,
+  .display--ok .display__char,
+  .display--error .display__char,
+  .answer-grid__key.is-ok,
+  .answer-grid__key.is-error,
+  .palier__lettre,
+  .palier::after,
+  .outlet[data-transition='fondu'] > .outlet__sortante,
+  .outlet[data-transition='fondu'] > .outlet__entrante,
+  .outlet[data-transition='glissement'] > .outlet__sortante,
+  .outlet[data-transition='glissement'] > .outlet__entrante {
+    animation: none;
+  }
+
+  .keypad__key,
+  .keypad__key.is-active,
+  .keypad__key.is-emitting,
+  .manip__touche,
+  .manip__touche:active,
+  .manip__touche.is-down,
+  .lamp__bulb,
+  .lamp__bulb.is-lit,
+  .progress__fill {
+    transition-duration: 60ms;
+  }
+
+  .keypad__key.is-active,
+  .keypad__key.is-emitting,
+  .manip__touche:active,
+  .manip__touche.is-down {
+    transform: translateY(1px);
+  }
+
+  .lamp__bulb.is-lit { transform: none; }
+
+  /* Une page sortante qui ne s'anime plus n'a plus de fin d'animation pour la
+     retirer : le routeur la retire au bout de son minuteur, mais elle ne doit
+     pas rester visible en attendant. */
+  .outlet__sortante { opacity: 0; }
+}

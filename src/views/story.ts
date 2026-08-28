@@ -13,6 +13,7 @@ import { h, setChildren } from '../ui/dom.ts';
 import { createSender, type Sender, type SenderMode } from '../ui/sender.ts';
 import { createMorseTable } from '../ui/morse-table.ts';
 import { MorsePlayer } from '../ui/player.ts';
+import { createSignalTrace } from '../ui/trace.ts';
 import { buildSequence, elementsForCode, resolveTiming } from '../core/timing.ts';
 import { compactCode, encodeChar } from '../core/morse.ts';
 import { recordEpisode, type StoryMode } from '../core/progress.ts';
@@ -69,6 +70,9 @@ export function storyView(context: ViewContext): View {
   const { store } = context;
   const root = h('div', { class: 'stack' });
   const player = new MorsePlayer(store);
+  // Un seul ruban pour tout l'épisode : il se déplace d'un bloc de réception
+  // au suivant, et n'est pas posé du tout au niveau opérateur.
+  const ruban = createSignalTrace(store, player, 'Signal reçu');
   let table = createMorseTable();
   let board: Sender | null = null;
   /**
@@ -715,6 +719,7 @@ export function storyView(context: ViewContext): View {
           h('span', { class: 'recit-source__quoi', text: 'À déchiffrer' }),
           beat.from ? h('span', { class: 'recit-source__qui', text: beat.from }) : null),
         tape,
+        rules.trace ? ruban.trace.element : null,
         controls,
         rules.table ? table.element : null,
         h('label', { class: 'recit-notes__label', text: 'Vos notes' }),
@@ -920,6 +925,7 @@ export function storyView(context: ViewContext): View {
       player.stop();
       stopNoise();
       board?.destroy();
+      ruban.destroy();
       borrowTheme(null);
     },
   };

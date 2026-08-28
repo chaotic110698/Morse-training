@@ -115,6 +115,11 @@ export interface StoryRules {
   repeats: number;
   /** Peut-on réécouter une fois la copie comparée ? */
   listenAfterCheck: boolean;
+  /**
+   * Le ruban du signal. Il montre le rythme, ce qu'aucun opérateur n'avait
+   * sous les yeux : c'est une aide moderne, et elle tombe avec les autres.
+   */
+  trace: boolean;
 }
 
 /** Le nombre de répétitions accordées en conditions d'opérateur. */
@@ -130,6 +135,7 @@ export function rulesFor(mode: StoryMode, year: number): StoryRules {
       qrs: true,
       repeats: Number.POSITIVE_INFINITY,
       listenAfterCheck: true,
+      trace: true,
     };
   }
   return {
@@ -142,6 +148,7 @@ export function rulesFor(mode: StoryMode, year: number): StoryRules {
     // Une fois le corrigé sous les yeux, réécouter n'apprend plus rien : on
     // ne copie plus, on recopie.
     listenAfterCheck: false,
+    trace: false,
   };
 }
 

@@ -418,6 +418,40 @@ export function settingsView(context: ViewContext): View {
           'La diode reste allumée exactement le temps du signal : une lueur brève pour un point, trois fois plus longue pour un trait. Aucun clignotement plein écran, qui serait épuisant et risque pour les personnes photosensibles.',
         ),
         field(
+          'Ruban du signal',
+          h(
+            'label',
+            { class: 'switch' },
+            h('input', {
+              type: 'checkbox',
+              attrs: { checked: s.signalTrace },
+              on: {
+                change: (event) =>
+                  store.updateSettings({ signalTrace: (event.target as HTMLInputElement).checked }),
+              },
+            }),
+            h('span', { text: 'Dessiner le signal pendant qu’il se joue' }),
+          ),
+          'Le papier avance sous un repère fixe et le signal s’y inscrit, comme sur l’encreur de 1844 ; la lettre apparaît sous son groupe une fois le silence long passé. Il montre le rythme, ce qui aide beaucoup au début — et gêne ensuite, quand il s’agit justement de l’entendre sans le voir.',
+        ),
+        field(
+          'Souffle du récepteur',
+          h(
+            'label',
+            { class: 'switch' },
+            h('input', {
+              type: 'checkbox',
+              attrs: { checked: s.signalWaves, disabled: !s.signalTrace },
+              on: {
+                change: (event) =>
+                  store.updateSettings({ signalWaves: (event.target as HTMLInputElement).checked }),
+              },
+            }),
+            h('span', { text: 'Une houle très basse derrière le ruban' }),
+          ),
+          'Le bruit de fond de la réception, dessiné : une ondulation de deux ou trois pixels sur laquelle le signal se détache. Purement visuelle — elle ne s’entend pas, et n’a rien à voir avec le bruit de bande réglé plus haut. Elle s’arrête d’elle-même si votre système demande moins d’animation.',
+        ),
+        field(
           'Retour haptique',
           h(
             'label',
@@ -554,6 +588,31 @@ export function settingsView(context: ViewContext): View {
           'Chaque habit est une palette complète : couleurs, ombres, angles et police. Les cinq derniers suivent le siècle et demi du télégraphe, et le mode histoire s’en sert pour ouvrir chaque épisode dans l’habit de son époque.',
         ),
         ...createThemeOptions(store),
+        field(
+          'D’une page à l’autre',
+          h(
+            'select',
+            {
+              class: 'select',
+              on: {
+                change: (event) =>
+                  store.updateSettings({
+                    pageMotion: (event.target as HTMLSelectElement).value as typeof s.pageMotion,
+                  }),
+              },
+            },
+            ...(
+              [
+                ['glissement', 'Glissement — la page entre par le côté, dans le sens du parcours'],
+                ['fondu', 'Fondu — un enchaînement court, presque invisible'],
+                ['aucun', 'Aucune — la page est remplacée d’un seul coup'],
+              ] as const
+            ).map(([value, label]) =>
+              h('option', { value, text: label, attrs: { selected: s.pageMotion === value } }),
+            ),
+          ),
+          'Le glissement dit le sens : on entre par la droite en descendant dans le site, par la gauche en remontant. Les trois restent sous les trois cents millisecondes — au-delà, une transition qu’on traverse cent fois par séance devient une attente. Si votre système demande moins d’animation, aucune n’est jouée.',
+        ),
       ),
 
       // --- Données ---

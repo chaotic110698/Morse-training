@@ -11,6 +11,7 @@ import { buildSequence, sequenceDuration, type TimedElement } from '../core/timi
 import type { AppStore } from '../core/store.ts';
 import type { ToneVoice } from '../core/audio.ts';
 import type { SignalLamp } from './lamp.ts';
+import type { SignalTrace } from './trace.ts';
 
 export interface PlayOptions {
   /** Surligne le caractère en cours de lecture. */
@@ -32,6 +33,12 @@ export interface PlayOptions {
 export class MorsePlayer {
   private readonly store: AppStore;
   private lamp: SignalLamp | null;
+  /**
+   * Le ruban, seconde sortie visuelle. Il est nourri exactement comme la
+   * diode, aux mêmes instants : les deux ne peuvent donc pas se contredire,
+   * et une vue qui n'en veut pas n'a rien à faire.
+   */
+  private trace: SignalTrace | null = null;
   private stopped = false;
   private frameId = 0;
 
@@ -42,6 +49,10 @@ export class MorsePlayer {
 
   setLamp(lamp: SignalLamp | null): void {
     this.lamp = lamp;
+  }
+
+  setTrace(trace: SignalTrace | null): void {
+    this.trace = trace;
   }
 
   get playing(): boolean {
@@ -114,11 +125,13 @@ export class MorsePlayer {
 
     let lastCharIndex = -1;
     let lastSignalElement: TimedElement | null = null;
+    this.trace?.begin();
     const handle = this.store.audio.play(
       elements,
       {
       onToneStart: (element) => {
         this.lamp?.on(element.kind ?? null);
+        this.trace?.mark(true, element);
         lastSignalElement = element;
         options.onSignal?.(true, element);
         if (element.charIndex !== undefined && element.charIndex !== lastCharIndex) {
@@ -128,6 +141,7 @@ export class MorsePlayer {
       },
       onToneEnd: (element) => {
         this.lamp?.off();
+        this.trace?.mark(false, element);
         options.onSignal?.(false, element);
       },
       },
@@ -141,6 +155,7 @@ export class MorsePlayer {
     options.onStart?.(sequenceDuration(elements));
     const completed = await handle.finished;
     this.lamp?.off();
+    this.trace?.end();
     // Filet de sécurité : une lecture interrompue en plein signal doit laisser
     // toutes les sorties éteintes, pas seulement la diode.
     if (lastSignalElement) options.onSignal?.(false, lastSignalElement);
@@ -175,12 +190,14 @@ export class MorsePlayer {
     let lastElement: TimedElement | null = null;
 
     this.store.haptics.playSequence(elements);
+    this.trace?.begin();
     options.onStart?.(cursor);
 
     return new Promise<boolean>((resolve) => {
       const finish = (completed: boolean): void => {
         this.frameId = 0;
         this.lamp?.off();
+        this.trace?.end();
         if (lastElement) options.onSignal?.(false, lastElement);
         if (!completed) this.store.haptics.cancel();
         options.onEnd?.(completed);
@@ -200,6 +217,7 @@ export class MorsePlayer {
           if (element) {
             if (transition.start) {
               this.lamp?.on(element.kind ?? null);
+              this.trace?.mark(true, element);
               lastElement = element;
               options.onSignal?.(true, element);
               if (element.charIndex !== undefined && element.charIndex !== lastCharIndex) {
@@ -208,6 +226,7 @@ export class MorsePlayer {
               }
             } else {
               this.lamp?.off();
+              this.trace?.mark(false, element);
               lastElement = null;
               options.onSignal?.(false, element);
             }
@@ -231,5 +250,6 @@ export class MorsePlayer {
     this.store.audio.stop();
     this.store.haptics.cancel();
     this.lamp?.off();
+    this.trace?.end();
   }
 }

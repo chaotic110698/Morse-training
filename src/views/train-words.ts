@@ -9,6 +9,7 @@
 
 import { h, setChildren } from '../ui/dom.ts';
 import { SignalLamp } from '../ui/lamp.ts';
+import { createSignalTrace } from '../ui/trace.ts';
 import { MorsePlayer } from '../ui/player.ts';
 import { SessionTracker } from '../ui/session.ts';
 import { drawVocabulary, VOCABULARY_SETS, type VocabularyEntry } from '../data/vocabulary.ts';
@@ -20,6 +21,7 @@ export function wordsView(context: ViewContext): View {
   const { store } = context;
   const lamp = new SignalLamp('Signal');
   const player = new MorsePlayer(store, lamp);
+  const ruban = createSignalTrace(store, player);
 
   let setId = 'abbreviations';
   let entry: VocabularyEntry | null = null;
@@ -243,6 +245,7 @@ export function wordsView(context: ViewContext): View {
     setHint,
     h('div', { class: 'progress' }, progressBar, progressLabel),
     h('div', { class: 'trainer__stage' }, display, lamp.element),
+    ruban.trace.element,
     input,
     h('div', { class: 'actions' }, playButton, validateButton, revealButton),
     summary,
@@ -266,6 +269,7 @@ export function wordsView(context: ViewContext): View {
   return {
     element,
     destroy: () => {
+      ruban.destroy();
       player.stop();
       store.audio.stopNoise();
       tracker.commit(null);

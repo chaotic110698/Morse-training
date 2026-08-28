@@ -5,6 +5,7 @@ import './styles/index.css';
 import { AppStore } from './core/store.ts';
 import { createShell } from './ui/shell.ts';
 import { Router } from './ui/router.ts';
+import { attachRipples } from './ui/ripple.ts';
 import { ROUTES } from './views/routes.ts';
 
 const root = document.getElementById('app');
@@ -20,6 +21,9 @@ const router = new Router({
   onChange: shell.setActiveRoute,
 });
 router.start();
+
+// L'onde d'un appui, pour tout le site d'un seul écouteur.
+attachRipples(root);
 
 // Le premier geste de l'utilisateur, quel qu'il soit, sert à déverrouiller le
 // contexte audio : les navigateurs mobiles refusent de le démarrer autrement,
