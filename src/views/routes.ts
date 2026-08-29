@@ -374,6 +374,15 @@ export const ROUTES: RouteDefinition[] = [
     load: () => import('./train-copie.ts').then((m) => m.copieView),
   },
   {
+    path: '/entrainement/qso',
+    label: 'Simuler un contact',
+    title: 'Simulateur de contact',
+    description: 'Un QSO complet : copier ce qu’il envoie, composer ce qu’on lui répond.',
+    icon: '🤝',
+    group: 'entrainement',
+    load: () => import('./train-qso.ts').then((m) => m.qsoView),
+  },
+  {
     path: '/entrainement/lecture',
     label: 'Lecture visuelle',
     title: 'Lecture visuelle',

@@ -1,6 +1,6 @@
 /** Statistiques et progression, conservées localement dans le navigateur. */
 
-export type TrainingMode = 'listen' | 'send' | 'words' | 'read' | 'copie';
+export type TrainingMode = 'listen' | 'send' | 'words' | 'read' | 'copie' | 'qso';
 
 export const MODE_LABELS: Record<TrainingMode, string> = {
   listen: 'Écoute',
@@ -8,6 +8,7 @@ export const MODE_LABELS: Record<TrainingMode, string> = {
   words: 'Mots et indicatifs',
   read: 'Lecture visuelle',
   copie: 'Copie suivie',
+  qso: 'Contact',
 };
 
 export interface CharStat {

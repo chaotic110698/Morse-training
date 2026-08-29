@@ -33,11 +33,24 @@ export interface AudioSettings {
   rampMs: number;
   /** Forme d'onde de la tonalité. */
   waveform: OscillatorType;
+  /**
+   * Profondeur de l'évanouissement, de 0 à 1. Zéro laisse l'étage
+   * parfaitement transparent : aucun nœud ne s'interpose de plus.
+   */
+  qsbDepth: number;
 }
+
+/**
+ * Les trois périodes de l'évanouissement, en secondes. Sept, onze et
+ * dix-sept : trois nombres premiers, donc sans commune mesure — la somme des
+ * trois sinusoïdes met plus de vingt minutes à repasser par la même valeur.
+ */
+const QSB_PERIODES = [7, 11, 17];
 
 export const DEFAULT_AUDIO_SETTINGS: AudioSettings = {
   noiseEnabled: true,
   noiseSnrDb: 20,
+  qsbDepth: 0,
   frequency: 650,
   volume: 0.35,
   rampMs: 5,
@@ -99,6 +112,22 @@ export class AudioEngine {
   private voice: ToneVoice = 'pur';
   private activeHandle: PlaybackHandle | null = null;
   private noiseGain: GainNode | null = null;
+
+  /**
+   * L'évanouissement.
+   *
+   * Un étage de gain sur la seule voix reçue, piloté par trois oscillateurs
+   * très lents dont les périodes n'ont pas de commune mesure : leur somme ne
+   * repasse jamais par la même valeur, si bien qu'aucun motif ne se reconnaît.
+   * Les périodes sont en outre tirées légèrement au hasard à la construction,
+   * de sorte que deux séances ne s'évanouissent pas au même rythme.
+   *
+   * Tout se passe dans le fil audio : aucun minuteur JavaScript, aucune
+   * dérive, et le coût est celui de trois sinusoïdes à un dixième de hertz.
+   */
+  private qsbGain: GainNode | null = null;
+
+  private qsbDepths: GainNode[] = [];
   private noiseSource: AudioBufferSourceNode | null = null;
   private noiseBuffer: AudioBuffer | null = null;
   /** Fréquence pour laquelle le tampon a été filtré, pour ne le refaire qu'utile. */
@@ -158,11 +187,30 @@ export class AudioEngine {
     if (this.playbackOsc) this.playbackOsc.type = this.waveformFor(this.voice);
     if (this.sidetoneOsc) this.sidetoneOsc.type = this.waveformFor(this.sidetoneVoice);
     this.applyNoiseLevel();
+    this.applyQsb();
     // Le filtrage dépend de la tonalité : changer celle-ci périme le tampon.
     if (this.noiseBufferFrequency !== this.settings.frequency) {
       this.noiseBuffer = null;
       if (this.noiseWanted) void this.startNoise();
     }
+  }
+
+  /**
+   * Applique la profondeur d'évanouissement.
+   *
+   * Le gain de repos vaut `1 - d/2` et chaque oscillateur apporte `d/6`, si
+   * bien que leur somme balaie l'intervalle `[1 - d, 1]`. À profondeur pleine
+   * le signal touche donc zéro — mais rarement : trois sinusoïdes n'atteignent
+   * leur maximum commun que de loin en loin, ce qui est précisément le
+   * comportement d'un vrai évanouissement.
+   */
+  private applyQsb(): void {
+    const gain = this.qsbGain;
+    if (!gain || !this.context) return;
+    const depth = Math.min(1, Math.max(0, this.settings.qsbDepth));
+    const now = this.context.currentTime;
+    gain.gain.setTargetAtTime(1 - depth / 2, now, 0.4);
+    for (const stage of this.qsbDepths) stage.gain.setTargetAtTime(depth / 6, now, 0.4);
   }
 
   /** Niveau courant du bruit, déduit du volume et du rapport signal/bruit. */
@@ -287,8 +335,33 @@ export class AudioEngine {
 
     // La lecture et le retour local ont chacun le leur : l'époque de l'épisode
     // ne doit pas teinter la main du joueur pendant qu'il s'entraîne ailleurs.
-    [, this.roughDepth] = insertRough(this.playbackGain);
+    const [playbackRough, playbackDepth] = insertRough(this.playbackGain);
+    this.roughDepth = playbackDepth;
     [, this.sidetoneRoughDepth] = insertRough(this.sidetoneGain);
+
+    // L'évanouissement s'insère après le grain, sur la lecture seulement : le
+    // retour local du manipulateur ne s'évanouit pas, votre main est à côté
+    // de vous.
+    this.qsbGain = ctx.createGain();
+    this.qsbGain.gain.value = 1;
+    playbackRough.disconnect();
+    playbackRough.connect(this.qsbGain);
+    this.qsbGain.connect(this.master);
+
+    this.qsbDepths = QSB_PERIODES.map((periode) => {
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      // Un écart de plus ou moins quinze pour cent : les trois périodes
+      // restent sans commune mesure, et le rythme change à chaque séance.
+      osc.frequency.value = 1 / (periode * (0.85 + Math.random() * 0.3));
+      const depth = ctx.createGain();
+      depth.gain.value = 0;
+      osc.connect(depth);
+      depth.connect((this.qsbGain as GainNode).gain);
+      osc.start();
+      return depth;
+    });
+    this.applyQsb();
 
     // Le graphe naît contact ouvert : l'état suivi doit dire la même chose que
     // le gain, sans quoi un appui en cours laisserait le retour muet pour de bon.
@@ -572,6 +645,8 @@ export class AudioEngine {
     this.sidetoneOsc?.stop();
     void this.context?.close();
     this.context = null;
+    this.qsbGain = null;
+    this.qsbDepths = [];
     this.master = null;
     this.playbackOsc = null;
     this.playbackGain = null;

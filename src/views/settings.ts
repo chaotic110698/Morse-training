@@ -458,7 +458,9 @@ export function settingsView(context: ViewContext): View {
       h(
         'section',
         { class: 'card' },
-        h('h2', { class: 'card__title', text: 'Bruit de fond' }),
+        // La carte ne parle plus seulement de bruit : l'évanouissement est
+        // l'autre moitié de ce qui rend une réception difficile.
+        h('h2', { class: 'card__title', text: 'Conditions de réception' }),
         field(
           'Bruit de réception',
           h(
@@ -494,6 +496,30 @@ export function settingsView(context: ViewContext): View {
             ),
           ),
           `Rapport signal sur bruit : ${s.noiseSnrDb} dB. ${presetForDb(s.noiseSnrDb).hint} Copier dans le bruit est la compétence qui compte vraiment sur l’air ; descendre d’un cran quand la copie devient facile vaut mieux que d’accélérer.`,
+        ),
+        field(
+          'Évanouissement (QSB)',
+          h(
+            'div',
+            { class: 'segmented', attrs: { role: 'group', 'aria-label': 'Profondeur de l’évanouissement' } },
+            ...(
+              [
+                ['aucun', 'Aucun', 'Le signal garde son niveau du début à la fin.'],
+                ['leger', 'Léger', 'Environ cinq décibels de creux : on l’entend sans en souffrir.'],
+                ['moyen', 'Moyen', 'Le signal passe sous le bruit par moments.'],
+                ['profond', 'Profond', 'Le signal disparaît complètement, de loin en loin.'],
+              ] as const
+            ).map(([value, label, note]) =>
+              h('button', {
+                class: `segmented__item${s.qsb === value ? ' is-active' : ''}`,
+                type: 'button',
+                text: label,
+                title: note,
+                on: { click: () => store.updateSettings({ qsb: value }) },
+              }),
+            ),
+          ),
+          'Sur les bandes hautes, ce que vous recevez a rebondi sur l’ionosphère, souvent par plusieurs chemins à la fois. Ces chemins s’additionnent ou s’annulent, et comme l’ionosphère bouge sans arrêt, le niveau monte et descend tout seul. Ce n’est pas du bruit : par moments c’est parfait, par moments c’est inaudible — et la compétence n’est pas de mieux entendre, c’est de continuer à copier en laissant un trou. Trois cycles lents et sans commune mesure, de sept à dix-sept secondes, tirés au hasard à chaque séance. Votre propre frappe ne s’évanouit jamais.',
         ),
       );
 

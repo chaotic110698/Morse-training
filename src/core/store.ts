@@ -17,6 +17,21 @@ import type { Achievement } from './achievements.ts';
 type Listener = () => void;
 type AchievementListener = (achievements: Achievement[]) => void;
 
+/**
+ * Ce que valent les quatre profondeurs d'évanouissement.
+ *
+ * « Léger » creuse d'environ cinq décibels — on l'entend sans en souffrir.
+ * « Profond » laisse le signal toucher zéro, ce qui arrive rarement : trois
+ * sinusoïdes sans commune mesure n'atteignent leur minimum commun que de loin
+ * en loin, comme un vrai évanouissement.
+ */
+const QSB_DEPTHS: Record<Settings['qsb'], number> = {
+  aucun: 0,
+  leger: 0.45,
+  moyen: 0.75,
+  profond: 1,
+};
+
 export class AppStore {
   settings: Settings;
   progress: Progress;
@@ -38,6 +53,7 @@ export class AppStore {
       waveform: this.settings.waveform,
       noiseEnabled: this.settings.noiseEnabled,
       noiseSnrDb: this.settings.noiseSnrDb,
+      qsbDepth: QSB_DEPTHS[this.settings.qsb],
     });
     this.haptics = new Haptics();
     this.haptics.setEnabled(this.settings.haptics);
@@ -112,6 +128,7 @@ export class AppStore {
       waveform: settings.waveform,
       noiseEnabled: settings.noiseEnabled,
       noiseSnrDb: settings.noiseSnrDb,
+      qsbDepth: QSB_DEPTHS[settings.qsb],
     });
     this.haptics.setEnabled(settings.haptics);
     this.saveNow();
@@ -132,7 +149,7 @@ export class AppStore {
     clearState();
     this.settings = { ...DEFAULT_SETTINGS };
     this.progress = emptyProgress();
-    this.audio.updateSettings(this.settings);
+    this.audio.updateSettings({ ...this.settings, qsbDepth: QSB_DEPTHS[this.settings.qsb] });
     this.haptics.setEnabled(this.settings.haptics);
     this.emit();
   }

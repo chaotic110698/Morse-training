@@ -20,6 +20,16 @@ export type Ambience = 'aucune' | 'discrete' | 'marquee';
  * la droite en descendant dans le site, par la gauche en remontant.
  */
 export type PageMotion = 'aucun' | 'fondu' | 'glissement';
+/**
+ * La profondeur de l'évanouissement — le QSB.
+ *
+ * Sur les bandes hautes, ce qu'on reçoit a rebondi sur l'ionosphère, souvent
+ * par plusieurs chemins à la fois ; ces chemins s'additionnent ou s'annulent
+ * selon leur différence de trajet, et comme l'ionosphère bouge sans arrêt, le
+ * niveau monte et descend tout seul. Ce n'est pas du bruit : par moments c'est
+ * parfait, par moments c'est inaudible, et c'est bien plus déstabilisant.
+ */
+export type Qsb = 'aucun' | 'leger' | 'moyen' | 'profond';
 
 export interface Settings {
   /** Vitesse des caractères, en mots par minute. */
@@ -77,6 +87,11 @@ export interface Settings {
   noiseEnabled: boolean;
   /** Rapport signal/bruit visé, en décibels. */
   noiseSnrDb: number;
+  /**
+   * Évanouissement du signal reçu. N'affecte jamais le retour local du
+   * manipulateur : votre propre frappe ne s'évanouit pas.
+   */
+  qsb: Qsb;
   /**
    * Silence ajouté après le dernier signal, en unités. Il détache la fin de
    * l'émission de l'extinction de la sortie audio, dont beaucoup de casques
@@ -149,6 +164,7 @@ export const DEFAULT_SETTINGS: Settings = {
   uiSounds: true,
   noiseEnabled: true,
   noiseSnrDb: 20,
+  qsb: 'aucun',
   tailUnits: 3,
 
   theme: 'auto',
@@ -168,6 +184,7 @@ const WAVEFORMS: Waveform[] = ['sine', 'square', 'triangle', 'sawtooth'];
 const ORDERS: KochOrderId[] = ['lcwo', 'classic', 'alphabetical'];
 const AMBIENCES: Ambience[] = ['aucune', 'discrete', 'marquee'];
 const PAGE_MOTIONS: PageMotion[] = ['aucun', 'fondu', 'glissement'];
+const QSBS: Qsb[] = ['aucun', 'leger', 'moyen', 'profond'];
 
 const clamp = (value: number, min: number, max: number): number =>
   Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : min;
@@ -229,6 +246,7 @@ export function normalizeSettings(input: Partial<Settings> | null | undefined): 
     kochThreshold: clamp(raw.kochThreshold, 0.6, 1),
     sessionLength: Math.round(clamp(raw.sessionLength, 5, 100)),
     noiseSnrDb: Math.round(clamp(raw.noiseSnrDb, 0, 40)),
+    qsb: QSBS.includes(raw.qsb) ? raw.qsb : 'aucun',
     tailUnits: Math.round(clamp(raw.tailUnits, 0, 10)),
     callsign: String(raw.callsign ?? '').toUpperCase().replace(/[^A-Z0-9/]/g, '').slice(0, 12),
     // La sélection est une chaîne de caractères distincts, dans l'ordre où on
