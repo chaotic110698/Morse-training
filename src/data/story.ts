@@ -1259,7 +1259,9 @@ const MGY: Episode = {
       wpm: 14,
       note: 'CQD est l’appel de détresse d’avant SOS. Les deux coexistent en 1912.',
       irruption: {
-        after: 5,
+        // Le temps de lire les trois paragraphes avant que la bande ne change
+        // de nature : le balai, le grésillement, les pensées qui partent.
+        after: 8,
         label: 'Décoder le signal',
         text: [
           'Vous vous levez pour vous dégourdir les jambes, et vous passez un coup de ' +
