@@ -339,9 +339,10 @@ export function settingsView(context: ViewContext): View {
             label: 'Vitesse globale, en mots par minute',
             onInput: (value) => store.updateSettings({ effectiveWpm: value }),
           }),
-          timing.farnsworth
+          (timing.farnsworth
             ? `Les silences sont étirés : ${Math.round(timing.interChar * 1000)} ms entre deux caractères au lieu de ${Math.round(timing.unit * 3000)} ms. C’est ce réglage qu’on augmente pour progresser.`
-            : 'Égale à la vitesse des caractères : aucun étirement des silences. Baissez-la pour vous laisser plus de temps entre les caractères.',
+            : 'Égale à la vitesse des caractères : aucun étirement des silences. Baissez-la pour vous laisser plus de temps entre les caractères.') +
+            ' Vous n’avez pas à y penser : après trois séries d’écoute d’affilée au-dessus de 90 % à la même vitesse, l’exercice vous proposera lui-même de monter d’un cran.',
         ),
         h(
           'div',

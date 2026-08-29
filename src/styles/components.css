@@ -886,6 +886,12 @@
   gap: var(--space-4);
 }
 
+/* « Plus tard » ne doit pas peser autant que les deux progressions qu'il
+   décline : il reste lisible, sans prendre la place d'un choix. */
+.levelup__report {
+  color: var(--text-muted);
+}
+
 .levelup--hold {
   background: var(--surface-2);
   border-color: var(--border);
@@ -913,6 +919,12 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-muted);
+}
+
+/* Le pas de vitesse porte un nombre et une unité, pas une lettre : à la taille
+   d'un caractère isolé, « 24 mots/min » déborderait sur un téléphone. */
+.palier--vitesse .palier__lettre {
+  font-size: clamp(1.7rem, 1.3rem + 2.6vw, 2.4rem);
 }
 
 .palier__suite {

@@ -27,6 +27,7 @@ import {
   type CharRecord,
 } from '../core/koch.ts';
 import { charRecord, longSession, SESSION_LENGTHS } from '../core/training.ts';
+import { cleReport, prochainPas, SEUIL_SERIE, type PasDeVitesse } from '../core/tempo.ts';
 import { formatPercent } from '../core/progress.ts';
 import type { View, ViewContext } from '../ui/router.ts';
 
@@ -423,17 +424,140 @@ export function listenView(context: ViewContext): View {
     void player.play(char);
   };
 
+  /**
+   * Le pas de vitesse accepté.
+   *
+   * On joue `QRQ` — « transmettez plus vite » — à la nouvelle vitesse, et non
+   * à l'ancienne : c'est la seule façon d'entendre tout de suite ce qu'on
+   * vient d'accepter, et de faire marche arrière si c'est trop.
+   */
+  const franchirVitesse = (pas: PasDeVitesse): void => {
+    store.updateSettings({ charWpm: pas.charWpm, effectiveWpm: pas.effectiveWpm });
+    setChildren(summary, [
+      h(
+        'div',
+        { class: 'palier palier--vitesse', attrs: { role: 'status' } },
+        h('span', { class: 'palier__titre', text: 'Nouvelle vitesse' }),
+        h('span', { class: 'palier__lettre', text: `${pas.effectiveWpm} mots/min` }),
+        h('span', { class: 'palier__code', text: 'QRQ' }),
+        h('p', {
+          class: 'palier__suite',
+          text:
+            pas.kind === 'farnsworth'
+              ? `Les caractères gardent leur rythme de ${pas.charWpm} mots/min : ce sont les silences qui se resserrent.`
+              : 'L’écart est refermé : cette fois, les caractères eux-mêmes accélèrent.',
+        }),
+      ),
+    ]);
+    annonce.dire(`Vitesse portée à ${pas.effectiveWpm} mots par minute.`);
+    void player.play('QRQ');
+  };
+
+  /**
+   * Ce qu'on propose à la fin d'une série.
+   *
+   * Deux progressions coexistent et ne disent pas la même chose : **un
+   * caractère de plus**, qui est la méthode Koch, et **plus vite**, qui est le
+   * tempo. Quand les deux sont ouvertes, on les présente côte à côte plutôt
+   * que d'en cacher une : c'est un vrai choix, et le joueur est le seul à
+   * savoir lequel des deux lui coûte le plus aujourd'hui.
+   */
+  const avancement = (): HTMLElement | null => {
+    const accuracy = tracker.accuracy;
+    if (accuracy === null) return null;
+    const order = getKochOrder(store.settings.kochOrder);
+    const maxLevel = order.sequence.length;
+    const nextChar = order.sequence[level()] ?? null;
+    const offreCaractere = accuracy >= store.settings.kochThreshold && level() < maxLevel && nextChar;
+    const pas = prochainPas(store.settings, store.progress);
+
+    if (!offreCaractere && !pas) {
+      if (accuracy >= store.settings.kochThreshold) return null;
+      return h('p', { class: 'levelup levelup--hold' },
+        `Il faut ${Math.round(store.settings.kochThreshold * 100)} % pour ajouter un caractère. ` +
+        'Refaites une série : la régularité compte plus que la performance ponctuelle.');
+    }
+
+    // Le bloc est créé avant ses boutons : « Plus tard » le retire lui-même,
+    // plutôt que de redessiner le bilan — ce qui relancerait la montée des
+    // trois chiffres, déjà découverts.
+    const bloc = h('div', { class: 'levelup' });
+    const phrase = h('p', {});
+    if (offreCaractere && pas) {
+      phrase.append(
+        'Deux façons d’avancer s’offrent à vous : ',
+        h('strong', { text: `le caractère ${nextChar} (${prettyCode(encodeChar(nextChar) ?? '')})` }),
+        ', ou le tempo.',
+      );
+    } else if (offreCaractere) {
+      phrase.append(
+        `Vous dépassez le seuil de ${Math.round(store.settings.kochThreshold * 100)} %. `,
+        h('strong', { text: `Le caractère suivant est ${nextChar} (${prettyCode(encodeChar(nextChar) ?? '')}).` }),
+      );
+    } else {
+      phrase.append(
+        `Trois séries d’affilée au-dessus de ${Math.round(SEUIL_SERIE * 100)} %, à la même vitesse : `,
+        h('strong', { text: 'ce n’est plus le nombre de caractères qui vous limite.' }),
+      );
+    }
+
+    const boutons: (HTMLElement | null)[] = [];
+
+    if (offreCaractere) {
+      boutons.push(h('button', {
+        class: 'btn btn--primary',
+        type: 'button',
+        text: `Débloquer ${nextChar}`,
+        on: {
+          click: () => {
+            store.mutateProgress((progress) => {
+              progress.kochLevel = Math.min(maxLevel, progress.kochLevel + 1);
+            });
+            renderHeader();
+            renderGrid();
+            franchirPalier(nextChar);
+          },
+        },
+      }));
+    }
+
+    if (pas) {
+      boutons.push(h('button', {
+        class: offreCaractere ? 'btn' : 'btn btn--primary',
+        type: 'button',
+        text: `Passer à ${pas.effectiveWpm} mots/min`,
+        title:
+          pas.kind === 'farnsworth'
+            ? 'Les caractères gardent leur rythme ; les silences se resserrent.'
+            : 'L’écart Farnsworth est refermé : les caractères eux-mêmes accélèrent.',
+        on: { click: () => franchirVitesse(pas) },
+      }));
+      boutons.push(h('button', {
+        class: 'btn btn--ghost levelup__report',
+        type: 'button',
+        text: 'Plus tard',
+        title: 'Ce pas ne sera plus proposé avant une semaine.',
+        on: {
+          click: () => {
+            store.mutateProgress((progress) => {
+              progress.flags[cleReport(pas)] = Date.now();
+            }, { silent: true });
+            bloc.remove();
+          },
+        },
+      }));
+    }
+
+    bloc.append(phrase, h('div', { class: 'actions' }, ...boutons));
+    return bloc;
+  };
+
   const renderSummary = (): void => {
     const accuracy = tracker.accuracy;
     if (accuracy === null) {
       summary.replaceChildren();
       return;
     }
-    const order = getKochOrder(store.settings.kochOrder);
-    const maxLevel = order.sequence.length;
-    const canLevelUp = accuracy >= store.settings.kochThreshold && level() < maxLevel;
-    const nextChar = order.sequence[level()] ?? null;
-
     const misses = new Map<string, number>();
     for (const entry of tracker.entries) {
       if (!entry.correct) misses.set(entry.char, (misses.get(entry.char) ?? 0) + 1);
@@ -476,34 +600,7 @@ export function listenView(context: ViewContext): View {
             ),
           )
         : h('p', { class: 'summary__misses summary__misses--clean', text: 'Aucune erreur. Série parfaite.' }),
-      canLevelUp && nextChar
-        ? h(
-            'div',
-            { class: 'levelup' },
-            h('p', {},
-              `Vous dépassez le seuil de ${Math.round(store.settings.kochThreshold * 100)} %. `,
-              h('strong', { text: `Le caractère suivant est ${nextChar} (${prettyCode(encodeChar(nextChar) ?? '')}).` })),
-            h('button', {
-              class: 'btn btn--primary',
-              type: 'button',
-              text: `Débloquer ${nextChar}`,
-              on: {
-                click: () => {
-                  store.mutateProgress((progress) => {
-                    progress.kochLevel = Math.min(maxLevel, progress.kochLevel + 1);
-                  });
-                  renderHeader();
-                  renderGrid();
-                  franchirPalier(nextChar);
-                },
-              },
-            }),
-          )
-        : accuracy < store.settings.kochThreshold
-          ? h('p', { class: 'levelup levelup--hold' },
-              `Il faut ${Math.round(store.settings.kochThreshold * 100)} % pour ajouter un caractère. ` +
-              'Refaites une série : la régularité compte plus que la performance ponctuelle.')
-          : null,
+      avancement(),
     ]);
 
     monte(valPrecision, accuracy, { format: (value) => formatPercent(value) });
