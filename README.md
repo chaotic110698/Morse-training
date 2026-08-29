@@ -361,11 +361,12 @@ l'affichage.
 
 ## Modèle imprimable
 
-`modele-3d/` contient l'icône du site en objet : une plaque de 60 × 60 × 8 mm
-avec le point et le trait en incrustation et un logement pour une pastille NFC,
-à imprimer en 3D. La géométrie est transposée de `public/icons/icon.svg` par un
-script Python sans dépendance, qui écrit un `.3mf` prêt pour Bambu Studio et
-trois `.stl`. Voir [`modele-3d/README.md`](modele-3d/README.md).
+`modele-3d/` contient l'icône du site en objet : une plaque pleine de
+35 × 35 × 5 mm portant le point et le trait, à imprimer en 3D. Le logo y est une
+pièce séparée, à qui l'on donne sa propre couleur. La géométrie est transposée
+de `public/icons/icon.svg` par un script Python sans dépendance, qui écrit un
+`.3mf` prêt pour Bambu Studio et deux `.stl`. Voir
+[`modele-3d/README.md`](modele-3d/README.md).
 
 ## Licence
 

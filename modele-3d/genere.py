@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Génère le modèle imprimable de la plaque NFC « Morse Training ».
+"""Génère la plaque imprimable « Morse Training ».
 
 La géométrie n'est pas dessinée à la main : elle est dérivée du fichier
 `public/icons/icon.svg`, qui définit l'icône du site dans une zone de 64 × 64 :
@@ -14,8 +14,13 @@ trait. Les proportions du SVG sont conservées à l'identique, seule l'échelle
 change. Modifier l'icône du site et relancer ce script suffit donc à mettre le
 modèle à jour.
 
+La plaque est pleine : à charge de qui l'imprime d'y ajouter, dans le
+trancheur, la cavité qu'il veut — un volume négatif suffit. Elle sort en deux
+pièces, le corps et le motif, de sorte que le logo puisse recevoir sa propre
+couleur.
+
 Le script n'a aucune dépendance : bibliothèque standard uniquement. Il écrit
-un `.3mf` (le format que préfère Bambu Studio), trois `.stl` et un aperçu PNG.
+un `.3mf` (le format que préfère Bambu Studio), deux `.stl` et un aperçu PNG.
 
     python3 modele-3d/genere.py
 
@@ -34,34 +39,24 @@ import zipfile
 # Paramètres — c'est ici, et nulle part ailleurs, qu'on règle le modèle.
 # ─────────────────────────────────────────────────────────────────────────────
 
-COTE = 60.0                 # côté de la plaque
-EPAISSEUR = 8.0             # épaisseur totale, demandée à 8 mm
+COTE = 35.0                 # côté de la plaque
+EPAISSEUR = 5.0             # épaisseur totale
 RAYON_COIN = COTE * 14 / 64  # rayon des coins, repris tel quel du SVG (rx=14/64)
 
-CHANFREIN_HAUT = 0.8        # arête supérieure cassée à 45°, pour la main
-CHANFREIN_BAS = 0.6         # arête inférieure cassée : masque le pied d'éléphant
+CHANFREIN_HAUT = 0.5        # arête supérieure cassée à 45°, pour la main
+CHANFREIN_BAS = 0.4         # arête inférieure cassée : masque le pied d'éléphant
 
 # Le motif est creusé dans la face du dessus ; l'incrustation vient le remplir.
 PROFONDEUR_MOTIF = 1.0      # 5 couches à 0,2 mm
 JEU_MOTIF = 0.0             # 0 = bicolore (AMS ou changement de filament).
                             # 0.15 = incrustation imprimée à part puis collée.
 CENTRER_MOTIF = True        # l'icône penche de 2,25/64 à gauche : imperceptible
-                            # à 64 px, visible sur 60 mm. True la recentre.
-
-# Logement de la pastille NFC, creusé par-dessous.
-NFC_DIAMETRE = 25.0         # pastille NTAG213/215 ronde, le format courant
-NFC_JEU = 1.0              # jeu au diamètre (0,5 mm au rayon)
-NFC_PROFONDEUR = 1.2        # accepte un autocollant (0,4) comme un jeton PVC (1,0)
-
-COUVERCLE_EPAISSEUR = 0.8   # 4 couches à 0,2 mm
-COUVERCLE_EPAULEMENT = 0.8  # largeur de la portée sur laquelle il repose
-COUVERCLE_JEU = 0.2         # jeu au rayon, pour qu'il entre sans forcer
+                            # à 64 px, visible sur 35 mm. True la recentre.
 
 # Finesse des contours. Erreur de corde < 0,01 mm partout.
 SEG_COIN = 32               # segments par quart de rond de la plaque
 SEG_POINT = 64              # segments pour le point (le disque du motif)
 SEG_TRAIT = 32              # segments par demi-cercle du trait
-SEG_NFC = 96                # segments pour les cercles du logement NFC
 
 # Couleurs de l'icône, reprises du SVG : elles ne servent qu'à l'aperçu et à
 # l'affichage du .3mf dans le trancheur.
@@ -73,11 +68,6 @@ EPS = 1e-9
 # ─── Cotes dérivées ──────────────────────────────────────────────────────────
 
 DEMI = COTE / 2
-R_POCHE = (NFC_DIAMETRE + NFC_JEU) / 2
-R_LAMAGE = R_POCHE + COUVERCLE_EPAULEMENT
-Z_LAMAGE = COUVERCLE_EPAISSEUR
-Z_POCHE = Z_LAMAGE + NFC_PROFONDEUR
-R_COUVERCLE = R_LAMAGE - COUVERCLE_JEU
 Z_MOTIF = EPAISSEUR - PROFONDEUR_MOTIF
 
 ECHELLE = COTE / 64          # du repère SVG au millimètre
@@ -349,51 +339,39 @@ class Solide:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Les trois pièces
+# Les deux pièces
 # ─────────────────────────────────────────────────────────────────────────────
 
 def construit_corps():
+    """La plaque, pleine, creusée du seul motif."""
     s = Solide('Corps')
     plein = carre_arrondi(DEMI, RAYON_COIN)
     bas = carre_arrondi(DEMI - CHANFREIN_BAS, RAYON_COIN - CHANFREIN_BAS)
     haut = carre_arrondi(DEMI - CHANFREIN_HAUT, RAYON_COIN - CHANFREIN_HAUT)
-    lamage = cercle(0, 0, R_LAMAGE, SEG_NFC)
-    poche = cercle(0, 0, R_POCHE, SEG_NFC)
     point, trait = contours_motif()
 
     # Flancs, avec les deux arêtes cassées à 45°.
     s.paroi([(0.0, bas), (CHANFREIN_BAS, plein),
              (EPAISSEUR - CHANFREIN_HAUT, plein), (EPAISSEUR, haut)], True)
 
-    # Logement NFC : une portée pour le couvercle, puis la poche de la pastille.
-    s.paroi([(0.0, lamage), (Z_LAMAGE, lamage)], False)
-    s.paroi([(Z_LAMAGE, poche), (Z_POCHE, poche)], False)
-
     # Creux du motif, débouchant sur la face du dessus.
     s.paroi([(Z_MOTIF, point), (EPAISSEUR, point)], False)
     s.paroi([(Z_MOTIF, trait), (EPAISSEUR, trait)], False)
 
     # Faces horizontales.
-    s.face(0.0, bas, [lamage], vers_le_haut=False)          # dessous
-    s.face(Z_LAMAGE, lamage, [poche], vers_le_haut=False)   # épaulement
-    s.face(Z_POCHE, poche, vers_le_haut=False)              # fond de poche
-    s.face(Z_MOTIF, point, vers_le_haut=True)               # fond du creux
+    s.face(0.0, bas, vers_le_haut=False)                        # dessous, plein
+    s.face(Z_MOTIF, point, vers_le_haut=True)                   # fond du creux
     s.face(Z_MOTIF, trait, vers_le_haut=True)
     s.face(EPAISSEUR, haut, [point, trait], vers_le_haut=True)  # dessus
     return s
 
 
 def construit_motif():
+    """Le point et le trait, pièce séparée pour recevoir leur propre couleur."""
     s = Solide('Motif')
     point, trait = contours_motif(JEU_MOTIF)
     s.prisme(point, Z_MOTIF, EPAISSEUR)
     s.prisme(trait, Z_MOTIF, EPAISSEUR)
-    return s
-
-
-def construit_couvercle():
-    s = Solide('Couvercle NFC')
-    s.prisme(cercle(0, 0, R_COUVERCLE, SEG_NFC), 0.0, COUVERCLE_EPAISSEUR)
     return s
 
 
@@ -446,21 +424,27 @@ def _xml_maillage(solide):
     return '<mesh><vertices>%s</vertices><triangles>%s</triangles></mesh>' % (v, t)
 
 
-def ecrit_3mf(chemin, corps, motif, couvercle, pose=(90.0, 90.0)):
+def ecrit_3mf(chemin, corps, motif, pose=(90.0, 90.0)):
     """3MF conforme au cœur de la norme : aucune extension propriétaire, donc
-    lisible par Bambu Studio, Orca, Prusa ou Cura sans réparation."""
+    lisible par Bambu Studio, Orca, PrusaSlicer ou Cura sans réparation.
+
+    Le corps et le motif sont deux maillages distincts réunis en un seul objet
+    par des composants. Les trancheurs dérivés de PrusaSlicer — Bambu Studio et
+    Orca en font partie — les présentent alors comme deux pièces d'un même
+    objet : c'est ce qui permet de donner sa couleur au logo, et d'ajouter un
+    volume négatif à l'objet sans que les deux pièces se désolidarisent.
+    """
     def tr(x, y, z=0.0):
         return '1 0 0 0 1 0 0 0 1 %g %g %g' % (x, y, z)
 
-    ecart = COTE / 2 + R_COUVERCLE + 8      # le couvercle, posé à côté
     modele = (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<model unit="millimeter" xml:lang="fr-FR"'
         ' xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">\n'
-        '<metadata name="Title">Plaque NFC Morse Training</metadata>\n'
+        '<metadata name="Title">Plaque Morse Training</metadata>\n'
         '<metadata name="Designer">Morse Training</metadata>\n'
-        '<metadata name="Description">Plaque %g x %g x %g mm, logement pour'
-        ' pastille NFC de %g mm</metadata>\n'
+        '<metadata name="Description">Plaque pleine %g x %g x %g mm, logo en'
+        ' pièce séparée</metadata>\n'
         '<resources>\n'
         '<basematerials id="1">'
         '<base name="Corps" displaycolor="%sFF"/>'
@@ -468,20 +452,16 @@ def ecrit_3mf(chemin, corps, motif, couvercle, pose=(90.0, 90.0)):
         '</basematerials>\n'
         '<object id="2" name="Corps" type="model" pid="1" pindex="0">%s</object>\n'
         '<object id="3" name="Motif" type="model" pid="1" pindex="1">%s</object>\n'
-        '<object id="4" name="Couvercle NFC" type="model" pid="1" pindex="0">%s</object>\n'
-        '<object id="5" name="Plaque Morse" type="model"><components>'
+        '<object id="4" name="Plaque Morse" type="model"><components>'
         '<component objectid="2"/><component objectid="3"/>'
         '</components></object>\n'
         '</resources>\n'
         '<build>\n'
-        '<item objectid="5" transform="%s"/>\n'
         '<item objectid="4" transform="%s"/>\n'
         '</build>\n'
         '</model>\n'
-    ) % (COTE, COTE, EPAISSEUR, NFC_DIAMETRE,
-         COULEUR_CORPS, COULEUR_MOTIF,
-         _xml_maillage(corps), _xml_maillage(motif), _xml_maillage(couvercle),
-         tr(pose[0], pose[1]), tr(pose[0], pose[1] + ecart))
+    ) % (COTE, COTE, EPAISSEUR, COULEUR_CORPS, COULEUR_MOTIF,
+         _xml_maillage(corps), _xml_maillage(motif), tr(pose[0], pose[1]))
 
     types = ('<?xml version="1.0" encoding="UTF-8"?>\n'
              '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
@@ -652,13 +632,13 @@ def main():
     stl = os.path.join(ici, 'stl')
     os.makedirs(stl, exist_ok=True)
 
-    corps, motif, couvercle = construit_corps(), construit_motif(), construit_couvercle()
+    corps, motif = construit_corps(), construit_motif()
 
     faux = 0
-    for s in (corps, motif, couvercle):
+    for s in (corps, motif):
         r = s.verifie()
         etat = 'fermé' if r['aretes_orphelines'] == 0 and r['degeneres'] == 0 else 'DÉFAUT'
-        print('%-14s %6d triangles  %5d sommets  %7.2f cm³  %s'
+        print('%-8s %6d triangles  %5d sommets  %7.2f cm³  %s'
               % (r['nom'], r['triangles'], r['sommets'], r['volume_cm3'], etat))
         if etat != 'fermé' or r['volume_cm3'] <= 0:
             faux += 1
@@ -667,24 +647,22 @@ def main():
     if faux:
         raise SystemExit('maillage inutilisable, rien n’a été écrit')
 
-    ecrit_3mf(os.path.join(ici, 'plaque-morse.3mf'), corps, motif, couvercle)
-    for s, nom in ((corps, 'corps'), (motif, 'motif'), (couvercle, 'couvercle')):
+    ecrit_3mf(os.path.join(ici, 'plaque-morse.3mf'), corps, motif)
+    for s, nom in ((corps, 'corps'), (motif, 'motif')):
         ecrit_stl(s, os.path.join(stl, 'plaque-morse-%s.stl' % nom))
 
     # Le gris du rendu est bien plus clair que le #0b1015 de l'icône : sous
-    # cette lumière, un tirage noir mat ne montrerait aucun relief.
+    # cette lumière, un tirage noir mat ne montrerait aucun relief. À droite,
+    # le motif est soulevé : c'est la pièce à qui l'on donne sa couleur.
     sombre, clair = rgb('#68727e'), rgb(COULEUR_MOTIF)
     apercu(os.path.join(ici, 'apercu.png'), [
-        (-66, 26, [(corps, sombre, (0, 0, 0)), (motif, clair, (0, 0, 0))], 7.0),
-        (-118, -40, [(corps, sombre, (0, 0, 0)),
-                     (couvercle, sombre, (0, 0, -20))], 7.0),
+        (-66, 26, [(corps, sombre, (0, 0, 0)), (motif, clair, (0, 0, 0))], 10.4),
+        (-66, 26, [(corps, sombre, (0, 0, 0)), (motif, clair, (0, 0, 7))], 10.4),
     ])
 
-    print('\n%.0f × %.0f × %.0f mm, coins R%.2f, pastille NFC ⌀%.0f'
-          % (COTE, COTE, EPAISSEUR, RAYON_COIN, NFC_DIAMETRE))
-    print('logement : ⌀%.1f sur %.1f mm, portée ⌀%.1f sur %.1f mm'
-          % (2 * R_POCHE, NFC_PROFONDEUR, 2 * R_LAMAGE, COUVERCLE_EPAISSEUR))
-    print('matière au-dessus de la pastille : %.1f mm' % (EPAISSEUR - Z_POCHE))
+    print('\n%.0f × %.0f × %.0f mm pleine, coins R%.2f' % (COTE, COTE, EPAISSEUR, RAYON_COIN))
+    print('motif : %.1f mm de profondeur, du plan %.1f mm au plan %.1f mm'
+          % (PROFONDEUR_MOTIF, Z_MOTIF, EPAISSEUR))
 
 
 if __name__ == '__main__':
