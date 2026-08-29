@@ -9,6 +9,7 @@
  */
 
 import { h, formatNumber, setChildren } from '../ui/dom.ts';
+import { envol } from '../ui/envol.ts';
 import { SignalLamp } from '../ui/lamp.ts';
 import { MorsePlayer } from '../ui/player.ts';
 import { SessionTracker } from '../ui/session.ts';
@@ -100,6 +101,9 @@ export function listenView(context: ViewContext): View {
   const progressBar = h('div', { class: 'progress__fill' });
   const progressLabel = h('span', { class: 'progress__label' });
   const display = h('div', { class: 'display' });
+  // La scène porte le « +1 » : elle n'est jamais reconstruite, contrairement
+  // au contenu de l'écran de verdict.
+  const stage = h('div', { class: 'trainer__stage' }, display, lamp.element);
   const grid = h('div', { class: 'answer-grid' });
   const actions = h('div', { class: 'actions' });
   const summary = h('div', { class: 'summary' });
@@ -354,6 +358,7 @@ export function listenView(context: ViewContext): View {
 
     if (store.settings.uiSounds) store.audio.feedback(correct ? 'ok' : 'error');
     store.haptics.feedback(correct ? 'ok' : 'error');
+    envol(stage, correct);
     annonce.dire(
       correct
         ? `Juste, ${expected}.`
@@ -654,7 +659,7 @@ export function listenView(context: ViewContext): View {
       charsetStrip,
     ),
     h('div', { class: 'progress' }, progressBar, progressLabel),
-    h('div', { class: 'trainer__stage' }, display, lamp.element),
+    stage,
     grid,
     actions,
     optionHint,

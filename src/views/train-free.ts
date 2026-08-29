@@ -12,6 +12,7 @@
  */
 
 import { h, setChildren } from '../ui/dom.ts';
+import { envol } from '../ui/envol.ts';
 import { SignalLamp } from '../ui/lamp.ts';
 import { MorsePlayer } from '../ui/player.ts';
 import { SessionTracker } from '../ui/session.ts';
@@ -72,6 +73,9 @@ export function freeView(context: ViewContext): View {
   const presetRow = h('div', { class: 'chips' });
   const pickerHint = h('p', { class: 'field__hint' });
   const display = h('div', { class: 'display' });
+  // La scène porte le « +1 » : elle n'est jamais reconstruite, contrairement
+  // au contenu de l'écran de verdict.
+  const stage = h('div', { class: 'trainer__stage' }, display, lamp.element);
   const grid = h('div', { class: 'answer-grid' });
   const stats = h('div', { class: 'free-stats' });
   const perChar = h('div', { class: 'free-chars' });
@@ -359,6 +363,7 @@ export function freeView(context: ViewContext): View {
 
     if (store.settings.uiSounds) store.audio.feedback(correct ? 'ok' : 'error');
     store.haptics.feedback(correct ? 'ok' : 'error');
+    envol(stage, correct);
 
     window.clearTimeout(advanceTimer);
     if (!correct) {
@@ -448,7 +453,7 @@ export function freeView(context: ViewContext): View {
       picker,
       pickerHint,
     ),
-    h('div', { class: 'trainer__stage' }, display, lamp.element),
+    stage,
     grid,
     actions,
     h(

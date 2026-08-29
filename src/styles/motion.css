@@ -185,6 +185,43 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* --- Le point marqué -------------------------------------------------------
+ *
+ * Le « +1 » de la maquette, posé dans le coin bas droit de la scène : il monte
+ * de vingt-deux pixels et s'efface. Il n'apparaît qu'un quart de seconde après
+ * le départ, le temps que le verdict de la lettre soit lu en premier.
+ *
+ * Sans mouvement, il ne reste rien à garder : un signe qui monte et s'efface
+ * est tout entier son mouvement, et le verdict est déjà dit trois fois
+ * ailleurs. La règle de `prefers-reduced-motion` le laisse donc à zéro.
+ */
+
+.envol {
+  position: absolute;
+  right: var(--space-4);
+  bottom: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ok);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.envol--ko {
+  color: var(--error);
+}
+
+.envol--part {
+  animation: envol 700ms ease-out;
+}
+
+@keyframes envol {
+  0% { opacity: 0; transform: translateY(2px); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-22px); }
+}
+
 /* --- Le palier franchi -----------------------------------------------------
  *
  * Le seul endroit où l'on a le droit d'être un peu démonstratif : il arrive
@@ -352,6 +389,7 @@
   .display--error .display__char,
   .answer-grid__key.is-ok,
   .answer-grid__key.is-error,
+  .envol--part,
   .palier__lettre,
   .palier::after,
   .outlet[data-transition='fondu'] > .outlet__sortante,

@@ -9,6 +9,7 @@
  */
 
 import { h } from '../ui/dom.ts';
+import { envol } from '../ui/envol.ts';
 import { SessionTracker } from '../ui/session.ts';
 import { isTypingTarget } from '../ui/keys.ts';
 import { compactCode, encodeChar, prettyCode } from '../core/morse.ts';
@@ -41,6 +42,9 @@ export function readView(context: ViewContext): View {
       : kochCharset(store.settings.kochOrder, store.progress.kochLevel);
 
   const display = h('div', { class: 'display display--read' });
+  // La scène porte le « +1 » : elle n'est jamais reconstruite, contrairement
+  // au contenu de l'écran de verdict.
+  const stage = h('div', { class: 'trainer__stage' }, display, lamp.element);
   const grid = h('div', { class: 'answer-grid' });
   const progressBar = h('div', { class: 'progress__fill' });
   const progressLabel = h('span', { class: 'progress__label' });
@@ -182,6 +186,7 @@ export function readView(context: ViewContext): View {
 
     if (store.settings.uiSounds) store.audio.feedback(correct ? 'ok' : 'error');
     store.haptics.feedback(correct ? 'ok' : 'error');
+    envol(stage, correct);
     annonce.dire(
       correct ? `Juste, ${expected}.` : `Faux. C’était ${expected}, vous avez répondu ${answer}.`,
     );
@@ -248,7 +253,7 @@ export function readView(context: ViewContext): View {
     annonce.element,
     h('div', { class: 'toolbar' }, directionToggle, fullSetToggle),
     h('div', { class: 'progress' }, progressBar, progressLabel),
-    h('div', { class: 'trainer__stage' }, display, lamp.element),
+    stage,
     grid,
     summary,
     h(

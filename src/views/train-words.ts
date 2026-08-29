@@ -8,6 +8,7 @@
  */
 
 import { h, setChildren } from '../ui/dom.ts';
+import { envol } from '../ui/envol.ts';
 import { SignalLamp } from '../ui/lamp.ts';
 import { createAnnonce } from '../ui/annonce.ts';
 import { MorsePlayer } from '../ui/player.ts';
@@ -30,6 +31,9 @@ export function wordsView(context: ViewContext): View {
   let tracker = new SessionTracker(store, 'words', 10);
 
   const display = h('div', { class: 'display display--word' });
+  // La scène porte le « +1 » : elle n'est jamais reconstruite, contrairement
+  // au contenu de l'écran de verdict.
+  const stage = h('div', { class: 'trainer__stage' }, display, lamp.element);
   const progressBar = h('div', { class: 'progress__fill' });
   const progressLabel = h('span', { class: 'progress__label' });
   const summary = h('div', { class: 'summary' });
@@ -168,6 +172,7 @@ export function wordsView(context: ViewContext): View {
     tracker.record(entry.text, answer || null, correct, responseMs);
     if (store.settings.uiSounds) store.audio.feedback(correct ? 'ok' : 'error');
     store.haptics.feedback(correct ? 'ok' : 'error');
+    envol(stage, correct);
     // On épelle le groupe : « QRZ » prononcé d'un trait n'est pas contrôlable.
     const epele = [...entry.text.toUpperCase()].join(' ');
     annonce.dire(correct ? `Juste : ${epele}.` : `Faux. C’était ${epele}.`);
@@ -248,7 +253,7 @@ export function wordsView(context: ViewContext): View {
     h('div', { class: 'toolbar' }, setSelect),
     setHint,
     h('div', { class: 'progress' }, progressBar, progressLabel),
-    h('div', { class: 'trainer__stage' }, display, lamp.element),
+    stage,
     input,
     h('div', { class: 'actions' }, playButton, validateButton, revealButton),
     summary,

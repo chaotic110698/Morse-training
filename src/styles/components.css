@@ -392,6 +392,8 @@
 }
 
 .trainer__stage {
+  /* Le « +1 » de `ui/envol.ts` se place dans son coin. */
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--space-5);
