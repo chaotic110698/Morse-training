@@ -359,6 +359,14 @@ Aucun framework : le rendu est fait avec une petite fabrique DOM, ce qui évite
 qu'un cycle de rendu ne vienne s'intercaler entre l'horloge audio et
 l'affichage.
 
+## Modèle imprimable
+
+`modele-3d/` contient l'icône du site en objet : une plaque de 60 × 60 × 8 mm
+avec le point et le trait en incrustation et un logement pour une pastille NFC,
+à imprimer en 3D. La géométrie est transposée de `public/icons/icon.svg` par un
+script Python sans dépendance, qui écrit un `.3mf` prêt pour Bambu Studio et
+trois `.stl`. Voir [`modele-3d/README.md`](modele-3d/README.md).
+
 ## Licence
 
 MIT.
