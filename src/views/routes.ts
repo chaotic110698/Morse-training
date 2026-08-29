@@ -365,6 +365,15 @@ export const ROUTES: RouteDefinition[] = [
     load: () => import('./train-words.ts').then((m) => m.wordsView),
   },
   {
+    path: '/entrainement/copie',
+    label: 'Copie suivie',
+    title: 'Copie de texte suivi',
+    description: 'Copier un message entier à l’oreille, sans jamais s’arrêter.',
+    icon: '✍️',
+    group: 'entrainement',
+    load: () => import('./train-copie.ts').then((m) => m.copieView),
+  },
+  {
     path: '/entrainement/lecture',
     label: 'Lecture visuelle',
     title: 'Lecture visuelle',

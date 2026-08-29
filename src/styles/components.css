@@ -893,6 +893,89 @@
   margin-left: auto;
 }
 
+/* --- Copie suivie ---
+ *
+ * Le verdict est la seule chose qui compte ici : il occupe la largeur, en
+ * chasse fixe, avec un code de couleur qui se lit sans légende — vert juste,
+ * rouge faux, souligné manqué, barré en trop.
+ */
+
+.copie__label {
+  font-weight: 600;
+}
+
+.copie__notes {
+  max-width: 100%;
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  min-height: 6rem;
+  resize: vertical;
+}
+
+.copie__etat {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.copie__verdict:empty {
+  display: none;
+}
+
+.copie__verdict {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.copie__titre {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.copie__diff {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  letter-spacing: 0.12em;
+  line-height: 1.9;
+  word-break: break-word;
+}
+
+.copie__diff .is-ok { color: var(--ok); }
+
+.copie__diff .is-ko {
+  color: var(--error);
+  font-weight: 700;
+}
+
+/* Manqué : le signe est passé, la copie ne l'a pas. Souligné plutôt que
+   coloré, pour ne pas le confondre avec une faute. */
+.copie__diff .is-manque {
+  color: var(--text-muted);
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+
+/* En trop : écrit alors que rien n'a été envoyé. */
+.copie__diff .is-trop {
+  color: var(--text-faint);
+  text-decoration: line-through;
+}
+
+.copie__espace {
+  display: inline-block;
+  width: 0.85em;
+}
+
 /* --- Bilans --- */
 
 .summary {

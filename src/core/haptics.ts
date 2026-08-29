@@ -9,7 +9,10 @@
  */
 
 import type { TimedElement } from './timing.ts';
-import { toVibrationPattern } from './timing.ts';
+import { sequenceDuration, toVibrationPattern } from './timing.ts';
+
+/** Durée maximale d'une séquence vibrée, en secondes. */
+const MAX_VIBRATION_S = 20;
 
 /** Vrai si le navigateur expose l'API Vibration. */
 export function hapticsSupported(): boolean {
@@ -41,6 +44,13 @@ export class Haptics {
    */
   playSequence(elements: TimedElement[]): void {
     if (!this.available) return;
+    // Au-delà, on ne vibre pas du tout. Un message de quarante mots ferait
+    // buzzer le téléphone une minute d'affilée : l'appareil chauffe, la
+    // batterie tombe, et plusieurs constructeurs tronquent de toute façon les
+    // motifs longs — la vibration s'arrêterait au milieu sans prévenir, ce qui
+    // est pire que de ne pas commencer. Le retour haptique accompagne un
+    // signal court ; il n'est pas un canal de lecture.
+    if (sequenceDuration(elements) > MAX_VIBRATION_S) return;
     const pattern = toVibrationPattern(elements);
     if (pattern.length > 0) navigator.vibrate(pattern);
   }
