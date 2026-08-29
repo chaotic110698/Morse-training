@@ -16,7 +16,7 @@ import { SignalLamp } from '../ui/lamp.ts';
 import { MorsePlayer } from '../ui/player.ts';
 import { SessionTracker } from '../ui/session.ts';
 import { isSpaceKey, isTypingTarget } from '../ui/keys.ts';
-import { prettyCode } from '../core/morse.ts';
+import { encodeChar, prettyCode } from '../core/morse.ts';
 import { drawChars, kochCharset, weakWeight, MASTERY_ATTEMPTS } from '../core/koch.ts';
 import { charRecord } from '../core/training.ts';
 import { formatDuration, formatPercent } from '../core/progress.ts';
@@ -391,16 +391,22 @@ export function freeView(context: ViewContext): View {
       return;
     }
     if (state) {
-      display.className = `display ${state.correct ? 'is-ok' : 'is-error'}`;
+      // Les mêmes classes que l'écoute guidée, et pour la même raison : c'est
+      // `display--ok` et `display--error` qui colorent la lettre en vert ou en
+      // rouge et déclenchent le hochement ou le refus. Et c'est bien le code
+      // du caractère qu'on affiche, pas le caractère lui-même : `prettyCode`
+      // attend des points et des traits, une lettre lui ressortirait comme un
+      // signe unique.
+      display.className = `display ${state.correct ? 'display--ok' : 'display--error'}`;
       setChildren(display, [
-        h('p', { class: 'display__char', text: state.char }),
-        h('p', { class: 'display__code', text: prettyCode(state.char) }),
+        h('span', { class: 'display__char', text: state.char }),
+        h('span', { class: 'display__code', text: prettyCode(encodeChar(state.char) ?? '') }),
         h('p', { class: 'display__hint' },
           state.correct ? 'Bonne réponse.' : `Vous avez répondu ${state.answer ?? '—'}.`),
       ]);
       return;
     }
-    display.className = 'display is-waiting';
+    display.className = 'display display--waiting';
     setChildren(display, [
       h('p', { class: 'display__lead', text: 'Écoutez…' }),
       h('p', { class: 'display__hint', text: 'Barre d’espace pour réentendre.' }),
