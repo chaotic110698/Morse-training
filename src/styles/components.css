@@ -2840,6 +2840,20 @@
   gap: var(--space-3);
 }
 
+/* L'hôte porte le soulèvement au survol, pas la carte : sur un épisode en
+   cours, la carte et la bande « Recommencer » sont collées l'une à l'autre et
+   doivent bouger ensemble. */
+.recit-carte-hote {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  transition: transform var(--transition);
+}
+
+.recit-carte-hote:hover,
+.recit-carte-hote:focus-within {
+  transform: translateY(-1px);
+}
+
 .recit-carte {
   display: grid;
   gap: var(--space-1);
@@ -2851,13 +2865,52 @@
   font: inherit;
   text-align: left;
   cursor: pointer;
-  transition: border-color var(--transition), transform var(--transition);
+  transition: border-color var(--transition);
 }
 
-.recit-carte:hover,
-.recit-carte:focus-visible {
+.recit-carte-hote:hover .recit-carte,
+.recit-carte-hote:focus-within .recit-carte {
   border-color: var(--accent);
-  transform: translateY(-1px);
+}
+
+/* La carte d'un épisode en cours s'ouvre par le bas sur sa bande. */
+.recit-carte--attache {
+  border-bottom: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.recit-carte__reprise {
+  padding: 0.4rem var(--space-3) 0.5rem;
+  background: var(--surface);
+  color: var(--text-faint);
+  border: 1px solid var(--border);
+  border-top: 1px dashed var(--border);
+  border-radius: 0 0 var(--radius) var(--radius);
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: color var(--transition), background var(--transition), border-color var(--transition);
+}
+
+.recit-carte-hote:hover .recit-carte__reprise,
+.recit-carte-hote:focus-within .recit-carte__reprise {
+  border-color: var(--accent);
+  border-top-style: dashed;
+}
+
+.recit-carte__reprise:hover,
+.recit-carte__reprise:focus-visible {
+  background: var(--surface-2);
+  color: var(--accent);
+}
+
+/* Un épisode facultatif est en pointillé : sa bande l'est aussi. */
+.recit-carte--lore + .recit-carte__reprise {
+  background: none;
+  border-style: dashed;
 }
 
 .recit-carte--lore {

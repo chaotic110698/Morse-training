@@ -160,10 +160,11 @@ export function storyView(context: ViewContext): View {
         const done = record?.completed === true;
         const started = (record?.beat ?? 0) > 0 && !done;
         const action = done ? 'Rejouer' : started ? 'Reprendre' : 'Commencer';
-        return h(
+        const carte = h(
           'button',
           {
-            class: `recit-carte${done ? ' is-done' : ''}${episode.optional ? ' recit-carte--lore' : ''}`,
+            class: `recit-carte${done ? ' is-done' : ''}${episode.optional ? ' recit-carte--lore' : ''}`
+              + (started ? ' recit-carte--attache' : ''),
             type: 'button',
             attrs: { 'aria-label': `${action} : ${episode.title}, ${episode.year}` },
             on: { click: () => openEpisode(episode) },
@@ -189,6 +190,32 @@ export function storyView(context: ViewContext): View {
             }),
             h('span', { class: 'recit-carte__action', text: `${action} →` }),
           ),
+        );
+
+        /*
+         * Un épisode en cours se reprend, ou se recommence. La carte entière
+         * fait la reprise — c'est le geste courant, et une cible large sert
+         * mieux le pouce ; le second bouton, collé dessous, efface la partie
+         * et repart du premier temps. Il n'apparaît que là où il a un sens :
+         * un épisode jamais ouvert n'a rien à recommencer, et un épisode
+         * terminé repart déjà de zéro sous le nom « Rejouer ».
+         */
+        return h(
+          'div',
+          { class: 'recit-carte-hote' },
+          carte,
+          started
+            ? h('button', {
+                class: 'recit-carte__reprise',
+                type: 'button',
+                text: '↺ Recommencer depuis le début',
+                attrs: {
+                  'aria-label': `Recommencer depuis le début : ${episode.title}, ${episode.year}`,
+                  title: 'Efface la partie en cours et reprend au premier temps',
+                },
+                on: { click: () => openEpisode(episode, true) },
+              })
+            : null,
         );
       });
 
