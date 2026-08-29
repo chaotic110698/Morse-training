@@ -1,12 +1,13 @@
 /** Statistiques et progression, conservées localement dans le navigateur. */
 
-export type TrainingMode = 'listen' | 'send' | 'words' | 'read';
+export type TrainingMode = 'listen' | 'send' | 'words' | 'read' | 'copie';
 
 export const MODE_LABELS: Record<TrainingMode, string> = {
   listen: 'Écoute',
   send: 'Émission',
   words: 'Mots et indicatifs',
   read: 'Lecture visuelle',
+  copie: 'Copie suivie',
 };
 
 export interface CharStat {
@@ -201,6 +202,19 @@ export function storyCleared(
 export interface Progress {
   kochLevel: number;
   chars: Record<string, CharStat>;
+  /**
+   * Ce qu'on prend pour autre chose.
+   *
+   * La clé est « attendu>répondu » — `S>H` se lit « S entendu, H répondu ».
+   * Savoir qu'un caractère est raté ne dit pas quoi travailler ; savoir qu'il
+   * est systématiquement pris pour un autre le dit, et ces paires-là sont le
+   * vrai obstacle de la méthode Koch : B et 6, U et V, S et H ne diffèrent que
+   * par un signe.
+   *
+   * Une table plate plutôt qu'imbriquée : elle se trie, se plafonne et se
+   * nettoie en une ligne, ce qu'une table à deux étages ne permet pas.
+   */
+  confusions: Record<string, number>;
   /** Historique borne aux dernières sessions, du plus récent au plus ancien. */
   sessions: SessionRecord[];
   totals: Totals;
@@ -229,6 +243,7 @@ export function emptyProgress(): Progress {
   return {
     kochLevel: 2,
     chars: {},
+    confusions: {},
     sessions: [],
     totals: { sessions: 0, attempts: 0, correct: 0, trainingMs: 0, sent: 0 },
     streak: { current: 0, longest: 0, lastDay: null },
@@ -260,6 +275,7 @@ export function recordAttempt(
   char: string,
   correct: boolean,
   responseMs: number,
+  answer: string | null = null,
 ): void {
   const stat = progress.chars[char] ?? { attempts: 0, correct: 0, totalMs: 0, lastSeen: 0 };
   stat.attempts += 1;
@@ -269,6 +285,40 @@ export function recordAttempt(
   progress.chars[char] = stat;
   progress.totals.attempts += 1;
   if (correct) progress.totals.correct += 1;
+
+  // On ne retient que les vraies méprises : une absence de réponse n'apprend
+  // rien, et un caractère pris pour lui-même n'existe pas.
+  if (!correct && answer && answer !== char) {
+    const cle = confusionKey(char, answer);
+    progress.confusions[cle] = (progress.confusions[cle] ?? 0) + 1;
+  }
+}
+
+/** La clé d'une méprise : le caractère attendu, puis celui qu'on a répondu. */
+export function confusionKey(expected: string, answer: string): string {
+  return `${expected}>${answer}`;
+}
+
+export interface Confusion {
+  expected: string;
+  answer: string;
+  count: number;
+}
+
+/**
+ * Les méprises les plus fréquentes, de la plus fréquente à la moins. Les
+ * paires vues une seule fois sont écartées : une erreur isolée est une
+ * distraction, pas une confusion.
+ */
+export function topConfusions(progress: Progress, limit = 8, minimum = 2): Confusion[] {
+  return Object.entries(progress.confusions)
+    .map(([cle, count]) => {
+      const [expected, answer] = cle.split('>');
+      return { expected: expected ?? '', answer: answer ?? '', count };
+    })
+    .filter((entry) => entry.expected !== '' && entry.answer !== '' && entry.count >= minimum)
+    .sort((a, b) => b.count - a.count || a.expected.localeCompare(b.expected))
+    .slice(0, limit);
 }
 
 /** Précision sur un caractère, ou `null` s'il n'a jamais été testé. */

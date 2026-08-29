@@ -6,7 +6,8 @@
  * par caractère, placée avant l'historique.
  */
 
-import { h, svg, formatNumber, formatDate } from '../ui/dom.ts';
+import { h, svg, formatNumber, formatDate, setChildren } from '../ui/dom.ts';
+import { MorsePlayer } from '../ui/player.ts';
 import {
   activityByDay,
   charAccuracy,
@@ -15,6 +16,7 @@ import {
   formatPercent,
   MODE_LABELS,
   overallAccuracy,
+  topConfusions,
   weakestChars,
 } from '../core/progress.ts';
 import { kochCharset, kochMaxLevel, getKochOrder } from '../core/koch.ts';
@@ -33,6 +35,19 @@ function accuracyClass(accuracy: number | null): string {
 export function statsView(context: ViewContext): View {
   const { store } = context;
   const container = h('div', { class: 'stack' });
+  // Une paire confondue s'entend, elle ne se lit pas : la seule chose utile à
+  // faire d'une confusion est de rejouer les deux signes à la suite.
+  const player = new MorsePlayer(store);
+
+  /**
+   * Les deux caractères d'une méprise, joués l'un après l'autre avec un
+   * silence de trois unités entre eux — l'écart d'un caractère à l'autre en
+   * trafic réel, ni plus ni moins.
+   */
+  const ecouterLaPaire = (attendu: string, repondu: string): void => {
+    player.stop();
+    void player.play(`${attendu} ${repondu}`);
+  };
 
   const render = (): void => {
     const { progress, settings } = store;
@@ -146,6 +161,71 @@ export function statsView(context: ViewContext): View {
             ),
           );
 
+    /**
+     * Ce que vous confondez.
+     *
+     * Savoir qu'un caractère est raté ne dit pas quoi travailler ; savoir
+     * qu'il est pris pour un autre le dit. Chaque ligne se réécoute, les deux
+     * signes à la suite : c'est le seul geste qui défait une confusion, et il
+     * n'existe nulle part ailleurs sur le site.
+     */
+    const confusionsCard = (): HTMLElement => {
+      const paires = topConfusions(progress);
+      const corps = h('div', { class: 'confusions' });
+
+      if (paires.length === 0) {
+        setChildren(corps, [
+          h('p', {
+            class: 'card__hint',
+            text:
+              'Rien à signaler : aucune paire n’a encore été confondue deux fois. ' +
+              'Les méprises répétées apparaîtront ici, une erreur isolée n’en est pas une.',
+          }),
+        ]);
+        return h(
+          'section',
+          { class: 'card' },
+          h('h2', { class: 'card__title', text: 'Ce que vous confondez' }),
+          corps,
+        );
+      }
+
+      setChildren(
+        corps,
+        paires.map((paire) =>
+          h(
+            'div',
+            { class: 'confusion' },
+            h('span', { class: 'confusion__paire' },
+              h('b', { text: paire.expected }),
+              h('span', { class: 'confusion__fleche', text: '→', attrs: { 'aria-hidden': 'true' } }),
+              h('b', { class: 'confusion__faux', text: paire.answer })),
+            h('span', { class: 'confusion__codes' },
+              `${prettyCode(encodeChar(paire.expected) ?? '')}  /  ${prettyCode(encodeChar(paire.answer) ?? '')}`),
+            h('span', { class: 'confusion__compte', text: `${paire.count} fois` }),
+            h('button', {
+              class: 'btn btn--ghost confusion__ecouter',
+              type: 'button',
+              text: 'Écouter les deux',
+              attrs: { 'aria-label': `Écouter ${paire.expected} puis ${paire.answer}` },
+              on: { click: () => ecouterLaPaire(paire.expected, paire.answer) },
+            }),
+          ),
+        ),
+      );
+
+      return h(
+        'section',
+        { class: 'card' },
+        h('h2', { class: 'card__title', text: 'Ce que vous confondez' }),
+        h('p', { class: 'card__hint' },
+          'Les paires que vous prenez l’une pour l’autre, de la plus fréquente à la moins. ' +
+          'C’est ici que se joue l’essentiel : deux signes qui ne diffèrent que par un point ' +
+          'ne se distinguent qu’en les entendant coup sur coup.'),
+        corps,
+      );
+    };
+
     container.replaceChildren(
       metrics,
       h(
@@ -165,6 +245,7 @@ export function statsView(context: ViewContext): View {
               ". Le mode Écoute propose une option pour insister dessus.")
           : h('p', { class: 'card__hint', text: 'Pas encore assez de réponses pour dégager des points faibles.' }),
       ),
+      confusionsCard(),
       h(
         'section',
         { class: 'card' },
@@ -187,5 +268,11 @@ export function statsView(context: ViewContext): View {
   render();
   const unsubscribe = store.subscribe(render);
 
-  return { element: container, destroy: unsubscribe };
+  return {
+    element: container,
+    destroy: () => {
+      unsubscribe();
+      player.stop();
+    },
+  };
 }

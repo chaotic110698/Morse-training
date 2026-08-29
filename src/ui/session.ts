@@ -74,7 +74,7 @@ export class SessionTracker {
   record(char: string, answer: string | null, correct: boolean, responseMs: number): void {
     this.entries.push({ char, answer, correct, responseMs });
     this.store.mutateProgress(
-      (progress) => recordAttempt(progress, char, correct, responseMs),
+      (progress) => recordAttempt(progress, char, correct, responseMs, answer),
       { silent: true },
     );
   }

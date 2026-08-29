@@ -183,12 +183,30 @@ function normalizeProgress(input: Partial<Progress> | null | undefined): Progres
     lastDay: typeof rawStreak['lastDay'] === 'string' ? rawStreak['lastDay'] : null,
   };
 
+  /*
+   * Les méprises.
+   *
+   * La table est plate, ses clés sont fabriquées par le code et non saisies :
+   * on n'accepte donc que la forme « X>Y », et on plafonne. Sans plafond, une
+   * sauvegarde bricolée à la main pourrait faire enfler le stockage local
+   * indéfiniment, et rien d'utile ne se lit au-delà des deux cents premières
+   * paires.
+   */
+  const confusions: Progress['confusions'] = {};
+  const paires = Object.entries(plainObject(input.confusions))
+    .map(([cle, valeur]) => [cle, counter(valeur)] as const)
+    .filter(([cle, valeur]) => /^[^>]{1,4}>[^>]{1,4}$/.test(cle) && valeur > 0)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 200);
+  for (const [cle, valeur] of paires) confusions[cle] = valeur;
+
   const level = Number(input.kochLevel);
   return {
     kochLevel: Number.isFinite(level)
       ? Math.min(MAX_KOCH, Math.max(2, Math.floor(level)))
       : base.kochLevel,
     chars,
+    confusions,
     sessions,
     totals,
     streak,
