@@ -9,6 +9,7 @@
  */
 
 import { h, formatNumber, setChildren } from '../ui/dom.ts';
+import { createFocus } from '../ui/focus.ts';
 import { envol } from '../ui/envol.ts';
 import { SignalLamp } from '../ui/lamp.ts';
 import { MorsePlayer } from '../ui/player.ts';
@@ -158,7 +159,23 @@ export function listenView(context: ViewContext): View {
     ...SESSION_LENGTHS.map((entry) => h('option', { value: String(entry.value), text: entry.label })),
   );
 
-  actions.append(primaryButton, replayButton, lengthSelect, reviewToggle);
+  /*
+   * L'écran nu. Il ne recrée pas l'exercice : il emprunte l'écran de verdict,
+   * la diode et la grille le temps d'une série, et les rend en sortant.
+   */
+  const focus = createFocus({
+    pieces: { scene: stage, pave: grid, principal: primaryButton },
+    progression: () => ({
+      part: phase === 'running' && tracker.target > 0 ? tracker.count / tracker.target : null,
+      texte: phase === 'running' ? `${tracker.count} / ${tracker.target}` : `Niveau ${level()}`,
+    }),
+    enCours: () => phase === 'running',
+    rejouer: () => {
+      if (phase === 'running') replay();
+    },
+  });
+
+  actions.append(primaryButton, replayButton, focus.bouton, lengthSelect, reviewToggle);
 
   // --- Rendu ---
 
@@ -192,6 +209,7 @@ export function listenView(context: ViewContext): View {
   };
 
   const renderProgress = (): void => {
+    focus.rafraichit();
     const ratio = tracker.target === 0 ? 0 : Math.min(1, tracker.count / tracker.target);
     progressBar.style.width = `${ratio * 100}%`;
     progressLabel.textContent =
@@ -245,6 +263,9 @@ export function listenView(context: ViewContext): View {
   };
 
   const renderGrid = (): void => {
+    // Le pavé du focus se recalcule sur le nombre de touches : il faut le
+    // prévenir quand le niveau change.
+    window.setTimeout(() => focus.rafraichit(), 0);
     grid.replaceChildren(
       ...displayOrder(charset()).map((char) =>
         h('button', {
@@ -687,6 +708,7 @@ export function listenView(context: ViewContext): View {
     destroy: () => {
       window.clearTimeout(advanceTimer);
       window.removeEventListener('keydown', onKeyDown);
+      focus.destroy();
       unsubscribe();
       annonce.destroy();
       player.stop();

@@ -12,6 +12,7 @@
  */
 
 import { h, setChildren } from '../ui/dom.ts';
+import { createFocus } from '../ui/focus.ts';
 import { envol } from '../ui/envol.ts';
 import { SignalLamp } from '../ui/lamp.ts';
 import { MorsePlayer } from '../ui/player.ts';
@@ -113,7 +114,28 @@ export function freeView(context: ViewContext): View {
   );
   let weighted = true;
 
-  actions.append(primaryButton, replayButton, weakToggle);
+  /*
+   * L'écran nu. La série libre n'a pas de fin : le fil n'a donc pas de rail,
+   * seulement le compte des réponses et la précision du moment.
+   */
+  const focus = createFocus({
+    pieces: { scene: stage, pave: grid, principal: primaryButton },
+    progression: () => {
+      const total = tracker.entries.length;
+      if (!running) return { part: null, texte: `${selection.size} caractères` };
+      const justes = tracker.entries.filter((entry) => entry.correct).length;
+      return {
+        part: null,
+        texte: total === 0 ? '0' : `${total} · ${formatPercent(justes / total)}`,
+      };
+    },
+    enCours: () => running,
+    rejouer: () => {
+      if (running) replay();
+    },
+  });
+
+  actions.append(primaryButton, replayButton, focus.bouton, weakToggle);
 
   // --- Sélection des caractères ---
 
@@ -200,6 +222,7 @@ export function freeView(context: ViewContext): View {
   // --- Grille de réponse ---
 
   const renderGrid = (): void => {
+    window.setTimeout(() => focus.rafraichit(), 0);
     setChildren(
       grid,
       chosen().map((char) =>
@@ -226,6 +249,7 @@ export function freeView(context: ViewContext): View {
   // --- Statistiques de la séance ---
 
   const renderStats = (): void => {
+    focus.rafraichit();
     const total = tracker.entries.length;
     if (total === 0) {
       stats.replaceChildren(
@@ -483,6 +507,7 @@ export function freeView(context: ViewContext): View {
     element,
     destroy: () => {
       window.removeEventListener('keydown', onKey);
+      focus.destroy();
       window.clearTimeout(advanceTimer);
       window.clearInterval(clockTimer);
       player.stop();

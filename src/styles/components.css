@@ -554,6 +554,201 @@
   display: none;
 }
 
+/* --- L'écran nu -----------------------------------------------------------
+ *
+ * Le mode focus (`src/ui/focus.ts`) ne recrée rien : il déplace l'écran de
+ * verdict, la diode et la grille dans cette couche, et les rend en sortant.
+ * Les règles ci-dessous ne décrivent donc qu'une mise en page — moitié haute
+ * pour l'écran, moitié basse pour les touches — jamais un composant.
+ *
+ * Les trois blocs qui s'effacent portent leur propre `[hidden]` : un `display`
+ * posé sur une classe l'emporte sur la règle de l'agent utilisateur, et c'est
+ * la septième fois que ce piège se referme sur ce dépôt.
+ */
+
+html[data-focus='on'] {
+  overflow: hidden;
+}
+
+.focus {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+           env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.focus__fil {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3) var(--space-1);
+}
+
+.focus__sortie {
+  flex: none;
+  width: 1.8rem;
+  height: 1.8rem;
+  display: grid;
+  place-items: center;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.focus__sortie:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+.focus__rail {
+  flex: 1;
+  height: 3px;
+  background: var(--surface-3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.focus__rail[hidden] {
+  display: none;
+}
+
+.focus__plein {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width var(--transition);
+}
+
+.focus__compte {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+/* La scène empruntée perd sa carte : dans une couche qui occupe déjà toute la
+   fenêtre, un cadre dans le cadre ne dit plus rien. La diode se range dans le
+   coin — au centre elle disputerait la place à la lettre, et ce n'est pas elle
+   qu'on regarde au moment de répondre. */
+.focus .trainer__stage--focus {
+  flex: 1;
+  min-height: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: var(--space-4) var(--space-5);
+  cursor: pointer;
+}
+
+.focus .trainer__stage--focus .lamp {
+  position: absolute;
+  inset: 0 var(--space-4) auto auto;
+  min-width: 0;
+}
+
+.focus__pave {
+  flex: 0 0 var(--focus-part, 50%);
+  display: grid;
+  min-height: 0;
+  padding: 0 var(--space-3) var(--space-3);
+}
+
+.focus__pave[hidden] {
+  display: none;
+}
+
+.focus__centre {
+  flex: 0 0 50%;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+}
+
+.focus__centre[hidden] {
+  display: none;
+}
+
+.answer-grid.answer-grid--focus {
+  grid-template-columns: repeat(var(--focus-colonnes, 6), minmax(0, 1fr));
+  align-content: end;
+  justify-items: center;
+  height: 100%;
+}
+
+.answer-grid.answer-grid--focus .answer-grid__key {
+  min-height: 0;
+  width: 100%;
+  height: var(--focus-hauteur, 3.25rem);
+  max-width: var(--focus-largeur, none);
+  font-size: clamp(1rem, calc(var(--focus-hauteur, 3.25rem) / 2.6), 1.7rem);
+}
+
+.answer-grid.answer-grid--focus .answer-grid__key--code {
+  font-size: 1rem;
+}
+
+/* Sur un écran large, le focus ne gagne pas de la place : il enlève du bruit.
+   Les touches restent à taille de doigt dans une colonne centrée plutôt que
+   de s'étirer sur toute la largeur. */
+@media (min-width: 60rem) {
+  .focus {
+    justify-content: center;
+  }
+
+  .focus__fil {
+    position: absolute;
+    inset: 0 0 auto 0;
+  }
+
+  .focus .trainer__stage--focus {
+    flex: 0 0 clamp(11rem, 32vh, 18rem);
+  }
+
+  .focus__pave,
+  .focus__centre {
+    flex: none;
+    height: clamp(14rem, 42vh, 24rem);
+    width: min(46rem, 100%);
+    margin: 0 auto;
+  }
+}
+
+/* Téléphone couché : l'écran passe à gauche, les touches à droite. Une moitié
+   basse de trois cent quatre-vingt-dix pixels de haut ne serait plus qu'une
+   bande. */
+@media (orientation: landscape) and (max-height: 32rem) {
+  .focus {
+    flex-direction: row;
+  }
+
+  .focus__fil {
+    position: absolute;
+    inset: 0 0 auto 0;
+  }
+
+  .focus .trainer__stage--focus {
+    flex: 1;
+    padding-top: var(--space-6);
+  }
+
+  .focus__pave,
+  .focus__centre {
+    flex: 1;
+    height: auto;
+    padding: var(--space-6) var(--space-3) var(--space-3) 0;
+  }
+}
+
 /* --- Grille de réponse --- */
 
 .answer-grid {

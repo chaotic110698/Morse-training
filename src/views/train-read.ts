@@ -9,6 +9,7 @@
  */
 
 import { h } from '../ui/dom.ts';
+import { createFocus } from '../ui/focus.ts';
 import { envol } from '../ui/envol.ts';
 import { SessionTracker } from '../ui/session.ts';
 import { isTypingTarget } from '../ui/keys.ts';
@@ -49,6 +50,32 @@ export function readView(context: ViewContext): View {
   const progressBar = h('div', { class: 'progress__fill' });
   const progressLabel = h('span', { class: 'progress__label' });
   const summary = h('div', { class: 'summary' });
+
+  /*
+   * L'écran nu. Cette page démarre d'elle-même : elle n'a pas de bouton de
+   * lancement à emprunter, seulement une relance à proposer quand la série
+   * est finie. La grille porte des codes, plus larges qu'une lettre.
+   */
+  const relanceFocus = h('button', {
+    class: 'btn btn--primary btn--lg',
+    type: 'button',
+    text: 'Nouvelle série',
+    on: { click: () => relance() },
+  });
+  const focus = createFocus({
+    pieces: { scene: stage, pave: grid, principal: relanceFocus },
+    largeurMin: () => (direction === 'char-to-code' ? 112 : 52),
+    progression: () => ({
+      part: tracker.target > 0 ? Math.min(1, tracker.count / tracker.target) : null,
+      texte: `${tracker.count} / ${tracker.target}`,
+    }),
+    enCours: () => !tracker.finished,
+    // Réentendre ce qu'on lit : c'est exactement le pont que ce mode cherche
+    // à construire vers l'oreille.
+    rejouer: () => {
+      if (current) void player.play(current);
+    },
+  });
 
   const directionToggle = h(
     'div',
@@ -95,6 +122,7 @@ export function readView(context: ViewContext): View {
   };
 
   const renderProgress = (): void => {
+    focus.rafraichit();
     const ratio = Math.min(1, tracker.count / tracker.target);
     progressBar.style.width = `${ratio * 100}%`;
     progressLabel.textContent = `${tracker.count} / ${tracker.target} · ${formatPercent(tracker.accuracy)}`;
@@ -117,6 +145,7 @@ export function readView(context: ViewContext): View {
   };
 
   const renderGrid = (): void => {
+    window.setTimeout(() => focus.rafraichit(), 0);
     const set = charset();
     // Une grille de codes réclame des cellules bien plus larges qu'une grille
     // de lettres : un code peut compter six signes.
@@ -199,6 +228,14 @@ export function readView(context: ViewContext): View {
     advanceTimer = window.setTimeout(() => nextQuestion(), correct ? 400 : 900);
   };
 
+  const relance = (): void => {
+    tracker = new SessionTracker(store, 'read', 20);
+    tracker.start();
+    summary.replaceChildren();
+    renderProgress();
+    nextQuestion();
+  };
+
   const finish = (): void => {
     tracker.commit(null);
     answerable = false;
@@ -217,15 +254,7 @@ export function readView(context: ViewContext): View {
         class: 'btn btn--primary',
         type: 'button',
         text: 'Nouvelle série',
-        on: {
-          click: () => {
-            tracker = new SessionTracker(store, 'read', 20);
-            tracker.start();
-            summary.replaceChildren();
-            renderProgress();
-            nextQuestion();
-          },
-        },
+        on: { click: () => relance() },
       }),
     );
   };
@@ -251,7 +280,7 @@ export function readView(context: ViewContext): View {
     'div',
     { class: 'trainer' },
     annonce.element,
-    h('div', { class: 'toolbar' }, directionToggle, fullSetToggle),
+    h('div', { class: 'toolbar' }, directionToggle, fullSetToggle, focus.bouton),
     h('div', { class: 'progress' }, progressBar, progressLabel),
     stage,
     grid,
@@ -278,6 +307,7 @@ export function readView(context: ViewContext): View {
       window.removeEventListener('keydown', onKeyDown);
       unsubscribe();
       annonce.destroy();
+      focus.destroy();
       player.stop();
       tracker.commit(null);
     },
